@@ -3,21 +3,24 @@ import * as sanitizeHtml from 'sanitize-html';
 
 export class PostAsset extends BaseAsset {
 	public name = 'post';
-	public id = 0;
+	public id = 1;
 
 	// Define schema for asset
 	public schema = {
 		$id: 'choices/post-asset',
 		title: 'PostAsset transaction asset for choices module',
 		type: 'object',
-		required: [],
+		required: ["choicesObject"],
 		properties: {
-			"dataType": "Array<{label: string, value: string}>",
-			"fieldNumber": 1,
-			"minLength": 2,
-			"maxLength": 4,
-		},
-	};
+			choicesObject: {
+				type: 'array',
+				fieldNumber: 1,
+				items: {
+					type: 'object'
+				}
+			}
+		}
+	}
 
 	public validate({ asset }: ValidateAssetContext<{}>): void {
 		// Validate your asset

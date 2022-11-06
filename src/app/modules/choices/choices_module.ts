@@ -51,7 +51,7 @@ export class ChoicesModule extends BaseModule {
         // Example below
         // 'choices:newBlock',
     ];
-    public id = 1000;
+    public id = 1001;
 
     // public constructor(genesisConfig: GenesisConfig) {
     //     super(genesisConfig);
