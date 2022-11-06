@@ -1,4 +1,4 @@
-import { BaseAsset, ApplyAssetContext, ValidateAssetContext, codec } from 'lisk-sdk';
+import { BaseAsset, ApplyAssetContext, ValidateAssetContext } from 'lisk-sdk';
 import * as sanitizeHtml from 'sanitize-html';
 
 export class PostAsset extends BaseAsset {
@@ -7,23 +7,15 @@ export class PostAsset extends BaseAsset {
 
 	// Define schema for asset
 	public schema = {
-		$id: 'blog/post-asset',
-		title: 'PostAsset transaction asset for blog module',
+		$id: 'choices/post-asset',
+		title: 'PostAsset transaction asset for choices module',
 		type: 'object',
 		required: [],
 		properties: {
-			"title": {
-				"dataType": "string",
-				"fieldNumber": 1,
-				"minLength": 3,
-				"maxLength": 32
-			},
-			"content": {
-				"dataType": "string",
-				"fieldNumber": 2,
-				"minLength": 100,
-				"maxLength": 30000
-			}
+			"dataType": "Array<{label: string, value: string}>",
+			"fieldNumber": 1,
+			"minLength": 2,
+			"maxLength": 4,
 		},
 	};
 
@@ -34,6 +26,6 @@ export class PostAsset extends BaseAsset {
 	// eslint-disable-next-line @typescript-eslint/require-await
 	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
 		asset.content = sanitizeHtml(asset.content);
-		await stateStore.chain.set("blog", codec.encode(this.schema, asset));
+		await stateStore.chain.set("choices", codec.encode(this.schema, asset));
 	}
 }

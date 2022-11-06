@@ -2,7 +2,6 @@
 
 import {
     AfterBlockApplyContext,
-    codec,
 
 
     AfterGenesisBlockApplyContext, BaseModule,
@@ -12,49 +11,45 @@ import {
 } from 'lisk-sdk';
 import { PostAsset } from "./assets/post_asset";
 
-export class BlogModule extends BaseModule {
+export class ChoicesModule extends BaseModule {
     public actions = {
-        // Example below
-        // getBalance: async (params) => this._dataAccess.account.get(params.address).token.balance,
-        // getBlockByID: async (params) => this._dataAccess.blocks.get(params.id),
-
-        getTestBlog: async (params: Record<string, unknown>) => {
+        getChoices: async (params: Record<string, unknown>) => {
             const chainGetter = this._dataAccess.getChainState.bind(this);
-            const buffer = await chainGetter("blog");;
-        
+            const buffer = await chainGetter("choices");;
+
             if (buffer === undefined) {
                 return null;
             }
-        
+
             const decoded: Object = codec.decode(
                 this.transactionAssets[0].schema,
                 buffer
             )
-        
+
             const data = codec.toJSON<string>(this.transactionAssets[0].schema, decoded);
-        
+
             return data;
         }
     };
     public reducers = {
         // Example below
         // getBalance: async (
-		// 	params: Record<string, unknown>,
-		// 	stateStore: StateStore,
-		// ): Promise<bigint> => {
-		// 	const { address } = params;
-		// 	if (!Buffer.isBuffer(address)) {
-		// 		throw new Error('Address must be a buffer');
-		// 	}
-		// 	const account = await stateStore.account.getOrDefault<TokenAccount>(address);
-		// 	return account.token.balance;
-		// },
+        // 	params: Record<string, unknown>,
+        // 	stateStore: StateStore,
+        // ): Promise<bigint> => {
+        // 	const { address } = params;
+        // 	if (!Buffer.isBuffer(address)) {
+        // 		throw new Error('Address must be a buffer');
+        // 	}
+        // 	const account = await stateStore.account.getOrDefault<TokenAccount>(address);
+        // 	return account.token.balance;
+        // },
     };
-    public name = 'blog';
+    public name = 'choices';
     public transactionAssets = [new PostAsset()];
     public events = [
         // Example below
-        // 'blog:newBlock',
+        // 'choices:newBlock',
     ];
     public id = 1000;
 
@@ -66,13 +61,13 @@ export class BlogModule extends BaseModule {
     public async beforeBlockApply(_input: BeforeBlockApplyContext) {
         // Get any data from stateStore using block info, below is an example getting a generator
         // const generatorAddress = getAddressFromPublicKey(_input.block.header.generatorPublicKey);
-		// const generator = await _input.stateStore.account.get<TokenAccount>(generatorAddress);
+        // const generator = await _input.stateStore.account.get<TokenAccount>(generatorAddress);
     }
 
     public async afterBlockApply(_input: AfterBlockApplyContext) {
         // Get any data from stateStore using block info, below is an example getting a generator
         // const generatorAddress = getAddressFromPublicKey(_input.block.header.generatorPublicKey);
-		// const generator = await _input.stateStore.account.get<TokenAccount>(generatorAddress);
+        // const generator = await _input.stateStore.account.get<TokenAccount>(generatorAddress);
     }
 
     public async beforeTransactionApply(_input: TransactionApplyContext) {
