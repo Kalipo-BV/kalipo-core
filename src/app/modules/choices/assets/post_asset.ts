@@ -10,13 +10,13 @@ export class PostAsset extends BaseAsset {
 		$id: 'choices/post-asset',
 		title: 'PostAsset transaction asset for choices module',
 		type: 'object',
-		required: ["choicesObject"],
+		required: [],
 		properties: {
 			choicesObject: {
 				type: 'array',
 				fieldNumber: 1,
 				items: {
-					type: 'object'
+					type: 'string'
 				}
 			}
 		}
