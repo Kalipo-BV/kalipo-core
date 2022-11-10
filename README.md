@@ -1,5 +1,5 @@
 # Kalipo-core
-
+<a name="readme-top"></a>
 Decentralised blockchain platform for democratic consensus (proposals) and autonomous organisations (autons) 
 
 <!-- PROJECT SHIELDS -->
