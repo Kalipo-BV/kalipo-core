@@ -1,0 +1,11 @@
+
+config/default/accounts.json
+config/accounts.json
+config/default/forging_info.json
+config/default/genesis_block.json
+config/default/password.json
+config/forging_info.json
+config/genesis_block.json
+config/password.json
+node_modules
+src/.DS_Store
