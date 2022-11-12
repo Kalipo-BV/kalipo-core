@@ -19,7 +19,7 @@ import { BasePlugin, cryptography, PluginInfo, transactions } from 'lisk-sdk';
 import type { BaseChannel, EventsDefinition, ActionsDefinition, SchemaWithDefault } from 'lisk-sdk';
 import { TransactionSignCommand } from 'lisk-commander';
 
-const accounts = require('../../../../config/default/accounts.json');
+const accounts = require('../../../../config/default/config/accounts.json');
 
 /* eslint-disable class-methods-use-this */
 /* eslint-disable  @typescript-eslint/no-empty-function */

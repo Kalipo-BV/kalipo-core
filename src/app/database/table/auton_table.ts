@@ -39,7 +39,8 @@ export interface Auton {
     tags: Array<string>,
     constitution: Array<ProposalTypeConstitution>,
     proposals: Array<string>,
-    transaction: string
+    transaction: string,
+    type: string
 }
 
 export class AutonTable extends BaseTable<Auton> {
@@ -47,7 +48,7 @@ export class AutonTable extends BaseTable<Auton> {
     protected schema: Schema = {
         $id: "kalipo/tables/auton_table",
         type: "object",
-        required: ["memberships", "autonProfile"],
+        required: ["memberships", "autonProfile", "type"],
         properties: {
             memberships: {
                 type: "array",
@@ -127,6 +128,10 @@ export class AutonTable extends BaseTable<Auton> {
             transaction: {
                 dataType: "string",
                 fieldNumber: 6,
+            },
+            type: {
+                type: "string",
+                fieldNumber: 7
             },
         }
     }

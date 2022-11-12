@@ -78,6 +78,10 @@ export class CreateAutonAsset extends BaseAsset {
 					dataType: "string",
 					maxLength: 128
 				}
+			},
+			type: {
+				type: 'string',
+				fieldNumber: 8,
 			}
 		},
 	};
@@ -186,6 +190,7 @@ export class CreateAutonAsset extends BaseAsset {
 				foundingDate: BigInt(stateStore.chain.lastBlockHeaders[0].timestamp)
 			},
 			tags: asset.tags,
+			type: asset.type,
 			constitution: constitution,
 			proposals: [],
 			transaction: transaction.id.toString('hex')

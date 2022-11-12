@@ -92,11 +92,6 @@
 		"/config",
 		"/docs"
 	],
-	"husky": {
-		"hooks": {
-			"pre-commit": "lint-staged"
-		}
-	},
 	"dependencies": {
 		"@liskhq/lisk-api-client": "^5.1.6",
 		"@liskhq/lisk-framework-dashboard-plugin": "^0.1.7",
