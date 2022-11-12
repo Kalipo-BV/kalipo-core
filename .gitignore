@@ -9,3 +9,8 @@ config/genesis_block.json
 config/password.json
 node_modules
 src/.DS_Store
+
+config/default/config/accounts.json
+config/default/config/forging_info.json
+config/default/config/password.json
+.secrets/default/accounts.json
