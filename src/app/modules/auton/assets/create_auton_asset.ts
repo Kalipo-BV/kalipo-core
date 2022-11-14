@@ -79,10 +79,35 @@ export class CreateAutonAsset extends BaseAsset {
 					maxLength: 128
 				}
 			},
-			type: {
+			template: {
 				type: 'string',
 				fieldNumber: 8,
-			}
+			},
+			description: {
+				type: 'string',
+				fieldNumber: 9,
+			},
+			startTimeDate: {
+				type: 'uint64',
+				fieldNumber: 10,
+			},			
+			endTimeDate: {
+				type: 'uint64',
+				fieldNumber: 11,
+			},			
+			price: {
+				type: 'uint32',
+				fieldNumber: 12,
+			},			
+			image: {
+				type: 'string',
+				fieldNumber: 13,
+			},
+			location: {
+				type: 'string',
+				fieldNumber: 14,
+			},
+
 		},
 	};
 
@@ -182,15 +207,25 @@ export class CreateAutonAsset extends BaseAsset {
 		const auton: Auton = {
 			memberships: memberships,
 			autonProfile: {
+				// TODO: Depending on which template is set, some fields might be empty
 				name: asset.name,
 				subtitle: asset.subtitle,
 				icon: asset.icon,
 				mission: asset.mission,
 				vision: asset.vision,
-				foundingDate: BigInt(stateStore.chain.lastBlockHeaders[0].timestamp)
+				foundingDate: BigInt(stateStore.chain.lastBlockHeaders[0].timestamp),
+				template: asset.template,
+				// these are the event properties (and name for both templates)
+				description: asset.description,	
+				startTimeDate: asset.startTimeDate,
+				endTimeDate: asset.endTimeDate,
+				price: asset.price,
+				capacity: asset.capacity,   
+				image: asset.image,     
+				location: asset.location,   
 			},
 			tags: asset.tags,
-			type: asset.type,
+
 			constitution: constitution,
 			proposals: [],
 			transaction: transaction.id.toString('hex')

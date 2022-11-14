@@ -20,12 +20,22 @@ import { BaseTable } from "../base_table";
 import { ProposalType } from "../enums";
 
 export interface AutonProfile {
-    name: string,
+    name: string, 
     subtitle: string,
     icon: string,
     mission: string,
     vision: string
     foundingDate: BigInt
+    template: string, // this is "default" or 'event'
+    // these are the event fields
+    // the title of the event is the name of the auton
+    description: string,
+    startTimeDate: Date,
+    endTimeDate: Date,
+    price:       number,
+    capacity:       number,
+    image:       string,
+    location:    string
 }
 
 export interface ProposalTypeConstitution {
@@ -40,7 +50,6 @@ export interface Auton {
     constitution: Array<ProposalTypeConstitution>,
     proposals: Array<string>,
     transaction: string,
-    type: string
 }
 
 export class AutonTable extends BaseTable<Auton> {

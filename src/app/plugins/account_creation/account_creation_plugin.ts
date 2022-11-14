@@ -19,7 +19,7 @@ import { BasePlugin, cryptography, PluginInfo, transactions } from 'lisk-sdk';
 import type { BaseChannel, EventsDefinition, ActionsDefinition, SchemaWithDefault } from 'lisk-sdk';
 import { TransactionSignCommand } from 'lisk-commander';
 
-const accounts = require('../../../../config/default/config/accounts.json');
+const accounts = require('../../../../config/default/accounts.json');
 
 /* eslint-disable class-methods-use-this */
 /* eslint-disable  @typescript-eslint/no-empty-function */
@@ -126,9 +126,11 @@ export class AccountCreationPlugin extends BasePlugin {
 				passphrase
 			);
 			const address = cryptography.getAddressFromPassphrase(passphrase);
+			console.log(address)
 			const account = await channel.invoke('app:getAccount', {
 				address,
 			});
+			console.log(account)
 			const { sequence: { nonce } } = codec.decodeAccount(account);
 
 			const { id, ...tx } = transactions.signTransaction(
