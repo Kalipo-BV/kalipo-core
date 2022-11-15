@@ -19,10 +19,7 @@ import { Schema } from "lisk-sdk";
 import { BaseTable } from "../base_table";
 import { ProposalType } from "../enums";
 
-export enum AutonTypeEnum {
-    default = "default",
-    event = "event"
-}
+
 export interface AutonProfile {
     name: string, 
     subtitle: string,

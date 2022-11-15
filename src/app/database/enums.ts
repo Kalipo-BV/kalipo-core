@@ -19,6 +19,11 @@ export enum ProposalType {
     MEMBERSHIP_INVITATION = 'membership-invitation',
 }
 
+export enum AutonTypeEnum {
+    default = "default",
+    event = "event"
+}
+
 export enum ProposalStatus {
     CAMPAIGNING = 'CAMPAIGNING',
     VOTING = 'VOTING',
