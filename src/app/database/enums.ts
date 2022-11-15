@@ -20,8 +20,8 @@ export enum ProposalType {
 }
 
 export enum AutonTypeEnum {
-    default = "default",
-    event = "event"
+    DEFAULT = "DEFAULT",
+    EVENT = "EVENT"
 }
 
 export enum ProposalStatus {
