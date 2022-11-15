@@ -19,6 +19,10 @@ import { Schema } from "lisk-sdk";
 import { BaseTable } from "../base_table";
 import { ProposalType } from "../enums";
 
+export enum AutonTypeEnum {
+    default = "default",
+    event = "event"
+}
 export interface AutonProfile {
     name: string, 
     subtitle: string,
@@ -26,16 +30,8 @@ export interface AutonProfile {
     mission: string,
     vision: string
     foundingDate: BigInt
-    template: string, // this is "default" or 'event'
     // these are the event fields
     // the title of the event is the name of the auton
-    description: string,
-    startTimeDate: Date,
-    endTimeDate: Date,
-    price:       number,
-    capacity:       number,
-    image:       string,
-    location:    string
 }
 
 export interface ProposalTypeConstitution {
@@ -45,11 +41,24 @@ export interface ProposalTypeConstitution {
 
 export interface Auton {
     memberships: Array<string>,
-    autonProfile: AutonProfile,
     tags: Array<string>,
     constitution: Array<ProposalTypeConstitution>,
     proposals: Array<string>,
     transaction: string,
+    type: AutonTypeEnum,
+    autonProfile: AutonProfile,
+    poas: Array<string>,
+    event: EventProfile
+}
+
+export interface EventProfile {
+    title: string,
+    description: string,
+    location: string,
+    capacity: BigInt,
+    price: BigInt, 
+    start: BigInt,
+    end: BigInt,
 }
 
 export class AutonTable extends BaseTable<Auton> {
@@ -142,6 +151,17 @@ export class AutonTable extends BaseTable<Auton> {
                 type: "string",
                 fieldNumber: 7
             },
+            poas: {
+                type: "array",
+                fieldNumber: 8,
+                items: {
+                    dataType: "string",
+                }
+            },
+            event: {
+                type: "string",
+                fieldNumber: 9,
+            }
         }
     }
 
