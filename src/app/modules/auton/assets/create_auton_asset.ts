@@ -23,6 +23,7 @@ import { KalipoAccount } from '../../../database/table/kalipo_account_table';
 import { RowContext } from '../../../database/row_context';
 import { templates } from '../../../database/templates';
 import { VALID_INVITATION_WINDOW } from '../../membership/membership_module';
+import { AutonTypeEnum } from '../../../database/enums';
 
 export class CreateAutonAsset extends BaseAsset {
 	public name = 'createAuton';
@@ -79,41 +80,93 @@ export class CreateAutonAsset extends BaseAsset {
 					maxLength: 128
 				}
 			},
-			template: {
-				type: 'string',
+			type: {
+				dataType: 'string',
 				fieldNumber: 8,
 			},
-			description: {
-				type: 'string',
-				fieldNumber: 9,
-			},
-			startTimeDate: {
-				type: 'uint64',
+			title: {
+				dataType: 'string',
 				fieldNumber: 10,
-			},			
-			endTimeDate: {
-				type: 'uint64',
+			},
+			description: {
+				dataType: 'string',
 				fieldNumber: 11,
-			},			
-			price: {
-				type: 'uint32',
-				fieldNumber: 12,
-			},			
-			image: {
-				type: 'string',
-				fieldNumber: 13,
 			},
 			location: {
-				type: 'string',
+				dataType: 'string',
+				fieldNumber: 12,
+			},
+			capacity: {
+				dataType: 'uint64',
+				fieldNumber: 13,
+			},
+			price: {
+				dataType: 'uint64',
 				fieldNumber: 14,
 			},
-
+			start: {
+				dataType: 'uint64',
+				fieldNumber: 15,
+			},
+			end: {
+				dataType: 'uint64',
+				fieldNumber: 16,
+			}
 		},
 	};
 
 	public validate({ asset }: ValidateAssetContext<{}>): void {
 		// Validate your asset
 
+	}
+
+
+	private _createAuton (asset, constitution, memberships, transaction, stateStore ) {
+
+		// This is the default auton, where poas and event are empty
+		// these fields are only needed for the auton type 'event'
+		let auton: Auton = {
+			memberships: memberships,
+			autonProfile: {
+				name: asset.name,
+				subtitle: asset.subtitle,
+				icon: asset.icon,
+				mission: asset.mission,
+				vision: asset.vision,
+				foundingDate: BigInt(stateStore.chain.lastBlockHeaders[0].timestamp),
+
+			},
+			tags: asset.tags,
+
+			constitution: constitution,
+			proposals: [],
+			transaction: transaction.id.toString('hex'),
+			type: asset.type,
+			poas: [],
+			event: {},
+		};
+
+		if (asset.type == AutonTypeEnum.EVENT) {
+
+
+			// auton.poas = this._createPoa();
+			auton.event = {
+				title: asset.title,
+				description: asset.description,
+				location: asset.location,
+				capacity: asset.capacity,
+				price: asset.price,
+				start: asset.start,
+				end: asset.end,
+			}
+		}
+
+		return auton;
+	}
+
+	private _createPoa (asset, auton, transaction, stateStore ) {
+
+		
 	}
 
 	// eslint-disable-next-line @typescript-eslint/require-await
@@ -204,32 +257,14 @@ export class CreateAutonAsset extends BaseAsset {
 			constitution.push(porposalType)
 		}
 
-		const auton: Auton = {
-			memberships: memberships,
-			autonProfile: {
-				// TODO: Depending on which template is set, some fields might be empty
-				name: asset.name,
-				subtitle: asset.subtitle,
-				icon: asset.icon,
-				mission: asset.mission,
-				vision: asset.vision,
-				foundingDate: BigInt(stateStore.chain.lastBlockHeaders[0].timestamp),
-				template: asset.template,
-				// these are the event properties (and name for both templates)
-				description: asset.description,	
-				startTimeDate: asset.startTimeDate,
-				endTimeDate: asset.endTimeDate,
-				price: asset.price,
-				capacity: asset.capacity,   
-				image: asset.image,     
-				location: asset.location,   
-			},
-			tags: asset.tags,
 
-			constitution: constitution,
-			proposals: [],
-			transaction: transaction.id.toString('hex')
-		}
+		const auton: Auton = this._createAuton(asset, constitution, memberships, transaction, stateStore)
+
+
+
+
+
+
 		console.log("Big 3")
 
 
@@ -312,4 +347,5 @@ export class CreateAutonAsset extends BaseAsset {
 		}
 
 	}
+
 }

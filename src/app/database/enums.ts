@@ -24,6 +24,11 @@ export enum AutonTypeEnum {
     EVENT = "EVENT"
 }
 
+export enum RoleEnum {
+    FULL_MEMBER = "FULL_MEMBER",
+    AFFILIATE_MEMBER = "AFFILIATE_MEMBER"
+}
+
 export enum ProposalStatus {
     CAMPAIGNING = 'CAMPAIGNING',
     VOTING = 'VOTING',

@@ -30,7 +30,8 @@ export interface KalipoAccount {
     socials: Array<Social>
     liskAccountId: Buffer
     memberships: Array<string>
-    transaction: string
+    transaction: string,
+    poas: Array<string>,
 }
 
 export class KalipoAccountTable extends BaseTable<KalipoAccount> {

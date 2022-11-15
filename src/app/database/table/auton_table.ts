@@ -18,6 +18,8 @@
 import { Schema } from "lisk-sdk";
 import { BaseTable } from "../base_table";
 import { ProposalType } from "../enums";
+import { AutonTypeEnum } from "../enums";
+
 
 
 export interface AutonProfile {
@@ -49,13 +51,13 @@ export interface Auton {
 }
 
 export interface EventProfile {
-    title: string,
-    description: string,
-    location: string,
-    capacity: BigInt,
-    price: BigInt, 
-    start: BigInt,
-    end: BigInt,
+    title?: string,
+    description?: string,
+    location?: string,
+    capacity?: BigInt,
+    price?: BigInt, 
+    start?: BigInt,
+    end?: BigInt,
 }
 
 export class AutonTable extends BaseTable<Auton> {
