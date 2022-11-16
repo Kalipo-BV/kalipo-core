@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { BaseAsset, ApplyAssetContext, ValidateAssetContext } from 'lisk-sdk';
+import { BaseAsset, ApplyAssetContext, ValidateAssetContext, HTTPAPIPlugin } from 'lisk-sdk';
 import { Membership, MembershipInvitation } from '../../../database/table/membership_table';
 import { Auton, ProposalTypeConstitution } from '../../../database/table/auton_table';
 import { db } from '../../../database/db';
@@ -24,6 +24,7 @@ import { RowContext } from '../../../database/row_context';
 import { templates } from '../../../database/templates';
 import { VALID_INVITATION_WINDOW } from '../../membership/membership_module';
 import { AutonTypeEnum } from '../../../database/enums';
+import { CreatePoaAsset } from '../../poa/assets/create_poa_asset';
 
 export class CreateAutonAsset extends BaseAsset {
 	public name = 'createAuton';
@@ -148,8 +149,7 @@ export class CreateAutonAsset extends BaseAsset {
 
 		if (asset.type == AutonTypeEnum.EVENT) {
 
-
-			// auton.poas = this._createPoa();
+			auton.poas = [];
 			auton.event = {
 				title: asset.title,
 				description: asset.description,
@@ -162,11 +162,6 @@ export class CreateAutonAsset extends BaseAsset {
 		}
 
 		return auton;
-	}
-
-	private _createPoa (asset, auton, transaction, stateStore ) {
-
-		
 	}
 
 	// eslint-disable-next-line @typescript-eslint/require-await
@@ -263,8 +258,7 @@ export class CreateAutonAsset extends BaseAsset {
 
 
 
-
-
+		
 		console.log("Big 3")
 
 

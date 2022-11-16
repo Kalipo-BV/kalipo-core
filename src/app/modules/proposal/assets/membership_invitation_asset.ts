@@ -222,6 +222,7 @@ export class MembershipInvitationAsset extends BaseAsset {
 		console.log("proposal")
 		console.log(proposal)
 
+		
 
 
 		const proposalId = await db.tables.proposal.createRecord(stateStore, transaction, proposal, new RowContext());

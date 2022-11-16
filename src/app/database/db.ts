@@ -29,6 +29,8 @@ import { VoteTable } from './table/vote_table'
 import { ScheduledProposalIndex } from './index/scheduled_proposal_index'
 import { ProposalCampaignCommentTable } from './table/proposal_campaign_comment_table'
 import { BaseTable } from './base_table'
+import { PoaTable } from './table/poa_table'
+import { PoaNameIndex } from './index/poa_index'
 
 export const tableRegistrationClasses: Array<BaseTable> = [new KalipoAccountTable(), new AutonTable(), new MembershipTable(),
 new ProposalTable(), new ProposalProvisionsTable(), new VoteTable(), new ProposalCampaignCommentTable()]
@@ -41,7 +43,8 @@ export const db = {
         proposal: new ProposalTable(),
         provisions: new ProposalProvisionsTable(),
         vote: new VoteTable(),
-        campaignComment: new ProposalCampaignCommentTable()
+        campaignComment: new ProposalCampaignCommentTable(),
+        poa: new PoaTable(),
     },
     indices: {
         liskId: new LiskIdIndex(),
@@ -49,6 +52,7 @@ export const db = {
         autonName: new AutonNameIndex(),
         autonTag: new AutonTagIndex(),
         fullTable: new FullTableIndex(),
-        scheduledProposal: new ScheduledProposalIndex()
+        scheduledProposal: new ScheduledProposalIndex(),
+        poaName: new PoaNameIndex(),
     }
 }

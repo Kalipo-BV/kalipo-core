@@ -22,6 +22,7 @@ import { CommentModule } from "./modules/comment/comment_module";
 import { HelloModule } from "./modules/hello/hello_module";
 import { KalipoAccountModule } from "./modules/kalipo_account/kalipo_account_module";
 import { MembershipModule } from "./modules/membership/membership_module";
+import { PoaModule } from './modules/poa/poa_module';
 import { ProposalModule } from "./modules/proposal/proposal_module";
 import { VoteModule } from "./modules/vote/vote_module";
 
@@ -34,4 +35,5 @@ export const registerModules = (app: Application): void => {
     app.registerModule(ProposalModule);
     app.registerModule(VoteModule);
     app.registerModule(CommentModule);
+    app.registerModule(PoaModule);
 };
