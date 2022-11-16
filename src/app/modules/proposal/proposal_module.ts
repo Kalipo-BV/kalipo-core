@@ -24,7 +24,7 @@ import {
     AfterGenesisBlockApplyContext, BaseModule,
 
 
-    BeforeBlockApplyContext, codec, TransactionApplyContext
+    BeforeBlockApplyContext, TransactionApplyContext
 } from 'lisk-sdk';
 import { process } from '../../database/action_pipeline';
 import { db, tableRegistrationClasses } from '../../database/db';
@@ -34,11 +34,16 @@ import { Auton } from '../../database/table/auton_table';
 import { ProposalProvisions } from '../../database/table/proposal_provisions_table';
 import { Proposal } from '../../database/table/proposal_table';
 import { MembershipInvitationAsset } from "./assets/membership_invitation_asset";
+import { MultiChoicePollAsset } from "./assets/multi_choice_poll_asset";
 
 export interface BinaryVoteCount {
     acceptCount: number,
     refuseCount: number,
     totalVotes: number,
+}
+
+export interface MultiChoicePollCResult {
+    memberCount: number,
 }
 
 export const currentRowContexts: Record<string, RowContext> = {}
@@ -67,7 +72,7 @@ export class ProposalModule extends BaseModule {
         // },
     };
     public name = 'proposal';
-    public transactionAssets = [new MembershipInvitationAsset()];
+    public transactionAssets = [new MembershipInvitationAsset(), new MultiChoicePollAsset()];
     public events = [
         // Example below
         'gotDecided'

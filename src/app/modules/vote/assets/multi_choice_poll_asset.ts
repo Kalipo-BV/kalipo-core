@@ -1,35 +1,18 @@
-/* Kalipo B.V. - the DAO platform for business & societal impact 
- * Copyright (C) 2022 Peter Nobels and Matthias van Dijk
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 import { BaseAsset, ApplyAssetContext, ValidateAssetContext } from 'lisk-sdk';
 import { db } from '../../../database/db';
-import { ProposalStatus, MembershipValidationError } from '../../../database/enums';
+import { MembershipValidationError, ProposalStatus } from '../../../database/enums';
 import { RowContext } from '../../../database/row_context';
 import { Membership } from '../../../database/table/membership_table';
-import { Vote } from '../../../database/table/vote_table';
 
-export class BinaryVotingAsset extends BaseAsset {
-	public name = 'binaryVoting';
-	public id = 0;
+// Binary Voting asset is bijna identiek alleen de validate methode verschilt
+export class MultiChoicePollAsset extends BaseAsset {
+	public name = 'multiChoicePoll';
+	public id = 1;
 
 	// Define schema for asset
 	public schema = {
-		$id: 'vote/binaryVoting-asset',
-		title: 'BinaryVotingAsset transaction asset for vote module',
+		$id: 'vote/multiChoicePoll-asset',
+		title: 'MultiChoicePollAsset transaction asset for vote module',
 		type: 'object',
 		required: ["proposalId", "answer"],
 		properties: {
@@ -46,9 +29,6 @@ export class BinaryVotingAsset extends BaseAsset {
 
 	public validate({ asset }: ValidateAssetContext<{}>): void {
 		// Validate your asset
-		if (asset.answer !== "ACCEPT" && asset.answer !== "REFUSE") {
-			throw new Error('Answer can only be ACCEPT or REFUSE');
-		} 
 	}
 
 	// eslint-disable-next-line @typescript-eslint/require-await
@@ -103,6 +83,7 @@ export class BinaryVotingAsset extends BaseAsset {
 		}
 
 		// Votes
+		// loop to check if member has voted
 		for (let index = 0; index < proposal.votes.length; index++) {
 			const voteId = proposal.votes[index];
 			const otherVote = await db.tables.vote.getRecord(stateStore, voteId)
@@ -151,6 +132,5 @@ export class BinaryVotingAsset extends BaseAsset {
 			}
 
 		}
-
 	}
 }

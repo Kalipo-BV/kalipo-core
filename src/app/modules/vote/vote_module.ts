@@ -24,11 +24,11 @@ import {
     AfterGenesisBlockApplyContext, BaseModule,
 
 
-    BeforeBlockApplyContext, codec, TransactionApplyContext
+    BeforeBlockApplyContext, TransactionApplyContext
 } from 'lisk-sdk';
-import { x } from 'tar';
 import { db } from '../../database/db';
 import { BinaryVotingAsset } from "./assets/binary_voting_asset";
+import { MultiChoicePollAsset } from "./assets/multi_choice_poll_asset";
 import { MultiOptionVotingAsset } from "./assets/multi_option_voting_asset";
 
 export class VoteModule extends BaseModule {
@@ -55,7 +55,7 @@ export class VoteModule extends BaseModule {
         // },
     };
     public name = 'vote';
-    public transactionAssets = [new BinaryVotingAsset(), new MultiOptionVotingAsset()];
+    public transactionAssets = [new BinaryVotingAsset(), new MultiOptionVotingAsset(), new MultiChoicePollAsset()];
     public events = [
         // Example below
         'newVote',
