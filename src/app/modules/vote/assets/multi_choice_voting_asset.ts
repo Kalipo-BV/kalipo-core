@@ -5,14 +5,14 @@ import { RowContext } from '../../../database/row_context';
 import { Membership } from '../../../database/table/membership_table';
 
 // Binary Voting asset is bijna identiek alleen de validate methode verschilt
-export class MultiChoicePollAsset extends BaseAsset {
-	public name = 'multiChoicePoll';
+export class MultiChoiceVotingAsset extends BaseAsset {
+	public name = 'multiChoiceVoting';
 	public id = 1;
 
 	// Define schema for asset
 	public schema = {
-		$id: 'vote/multiChoicePoll-asset',
-		title: 'MultiChoicePollAsset transaction asset for vote module',
+		$id: 'vote/multiChoiceVoting-asset',
+		title: 'multiChoiceVotingAsset transaction asset for vote module',
 		type: 'object',
 		required: ["proposalId", "answer"],
 		properties: {
@@ -37,16 +37,7 @@ export class MultiChoicePollAsset extends BaseAsset {
 		console.log(now)
 		const senderAddress = transaction.senderAddress;
 
-		//Kalipo account
-		const accountIdWrapper = await db.indices.liskId.getRecord(stateStore, senderAddress.toString('hex'))
-		const accountId = accountIdWrapper?.id
-
-		if (accountId == null) {
-			throw new Error("No Kalipo account found for this Lisk account")
-		}
-
-		const kalipoAccount = await db.tables.kalipoAccount.getRecord(stateStore, accountId)
-
+		// Controleer of answer voorkomt in de argumenten van Proposal
 		// Proposal
 		const proposal = await db.tables.proposal.getRecord(stateStore, asset.proposalId)
 		if (proposal == null) {
@@ -64,6 +55,25 @@ export class MultiChoicePollAsset extends BaseAsset {
 		if (proposal.status != ProposalStatus.DECIDED && proposal.status != ProposalStatus.VOTING) {
 			throw new Error("The current status does not allow new votes")
 		}
+
+		if (proposal.MultiChoicePollArguments?.answers.length == undefined) {
+			throw new Error("Proposal is undefined")
+		}
+
+		// Controleer of answer voorkomt in proposal answers[]
+		if (!proposal.MultiChoicePollArguments.answers.includes(asset.answer)) {
+			throw new Error("The given answer is not an option")
+		}
+
+		//Kalipo account
+		const accountIdWrapper = await db.indices.liskId.getRecord(stateStore, senderAddress.toString('hex'))
+		const accountId = accountIdWrapper?.id
+
+		if (accountId == null) {
+			throw new Error("No Kalipo account found for this Lisk account")
+		}
+
+		const kalipoAccount = await db.tables.kalipoAccount.getRecord(stateStore, accountId)
 
 		// Membership
 		const membershipCheck = await db.tables.membership.validateMembership(kalipoAccount, proposal.autonId, stateStore);

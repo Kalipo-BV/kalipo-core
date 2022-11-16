@@ -31,7 +31,7 @@ export class MultiChoicePollAsset extends BaseAsset {
 			},
 			question: {
 				dataType: 'string',
-				fielNumber: 4,
+				fieldNumber: 4,
 			},
 			answers: {
 				type: 'array',

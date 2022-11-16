@@ -19,6 +19,8 @@ import { ProposalType } from "./enums";
 import { ProposalProvisions } from "./table/proposal_provisions_table";
 
 export const templates = {
-    starter: [new ProposalProvisions(ProposalType.MEMBERSHIP_INVITATION, 51, 51, BigInt(0), BigInt(60 * 24 * 3), false, "system")
+    starter: [
+        new ProposalProvisions(ProposalType.MEMBERSHIP_INVITATION, 51, 51, BigInt(0), BigInt(60 * 24 * 3), false, "system"),
+        new ProposalProvisions(ProposalType.MULTI_CHOICE_POLL, 0, 0, BigInt(1), BigInt(5), false, "system")
     ],
 }

@@ -24,6 +24,13 @@ export interface MembershipInvitationArguments {
     message: string
 }
 
+export interface MultiChoicePollArguments {
+    campaign
+    question: string,
+    answers: Array<string>,
+    addedValue: string
+}
+
 export interface BinaryVoteResult {
     result: ProposalResult,
     decided: BigInt,
@@ -53,6 +60,7 @@ export interface Proposal {
     windowClosed: BigInt,
     binaryVoteResult: BinaryVoteResult,
     membershipInvitationArguments: MembershipInvitationArguments | null
+    MultiChoicePollArguments: MultiChoicePollArguments | null
 }
 
 export class ProposalTable extends BaseTable<Proposal> {
@@ -176,6 +184,36 @@ export class ProposalTable extends BaseTable<Proposal> {
                     },
                 }
             },
+            multiChoicePollArguments: {
+                type: "object",
+                fieldNumber: 16,
+                required: ["campaignWindow", "votingWindow","question", "answers", "addedValue"],
+                properties: {
+                    campaignWindow: {
+                        dataType: 'uint64',
+                        fieldNumber: 1
+                    },
+                    votingWindow: {
+                        dataType: 'uint64',
+                        fieldNumber: 2
+                    },
+                    question: {
+                        dataType: 'string',
+                        fieldNumber: 3,
+                    },
+                    answers: {
+                        type: 'array',
+                        fieldNumber: 4,
+                        items: {
+                            type: 'string'
+                        }
+                    },
+                    addedValue: {
+                        dataType: 'string',
+                        fieldNumber: 5
+                    }
+                }
+            }
         }
     }
 

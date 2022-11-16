@@ -28,8 +28,7 @@ import {
 } from 'lisk-sdk';
 import { db } from '../../database/db';
 import { BinaryVotingAsset } from "./assets/binary_voting_asset";
-import { MultiChoicePollAsset } from "./assets/multi_choice_poll_asset";
-import { MultiOptionVotingAsset } from "./assets/multi_option_voting_asset";
+import { MultiChoiceVotingAsset } from "./assets/multi_choice_voting_asset";
 
 export class VoteModule extends BaseModule {
     public actions = {
@@ -55,7 +54,7 @@ export class VoteModule extends BaseModule {
         // },
     };
     public name = 'vote';
-    public transactionAssets = [new BinaryVotingAsset(), new MultiOptionVotingAsset(), new MultiChoicePollAsset()];
+    public transactionAssets = [new BinaryVotingAsset(), new MultiChoiceVotingAsset()];
     public events = [
         // Example below
         'newVote',
