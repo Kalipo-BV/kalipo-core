@@ -35,7 +35,7 @@ export class CreateAutonAsset extends BaseAsset {
 		$id: 'auton/createAuton-asset',
 		title: 'CreateAutonAsset transaction asset for auton module',
 		type: 'object',
-		required: [],
+		required: ["name", "type"],
 		properties: {
 			name: {
 				dataType: 'string',
@@ -85,40 +85,35 @@ export class CreateAutonAsset extends BaseAsset {
 				dataType: 'string',
 				fieldNumber: 8,
 			},
-			title: {
-				dataType: 'string',
-				fieldNumber: 10,
-			},
 			description: {
 				dataType: 'string',
-				fieldNumber: 11,
+				fieldNumber: 9,
 			},
 			location: {
 				dataType: 'string',
-				fieldNumber: 12,
+				fieldNumber: 10,
 			},
 			capacity: {
 				dataType: 'uint64',
-				fieldNumber: 13,
+				fieldNumber: 11,
 			},
 			price: {
 				dataType: 'uint64',
-				fieldNumber: 14,
+				fieldNumber: 12,
 			},
 			start: {
 				dataType: 'uint64',
-				fieldNumber: 15,
+				fieldNumber: 13,
 			},
 			end: {
 				dataType: 'uint64',
-				fieldNumber: 16,
+				fieldNumber: 14,
 			}
 		},
 	};
 
 	public validate({ asset }: ValidateAssetContext<{}>): void {
 		// Validate your asset
-
 	}
 
 
@@ -151,7 +146,6 @@ export class CreateAutonAsset extends BaseAsset {
 
 			auton.poas = [];
 			auton.event = {
-				title: asset.title,
 				description: asset.description,
 				location: asset.location,
 				capacity: asset.capacity,
@@ -160,6 +154,7 @@ export class CreateAutonAsset extends BaseAsset {
 				end: asset.end,
 			}
 		}
+
 
 		return auton;
 	}
@@ -231,7 +226,9 @@ export class CreateAutonAsset extends BaseAsset {
 			comments: [],
 			commentLikes: [],
 			commentDislikes: [],
-			proposals: []
+			proposals: [],
+			role: [],
+			poasIssued: []
 		}
 		console.log("Big 2")
 
@@ -265,11 +262,20 @@ export class CreateAutonAsset extends BaseAsset {
 		const autonRowContext: RowContext = new RowContext;
 		const autonId: string = await db.tables.auton.createRecord(stateStore, transaction, auton, autonRowContext)
 
+		console.log("Big 3.4");
+
+		console.log(membership);
+		
 		const membershipRowContext: RowContext = new RowContext;
 		const membershipId: string = await db.tables.membership.createRecord(stateStore, transaction, membership, membershipRowContext)
 
+
+		console.log("Big 3.5");
+		
 		await db.indices.autonName.setRecord(stateStore, asset.name, { id: autonId })
 
+		console.log("Big 3.6");
+		
 		let allAutonIds = await db.indices.fullTable.getRecord(stateStore, "autons");
 
 		if (allAutonIds == null) {
@@ -287,6 +293,8 @@ export class CreateAutonAsset extends BaseAsset {
 			kalipoAccount?.memberships.push(membershipId)
 			await db.tables.kalipoAccount.updateRecord(stateStore, accountId, kalipoAccount)
 		}
+
+		console.log("Big 3.7");
 
 		for (let index = 0; index < asset.tags.length; index++) {
 			const tag: string = asset.tags[index];

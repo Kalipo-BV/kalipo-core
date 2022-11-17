@@ -41,7 +41,7 @@ export interface Membership {
     commentLikes: Array<string>,
     commentDislikes: Array<string>,
     proposals: Array<string>,
-    roles: Array<RoleEnum>,
+    role: RoleEnum,
     poasIssued: Array<string>,
 }
 
@@ -136,12 +136,9 @@ export class MembershipTable extends BaseTable<Membership> {
                     dataType: "string",
                 }
             },
-            roles: {
-                type: "array",
-                fieldNumber: 10,
-                items: {
-                    dataType: "string",
-                }
+            role: {
+                dataType: "string",
+                fieldNumber: 10
             },
             poasIssued: {
                 type: "array",

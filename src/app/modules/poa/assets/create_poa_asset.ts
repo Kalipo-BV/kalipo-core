@@ -49,13 +49,6 @@ export class CreatePoaAsset extends BaseAsset {
             staticImageId: {
                 dataType: 'string',
                 fieldNumber: 3,
-            },
-            issuedPoas: {
-                type: 'array',
-                items: {
-                    dataType: 'string',
-                },
-                fieldNumber: 4,
             }
         },
     }
@@ -76,14 +69,14 @@ export class CreatePoaAsset extends BaseAsset {
         const auton =  await db.tables.auton.getRecord( stateStore, asset.autonId );
 
         if ( auton == null ) {
-            throw new Error(`Auton with id: ${auton.id} can not be found`);
+            throw new Error(`Auton can not be found`);
         }
 
         const poa: Poa = {
             autonId: asset.autonId,
             name: asset.name,
             staticImageId: asset.staticImageId,
-            issuedPoas: asset.issuedPoas,
+            issuedPoas: [],
         }
 
         

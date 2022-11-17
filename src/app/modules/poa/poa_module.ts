@@ -28,8 +28,19 @@ import { CreatePoaAsset } from './assets/create_poa_asset';
 
 export class PoaModule extends BaseModule {
     public actions = {
-    
-    }
+        // Example below
+        // getBalance: async (params) => this._dataAccess.account.get(params.address).token.balance,
+        // getBlockByID: async (params) => this._dataAccess.blocks.get(params.id),
+        getByID: async (params: Record<string, unknown>) => {
+            return await db.tables.poa.getRecordInJSON(this._dataAccess.getChainState.bind(this), (params as { id: string }).id)
+        },
+        getAutonIdByName: async (params: Record<string, unknown>) => {
+            return await db.indices.poaName.getRecord(this._dataAccess.getChainState.bind(this), (params as { name: string }).name)
+        },
+        getAll: async (params: Record<string, unknown>) => {
+            return await db.indices.fullTable.getRecordInJSON(this._dataAccess.getChainState.bind(this), "poas")
+        },
+    };
 
     public reducers = {
     

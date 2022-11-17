@@ -51,7 +51,6 @@ export interface Auton {
 }
 
 export interface EventProfile {
-    title?: string,
     description?: string,
     location?: string,
     capacity?: BigInt,
@@ -147,7 +146,7 @@ export class AutonTable extends BaseTable<Auton> {
                 fieldNumber: 6,
             },
             type: {
-                type: "string",
+                dataType: "string",
                 fieldNumber: 7
             },
             poas: {
@@ -158,8 +157,35 @@ export class AutonTable extends BaseTable<Auton> {
                 }
             },
             event: {
-                type: "string",
+                type: "object",
                 fieldNumber: 9,
+                required: [],
+                properties: {
+                    description: {
+                        dataType: "string",
+                        fieldNumber: 1,
+                    },
+                    location: {
+                        dataType: "string",
+                        fieldNumber: 2,
+                    },
+                    capacity: {
+                        dataType: "uint64",
+                        fieldNumber: 3,
+                    },
+                    price: {
+                        dataType: "uint64",
+                        fieldNumber: 4,
+                    },
+                    start: {
+                        dataType: "uint64",
+                        fieldNumber: 5,
+                    },
+                    end: {
+                        dataType: "uint64",
+                        fieldNumber: 6,
+                    }
+                }
             }
         }
     }
