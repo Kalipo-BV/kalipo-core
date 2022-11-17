@@ -25,7 +25,8 @@ export interface MembershipInvitationArguments {
 }
 
 export interface MultiChoicePollArguments {
-    campaign
+    campaignWindow: number,
+    waitingWindow: number,
     question: string,
     answers: Array<string>,
     addedValue: string

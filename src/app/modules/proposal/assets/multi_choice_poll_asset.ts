@@ -65,10 +65,6 @@ export class MultiChoicePollAsset extends BaseAsset {
 			throw new Error("No Kalipo account found for this Lisk account")
 		}
 
-		if (accountId == asset.accountIdToInvite) {
-			throw new Error("You cannot invite yourself")
-		}
-
 		const kalipoAccount = await db.tables.kalipoAccount.getRecord(stateStore, accountId)
 
 		// Auton
