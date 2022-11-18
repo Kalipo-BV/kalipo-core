@@ -56,12 +56,12 @@ export class MultiChoiceVotingAsset extends BaseAsset {
 			throw new Error("The current status does not allow new votes")
 		}
 
-		if (proposal.MultiChoicePollArguments?.answers.length == undefined) {
+		if (proposal.multiChoicePollArguments?.answers.length == undefined) {
 			throw new Error("Proposal is undefined")
 		}
 
 		// Controleer of answer voorkomt in proposal answers[]
-		if (!proposal.MultiChoicePollArguments.answers.includes(asset.answer)) {
+		if (!proposal.multiChoicePollArguments.answers.includes(asset.answer)) {
 			throw new Error("The given answer is not an option")
 		}
 

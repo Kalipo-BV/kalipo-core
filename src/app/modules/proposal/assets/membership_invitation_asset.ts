@@ -215,8 +215,10 @@ export class MembershipInvitationAsset extends BaseAsset {
 			created: BigInt(created),
 			windowOpen: BigInt(windowOpen),
 			windowClosed: BigInt(windowClosed),
+			binaryVoteResult: binaryVoteResult,
 			membershipInvitationArguments: membershipInvitationArguments,
-			binaryVoteResult: binaryVoteResult
+			multiChoiceVoteResult: null,
+			multiChoicePollArguments: null
 		}
 
 		console.log("proposal")

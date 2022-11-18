@@ -25,8 +25,6 @@ export interface MembershipInvitationArguments {
 }
 
 export interface MultiChoicePollArguments {
-    campaignWindow: number,
-    waitingWindow: number,
     question: string,
     answers: Array<string>,
     addedValue: string
@@ -38,6 +36,10 @@ export interface BinaryVoteResult {
     memberCount: number,
     acceptedCount: number,
     refusedCount: number
+}
+
+export interface MultiChoiceVoteResult {
+    memberCount: number,
 }
 
 export interface ProposalAction {
@@ -59,9 +61,10 @@ export interface Proposal {
     created: BigInt,
     windowOpen: BigInt,
     windowClosed: BigInt,
-    binaryVoteResult: BinaryVoteResult,
+    binaryVoteResult: BinaryVoteResult | null
+    multiChoiceVoteResult: MultiChoiceVoteResult | null
     membershipInvitationArguments: MembershipInvitationArguments | null
-    MultiChoicePollArguments: MultiChoicePollArguments | null
+    multiChoicePollArguments: MultiChoicePollArguments | null
 }
 
 export class ProposalTable extends BaseTable<Proposal> {
@@ -185,33 +188,32 @@ export class ProposalTable extends BaseTable<Proposal> {
                     },
                 }
             },
-            multiChoicePollArguments: {
+            multiChoiceVoteResult: {
                 type: "object",
                 fieldNumber: 16,
-                required: ["campaignWindow", "votingWindow","question", "answers", "addedValue"],
+                required: ["result", "decided", "memberCount", "acceptedCount", "refusedCount"],
                 properties: {
-                    campaignWindow: {
-                        dataType: 'uint64',
+                    memberCount: {
+                        dataType: "uint32",
                         fieldNumber: 1
-                    },
-                    votingWindow: {
-                        dataType: 'uint64',
-                        fieldNumber: 2
-                    },
+                    }
+                }
+            },
+            multiChoicePollArguments: {
+                type: "object",
+                fieldNumber: 17,
+                required: ["campaignWindow", "votingWindow", "question", "answers", "addedValue"],
+                properties: {
                     question: {
                         dataType: 'string',
-                        fieldNumber: 3,
+                        fieldNumber: 1,
                     },
                     answers: {
                         type: 'array',
-                        fieldNumber: 4,
+                        fieldNumber: 2,
                         items: {
                             type: 'string'
                         }
-                    },
-                    addedValue: {
-                        dataType: 'string',
-                        fieldNumber: 5
                     }
                 }
             }
