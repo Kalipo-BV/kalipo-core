@@ -31,6 +31,7 @@ import { ProposalCampaignCommentTable } from './table/proposal_campaign_comment_
 import { BaseTable } from './base_table'
 import { PoaTable } from './table/poa_table'
 import { PoaNameIndex } from './index/poa_index'
+import { PoaIssueTable } from './table/poa_issue_table'
 
 export const tableRegistrationClasses: Array<BaseTable> = [new KalipoAccountTable(), new AutonTable(), new MembershipTable(),
 new ProposalTable(), new ProposalProvisionsTable(), new VoteTable(), new ProposalCampaignCommentTable()]
@@ -45,6 +46,7 @@ export const db = {
         vote: new VoteTable(),
         campaignComment: new ProposalCampaignCommentTable(),
         poa: new PoaTable(),
+        poaIssue: new PoaIssueTable()
     },
     indices: {
         liskId: new LiskIdIndex(),

@@ -31,7 +31,7 @@ export interface KalipoAccount {
     liskAccountId: Buffer
     memberships: Array<string>
     transaction: string,
-    poas: Array<string>,
+    issuedPoas: Array<string>,
 }
 
 export class KalipoAccountTable extends BaseTable<KalipoAccount> {
@@ -83,7 +83,14 @@ export class KalipoAccountTable extends BaseTable<KalipoAccount> {
             transaction: {
                 dataType: "string",
                 fieldNumber: 6
-            }
+            },
+            issuedPoas: {
+                type: "array",
+                fieldNumber: 7,
+                items: {
+                    dataType: "string",
+                }
+            },
         }
     }
 }

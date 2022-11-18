@@ -74,7 +74,8 @@ export class CreateAccountAsset extends BaseAsset {
 				socials: [],
 				liskAccountId: senderAddress,
 				memberships: [],
-				transaction: transaction.id.toString('hex')
+				transaction: transaction.id.toString('hex'),
+				issuedPoas: [],
 			}
 			const accountRowContext = new RowContext();
 			accountId = await db.tables.kalipoAccount.createRecord(stateStore, transaction, newKalipoAccount, accountRowContext)

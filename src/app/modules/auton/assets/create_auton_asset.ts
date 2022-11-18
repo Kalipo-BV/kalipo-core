@@ -269,7 +269,6 @@ export class CreateAutonAsset extends BaseAsset {
 		const membershipRowContext: RowContext = new RowContext;
 		const membershipId: string = await db.tables.membership.createRecord(stateStore, transaction, membership, membershipRowContext)
 
-
 		console.log("Big 3.5");
 		
 		await db.indices.autonName.setRecord(stateStore, asset.name, { id: autonId })
