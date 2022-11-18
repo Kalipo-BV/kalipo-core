@@ -26,8 +26,7 @@ export interface MembershipInvitationArguments {
 
 export interface MultiChoicePollArguments {
     question: string,
-    answers: Array<string>,
-    addedValue: string
+    answers: Array<string>
 }
 
 export interface BinaryVoteResult {
@@ -72,7 +71,7 @@ export class ProposalTable extends BaseTable<Proposal> {
     protected schema: Schema = {
         $id: "kalipo/tables/proposal_table",
         type: "object",
-        required: ["title", "status", "actions", "type", "membershipId", "provisionId", "autonId", "comments", "votes", "transaction", "created", "windowOpen", "windowClosed", "binaryVoteResult"],
+        required: ["title", "status", "actions", "type", "membershipId", "provisionId", "autonId", "comments", "votes", "transaction", "created", "windowOpen", "windowClosed"],
         properties: {
             title: {
                 dataType: 'string',
@@ -191,7 +190,7 @@ export class ProposalTable extends BaseTable<Proposal> {
             multiChoiceVoteResult: {
                 type: "object",
                 fieldNumber: 16,
-                required: ["result", "decided", "memberCount", "acceptedCount", "refusedCount"],
+                required: ["memberCount"],
                 properties: {
                     memberCount: {
                         dataType: "uint32",
@@ -202,7 +201,7 @@ export class ProposalTable extends BaseTable<Proposal> {
             multiChoicePollArguments: {
                 type: "object",
                 fieldNumber: 17,
-                required: ["campaignWindow", "votingWindow", "question", "answers", "addedValue"],
+                required: ["question", "answers"],
                 properties: {
                     question: {
                         dataType: 'string',
@@ -212,7 +211,7 @@ export class ProposalTable extends BaseTable<Proposal> {
                         type: 'array',
                         fieldNumber: 2,
                         items: {
-                            type: 'string'
+                            dataType: 'string'
                         }
                     }
                 }
