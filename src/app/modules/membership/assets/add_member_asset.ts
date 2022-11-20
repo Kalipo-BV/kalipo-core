@@ -115,7 +115,7 @@ export class AddMemberAsset extends BaseAsset {
                 const membership: Membership = {
 					started: BigInt(0),
 					accountId: receiverAddress.id,
-					autonId: db.tables.auton.getDeterministicId(transaction, 0),
+					autonId: asset.autonId,
 					invitation: membershipInvite,
 					votes: [],
 					comments: [],
