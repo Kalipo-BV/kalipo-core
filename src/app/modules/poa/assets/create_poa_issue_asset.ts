@@ -51,18 +51,18 @@ export class CreatePoaIssueAsset extends BaseAsset {
     }
 
     public validate({ asset }: ValidateAssetContext<{}>): void {
-		// Validate your asset
-	}
+        // Validate your asset
+    }
 
 
 
-	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
+    public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
 
         const poa = await db.tables.poa.getRecord(stateStore, asset.poaId);
 
 
-        if ( poa == null ) {
-            throw new Error(`Auton can not be found`);
+        if (poa == null) {
+            throw new Error(`Poa can not be found`);
         }
 
         const now: BigInt = (BigInt)(new Date().getTime());
@@ -71,29 +71,28 @@ export class CreatePoaIssueAsset extends BaseAsset {
             asset.receiverAddress = transaction.senderAddress.toString('hex');
         }
 
-        const accountIdWrapper = await db.indices.liskId.getRecord(stateStore, asset.receiverAddress)
-		const kalipoAccountId = accountIdWrapper?.id
+        const kalipoAccountId = asset.receiverAddress
 
-        
+
         if (kalipoAccountId == null) {
             throw new Error(`Lisk account can not be found`);
-        } 
+        }
 
         const kalipoAccount = await db.tables.kalipoAccount.getRecord(stateStore, kalipoAccountId);
-        
+
         if (kalipoAccount == null) {
             throw new Error(`Only the creator of the Poa can create issues`);
         }
 
         const membershipsId = kalipoAccount.memberships;
-        const auton = await db.tables.auton.getRecord(stateStore, poa.autonId); 
+        const auton = await db.tables.auton.getRecord(stateStore, poa.autonId);
 
         if (auton == null) {
             throw new Error(`Auton can not be found`);
         }
 
 
-        let validMembership = membershipsId.find((id) => auton.memberships.includes(id) );
+        let validMembership = membershipsId.find((id) => auton.memberships.includes(id));
 
         if (validMembership == null) {
             throw new Error(`Only members of the event can receive poas`);
@@ -101,7 +100,7 @@ export class CreatePoaIssueAsset extends BaseAsset {
 
 
         console.log("BIG 1");
-        
+
 
         const poaIssue: PoaIssue = {
             accountId: kalipoAccountId,
@@ -110,7 +109,7 @@ export class CreatePoaIssueAsset extends BaseAsset {
             issueDate: now,
         }
 
-        
+
         const poaIssueRowContext: RowContext = new RowContext;
         const poaIssueId: string = await db.tables.poaIssue.createRecord(stateStore, transaction, poaIssue, poaIssueRowContext);
 
@@ -118,20 +117,20 @@ export class CreatePoaIssueAsset extends BaseAsset {
 
         let allPoaIssueIds = await db.indices.fullTable.getRecord(stateStore, "poaIssues");
 
-		if (allPoaIssueIds == null) {
-			const index = { ids: [poaIssueId] }
-			console.log(index)
-			await db.indices.fullTable.setRecord(stateStore, "poaIssues", index)
-		} else {
-			allPoaIssueIds.ids.push(poaIssueId)
-			await db.indices.fullTable.setRecord(stateStore, "poaIssues", allPoaIssueIds)
-		}
+        if (allPoaIssueIds == null) {
+            const index = { ids: [poaIssueId] }
+            console.log(index)
+            await db.indices.fullTable.setRecord(stateStore, "poaIssues", index)
+        } else {
+            allPoaIssueIds.ids.push(poaIssueId)
+            await db.indices.fullTable.setRecord(stateStore, "poaIssues", allPoaIssueIds)
+        }
 
         console.log("BIG 3");
 
 
         poa.issuedPoas.push(poaIssueId);
-		await db.tables.poa.updateRecord(stateStore, asset.poaId, poa)
+        await db.tables.poa.updateRecord(stateStore, asset.poaId, poa)
 
         kalipoAccount.issuedPoas.push(poaIssueId);
         await db.tables.kalipoAccount.updateRecord(stateStore, kalipoAccountId, kalipoAccount)

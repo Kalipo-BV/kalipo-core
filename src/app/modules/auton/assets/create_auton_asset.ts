@@ -23,7 +23,7 @@ import { KalipoAccount } from '../../../database/table/kalipo_account_table';
 import { RowContext } from '../../../database/row_context';
 import { templates } from '../../../database/templates';
 import { VALID_INVITATION_WINDOW } from '../../membership/membership_module';
-import { AutonTypeEnum } from '../../../database/enums';
+import { AutonTypeEnum, RoleEnum } from '../../../database/enums';
 import { CreatePoaAsset } from '../../poa/assets/create_poa_asset';
 
 export class CreateAutonAsset extends BaseAsset {
@@ -117,7 +117,7 @@ export class CreateAutonAsset extends BaseAsset {
 	}
 
 
-	private _createAuton (asset, constitution, memberships, transaction, stateStore ) {
+	private _createAuton(asset, constitution, memberships, transaction, stateStore) {
 
 		// This is the default auton, where poas and event are empty
 		// these fields are only needed for the auton type 'event'
@@ -227,7 +227,7 @@ export class CreateAutonAsset extends BaseAsset {
 			commentLikes: [],
 			commentDislikes: [],
 			proposals: [],
-			role: [],
+			role: RoleEnum.FULL_MEMBER,
 			poasIssued: []
 		}
 		console.log("Big 2")
@@ -255,7 +255,7 @@ export class CreateAutonAsset extends BaseAsset {
 
 
 
-		
+
 		console.log("Big 3")
 
 
@@ -265,16 +265,21 @@ export class CreateAutonAsset extends BaseAsset {
 		console.log("Big 3.4");
 
 		console.log(membership);
-		
+
 		const membershipRowContext: RowContext = new RowContext;
 		const membershipId: string = await db.tables.membership.createRecord(stateStore, transaction, membership, membershipRowContext)
 
 		console.log("Big 3.5");
-		
+
+		console.log("auton uno")
+		console.log(auton)
+
 		await db.indices.autonName.setRecord(stateStore, asset.name, { id: autonId })
 
 		console.log("Big 3.6");
-		
+		console.log("auton dos")
+		console.log(auton)
+
 		let allAutonIds = await db.indices.fullTable.getRecord(stateStore, "autons");
 
 		if (allAutonIds == null) {
@@ -286,6 +291,9 @@ export class CreateAutonAsset extends BaseAsset {
 			await db.indices.fullTable.setRecord(stateStore, "autons", allAutonIds)
 		}
 
+		console.log("auton tres")
+		console.log(auton)
+
 		const kalipoAccount = await db.tables.kalipoAccount.getRecord(stateStore, accountId)
 
 		if (kalipoAccount !== null) {
@@ -294,6 +302,8 @@ export class CreateAutonAsset extends BaseAsset {
 		}
 
 		console.log("Big 3.7");
+		console.log("auton quatro")
+		console.log(auton)
 
 		for (let index = 0; index < asset.tags.length; index++) {
 			const tag: string = asset.tags[index];
