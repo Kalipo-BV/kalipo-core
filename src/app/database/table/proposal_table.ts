@@ -216,16 +216,15 @@ export class ProposalTable extends BaseTable<Proposal> {
                         type: 'array',
                         fieldNumber: 2,
                         items: {
-                            type: 'object',
-                            fieldNumber: 1,
+                            type: "object",
                             properties: {
                                 answer: {
                                     dataType: 'string',
-                                    fieldNumber: 1
+                                    fieldNumber: 1,
                                 },
                                 count: {
                                     dataType: 'uint64',
-                                    fieldNumber: 2
+                                    fieldNumber: 2,
                                 }
                             }
                         }
