@@ -61,11 +61,6 @@ export class MultiChoiceVotingAsset extends BaseAsset {
 			throw new Error("Proposal is undefined")
 		}
 
-		// Controleer of answer voorkomt in proposal answers[]
-		if (!proposal.multiChoicePollArguments.answers.includes(asset.answer)) {
-			throw new Error("The given answer is not an option")
-		}
-
 		//Kalipo account
 		const accountIdWrapper = await db.indices.liskId.getRecord(stateStore, senderAddress.toString('hex'))
 		const accountId = accountIdWrapper?.id
