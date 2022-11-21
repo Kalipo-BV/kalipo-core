@@ -122,6 +122,7 @@ export class AddMemberAsset extends BaseAsset {
 					commentLikes: [],
 					commentDislikes: [],
 					proposals: [],
+                    role: RoleEnum.AFFILIATE_MEMBER,
                     poasIssued: []
 				}
 
