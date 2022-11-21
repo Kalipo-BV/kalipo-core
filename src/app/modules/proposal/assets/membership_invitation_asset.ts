@@ -21,7 +21,7 @@ import { MembershipValidationError, ProposalResult, ProposalStatus, ProposalType
 import { RowContext } from '../../../database/row_context';
 import { ProposalCampaignComment } from '../../../database/table/proposal_campaign_comment_table';
 import { ProposalProvisions } from '../../../database/table/proposal_provisions_table';
-import { BinaryVoteResult, MembershipInvitationArguments, Proposal } from '../../../database/table/proposal_table';
+import { BinaryVoteResult, MembershipInvitationArguments, MultiChoicePollArguments, MultiChoiceVoteResult, Proposal } from '../../../database/table/proposal_table';
 
 export class MembershipInvitationAsset extends BaseAsset {
 	public name = 'membershipInvitation';
@@ -199,6 +199,15 @@ export class MembershipInvitationAsset extends BaseAsset {
 			refusedCount: 0,
 			decided: BigInt(0)
 		}
+		
+		const multiChoicePollArguments: MultiChoicePollArguments = {
+			question: "",
+			answers: ""
+		}
+
+		const multiChoiceVoteResult: MultiChoiceVoteResult = {
+			memberCount: 0,
+		}
 
 		// Creating proposal
 		const proposal: Proposal = {
@@ -217,13 +226,12 @@ export class MembershipInvitationAsset extends BaseAsset {
 			windowClosed: BigInt(windowClosed),
 			binaryVoteResult: binaryVoteResult,
 			membershipInvitationArguments: membershipInvitationArguments,
-			multiChoiceVoteResult: null,
-			multiChoicePollArguments: null
+			multiChoiceVoteResult: multiChoiceVoteResult,
+			multiChoicePollArguments: multiChoicePollArguments
 		}
 
 		console.log("proposal")
 		console.log(proposal)
-
 
 
 		const proposalId = await db.tables.proposal.createRecord(stateStore, transaction, proposal, new RowContext());
