@@ -3,6 +3,7 @@ import { db } from '../../../database/db';
 import { MembershipValidationError, ProposalStatus } from '../../../database/enums';
 import { RowContext } from '../../../database/row_context';
 import { Membership } from '../../../database/table/membership_table';
+import { Vote } from '../../../database/table/vote_table';
 
 // Binary Voting asset is bijna identiek alleen de validate methode verschilt
 export class MultiChoiceVotingAsset extends BaseAsset {
@@ -122,6 +123,13 @@ export class MultiChoiceVotingAsset extends BaseAsset {
 		await db.tables.membership.updateRecord(stateStore, membershipId, membership);
 
 		proposal.votes.push(voteId);
+
+		for (let index = 0; index < proposal.multiChoicePollArguments.answers.length; index++) {
+			if (asset.answer == proposal.multiChoicePollArguments.answers[index].answer) {
+				proposal.multiChoicePollArguments.answers[index].count++
+			}
+		}
+		
 		await db.tables.proposal.updateRecord(stateStore, asset.proposalId, proposal);
 
 		// Schedule a determination of the voting result
@@ -140,7 +148,6 @@ export class MultiChoiceVotingAsset extends BaseAsset {
 
 				await db.indices.scheduledProposal.setRecord(stateStore, "current", index);
 			}
-
 		}
 	}
 }

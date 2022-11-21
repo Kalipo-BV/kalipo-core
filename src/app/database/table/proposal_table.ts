@@ -26,7 +26,12 @@ export interface MembershipInvitationArguments {
 
 export interface MultiChoicePollArguments {
     question: string,
-    answers: Array<string>
+    answers: Array<MultiChoiceCount>
+}
+
+export interface MultiChoiceCount {
+    answer: string,
+    count: number
 }
 
 export interface BinaryVoteResult {
@@ -211,7 +216,18 @@ export class ProposalTable extends BaseTable<Proposal> {
                         type: 'array',
                         fieldNumber: 2,
                         items: {
-                            dataType: 'string'
+                            type: 'object',
+                            fieldNumber: 1,
+                            properties: {
+                                answer: {
+                                    dataType: 'string',
+                                    fieldNumber: 1
+                                },
+                                count: {
+                                    dataType: 'uint64',
+                                    fieldNumber: 2
+                                }
+                            }
                         }
                     }
                 }
