@@ -161,11 +161,10 @@ export class CreateAutonAsset extends BaseAsset {
 
 	// eslint-disable-next-line @typescript-eslint/require-await
 	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
-		const senderAddress = transaction.senderAddress;
-		console.log("CHECK THIS IDDDDD")
-		console.log(senderAddress)
-		console.log(transaction)
 
+		console.log("-----------------------APPLY FUNC CREATE AUTON ASSET-----------------------")
+
+		const senderAddress = transaction.senderAddress;
 		const accountIdWrapper = await db.indices.liskId.getRecord(stateStore, senderAddress.toString('hex'))
 		const accountId = accountIdWrapper?.id
 
@@ -213,9 +212,6 @@ export class CreateAutonAsset extends BaseAsset {
 			proposalId: "Founder invitation",
 			message: "Founder"
 		}
-		console.log(BigInt(stateStore.chain.lastBlockHeaders[0].timestamp))
-		console.log("Big 1")
-
 
 		const membership: Membership = {
 			started: BigInt(stateStore.chain.lastBlockHeaders[0].timestamp),
@@ -230,8 +226,6 @@ export class CreateAutonAsset extends BaseAsset {
 			role: RoleEnum.FULL_MEMBER,
 			poasIssued: []
 		}
-		console.log("Big 2")
-
 
 		// Setting row contexts for each id for the total amount of accounts 
 		const memberships: Array<string> = [db.tables.membership.getDeterministicId(transaction, 0)];
@@ -249,50 +243,25 @@ export class CreateAutonAsset extends BaseAsset {
 			constitution.push(porposalType)
 		}
 
-
 		const auton: Auton = this._createAuton(asset, constitution, memberships, transaction, stateStore)
-
-
-
-
-
-		console.log("Big 3")
-
 
 		const autonRowContext: RowContext = new RowContext;
 		const autonId: string = await db.tables.auton.createRecord(stateStore, transaction, auton, autonRowContext)
 
-		console.log("Big 3.4");
-
-		console.log(membership);
-
 		const membershipRowContext: RowContext = new RowContext;
 		const membershipId: string = await db.tables.membership.createRecord(stateStore, transaction, membership, membershipRowContext)
 
-		console.log("Big 3.5");
-
-		console.log("auton uno")
-		console.log(auton)
-
 		await db.indices.autonName.setRecord(stateStore, asset.name, { id: autonId })
-
-		console.log("Big 3.6");
-		console.log("auton dos")
-		console.log(auton)
 
 		let allAutonIds = await db.indices.fullTable.getRecord(stateStore, "autons");
 
 		if (allAutonIds == null) {
 			const index = { ids: [autonId] }
-			console.log(index)
 			await db.indices.fullTable.setRecord(stateStore, "autons", index)
 		} else {
 			allAutonIds.ids.push(autonId)
 			await db.indices.fullTable.setRecord(stateStore, "autons", allAutonIds)
 		}
-
-		console.log("auton tres")
-		console.log(auton)
 
 		const kalipoAccount = await db.tables.kalipoAccount.getRecord(stateStore, accountId)
 
@@ -300,10 +269,6 @@ export class CreateAutonAsset extends BaseAsset {
 			kalipoAccount?.memberships.push(membershipId)
 			await db.tables.kalipoAccount.updateRecord(stateStore, accountId, kalipoAccount)
 		}
-
-		console.log("Big 3.7");
-		console.log("auton quatro")
-		console.log(auton)
 
 		for (let index = 0; index < asset.tags.length; index++) {
 			const tag: string = asset.tags[index];
@@ -329,9 +294,6 @@ export class CreateAutonAsset extends BaseAsset {
 					message: "Founder"
 				}
 
-				console.log("Big 4")
-
-
 				const bulkMembership: Membership = {
 					started: BigInt(0),
 					accountId: bulkKalipoAccount.id,
@@ -343,8 +305,6 @@ export class CreateAutonAsset extends BaseAsset {
 					commentDislikes: [],
 					proposals: []
 				}
-				console.log("Big 5")
-
 
 				membershipRowContext.increment();
 
@@ -354,9 +314,6 @@ export class CreateAutonAsset extends BaseAsset {
 				await db.tables.kalipoAccount.updateRecord(stateStore, bulkKalipoAccount.id, bulkKalipoAccount)
 
 			}
-
 		}
-
 	}
-
 }

@@ -32,6 +32,7 @@ import { BaseTable } from './base_table'
 import { PoaTable } from './table/poa_table'
 import { PoaNameIndex } from './index/poa_index'
 import { PoaIssueTable } from './table/poa_issue_table'
+import { PoaIssueIndex } from './index/poa_issue_index'
 
 export const tableRegistrationClasses: Array<BaseTable> = [new KalipoAccountTable(), new AutonTable(), new MembershipTable(),
 new ProposalTable(), new ProposalProvisionsTable(), new VoteTable(), new ProposalCampaignCommentTable()]
@@ -56,5 +57,6 @@ export const db = {
         fullTable: new FullTableIndex(),
         scheduledProposal: new ScheduledProposalIndex(),
         poaName: new PoaNameIndex(),
+        poaIssue: new PoaIssueIndex()
     }
 }

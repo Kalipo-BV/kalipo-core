@@ -45,7 +45,8 @@ export class CreatePoaAsset extends BaseAsset {
             name: {
                 dataType: 'string',
                 fieldNumber: 2,
-            },  
+                maxLength: 30
+            },
             staticImageId: {
                 dataType: 'string',
                 fieldNumber: 3,
@@ -54,8 +55,8 @@ export class CreatePoaAsset extends BaseAsset {
     }
 
     public validate({ asset }: ValidateAssetContext<{}>): void {
-		// Validate your asset
-	}
+        // Validate your asset
+    }
 
 
     // VRAGEN
@@ -64,11 +65,16 @@ export class CreatePoaAsset extends BaseAsset {
 
 
 
-	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
-        // create a new Poa
-        const auton =  await db.tables.auton.getRecord( stateStore, asset.autonId );
+    public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
 
-        if ( auton == null ) {
+        console.log()
+        console.log("-----------------------------------CREATE POA APPLY FUNC------------------------------------")
+        console.log()
+
+        // create a new Poa
+        const auton = await db.tables.auton.getRecord(stateStore, asset.autonId);
+
+        if (auton == null) {
             throw new Error(`Auton can not be found`);
         }
 
@@ -79,27 +85,23 @@ export class CreatePoaAsset extends BaseAsset {
             issuedPoas: [],
         }
 
-        
         const poaRowContext: RowContext = new RowContext;
         const poaId: string = await db.tables.poa.createRecord(stateStore, transaction, poa, poaRowContext);
 
-
-        await db.indices.poaName.setRecord(stateStore, asset.name, {id: poaId}) 
-
+        await db.indices.poaName.setRecord(stateStore, asset.name, { id: poaId })
 
         let allPoaIds = await db.indices.fullTable.getRecord(stateStore, "poas");
 
-		if (allPoaIds == null) {
-			const index = { ids: [poaId] }
-			console.log(index)
-			await db.indices.fullTable.setRecord(stateStore, "poas", index)
-		} else {
-			allPoaIds.ids.push(poaId)
-			await db.indices.fullTable.setRecord(stateStore, "poas", allPoaIds)
-		}
+        if (allPoaIds == null) {
+            const index = { ids: [poaId] }
+            await db.indices.fullTable.setRecord(stateStore, "poas", index)
+        } else {
+            allPoaIds.ids.push(poaId)
+            await db.indices.fullTable.setRecord(stateStore, "poas", allPoaIds)
+        }
 
         auton.poas.push(poaId);
-		await db.tables.auton.updateRecord(stateStore, asset.autonId, auton)
+        await db.tables.auton.updateRecord(stateStore, asset.autonId, auton)
 
     }
 }
