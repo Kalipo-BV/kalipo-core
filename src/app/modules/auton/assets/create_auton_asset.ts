@@ -253,9 +253,6 @@ export class CreateAutonAsset extends BaseAsset {
 		const auton: Auton = this._createAuton(asset, constitution, memberships, transaction, stateStore)
 
 
-
-
-
 		console.log("Big 3")
 
 
@@ -341,16 +338,19 @@ export class CreateAutonAsset extends BaseAsset {
 					comments: [],
 					commentLikes: [],
 					commentDislikes: [],
-					proposals: []
+					proposals: [],
+					poasIssued: []
 				}
 				console.log("Big 5")
 
 
 				membershipRowContext.increment();
+				console.log("Big 5.1")
 
 				const membershipId: string = await db.tables.membership.createRecord(stateStore, transaction, bulkMembership, membershipRowContext)
-
+				console.log("Big 5.2")
 				bulkKalipoAccount.memberships.push(membershipId)
+
 				await db.tables.kalipoAccount.updateRecord(stateStore, bulkKalipoAccount.id, bulkKalipoAccount)
 
 			}
