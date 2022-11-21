@@ -202,7 +202,7 @@ export class MembershipInvitationAsset extends BaseAsset {
 		
 		const multiChoicePollArguments: MultiChoicePollArguments = {
 			question: "",
-			answers: ""
+			answers: [""]
 		}
 
 		const multiChoiceVoteResult: MultiChoiceVoteResult = {
