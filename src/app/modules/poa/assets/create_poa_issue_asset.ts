@@ -150,65 +150,21 @@ export class CreatePoaIssueAsset extends BaseAsset {
 
                         console.log()
                         console.log(mship)
+
+                        // update membership id
+                        const poaIssue = await db.tables.poaIssue.getRecord(stateStore, poaIssueId)
+                        if (poaIssue != null) {
+                            poaIssue.membershipId = receiverAccount.memberships[x];
+
+                            await db.tables.poaIssue.updateRecord(stateStore, poaIssueId, poaIssue);
+                        }
+
+                        console.log()
+                        console.log("POA ISSUE WITH UPDATED MEMBERSHIP ID")
+                        console.log(poaIssue)
                     }
                 }
             }
         }
-
-
-
-
-
-        // for (let i = 0; i < arr.length; i++) {
-
-        //     const membershipsId = kalipoAccount.memberships;
-        //     const auton = await db.tables.auton.getRecord(stateStore, arr[i].autonId);
-
-        //     if (auton == null) {
-        //         throw new Error(`Auton can not be found`);
-        //     }
-
-        //     let validMembership = membershipsId.find((id) => auton.memberships.includes(id));
-
-        //     if (validMembership == null) {
-        //         throw new Error(`Only members of the event can receive poas`);
-        //     }
-
-        //     const now: BigInt = (BigInt)(new Date().getTime());
-
-        //     const poaIssue: PoaIssue = {
-        //         accountId: kalipoAccountId,
-        //         poaId: asset.poaIds[i],
-        //         membershipId: "",
-        //         issueDate: now,
-        //     }
-
-        //     poaIssueRowContext.increment();
-
-        //     const poaIssueId: string = await db.tables.poaIssue.createRecord(stateStore, transaction, poaIssue, poaIssueRowContext);
-
-        //     await db.indices.poaIssue.setRecord(stateStore, asset.poaIds[i], { id: poaIssueId })
-        //     const allPoaIssueIds = await db.indices.fullTable.getRecord(stateStore, "poaIssues");
-
-        //     if (allPoaIssueIds == null) {
-        //         const index = { ids: [poaIssueId] }
-        //         await db.indices.fullTable.setRecord(stateStore, "poaIssues", index)
-        //     } else {
-        //         allPoaIssueIds.ids.push(poaIssueId)
-        //         await db.indices.fullTable.setRecord(stateStore, "poaIssues", allPoaIssueIds)
-        //     }
-
-        // console.log()
-        // console.log("POA ISSUE ID");
-        // console.log(poaIssueId)
-        // console.log()
-
-        // arr[i].issuedPoas.push(poaIssueId);
-        // await db.tables.poa.updateRecord(stateStore, arr[i].poaId, arr[i])
-
-        // kalipoAccount.issuedPoas.push(poaIssueId);
-        // await db.tables.kalipoAccount.updateRecord(stateStore, kalipoAccountId, kalipoAccount)
-
-        // }
     }
 }
