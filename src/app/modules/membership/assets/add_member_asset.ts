@@ -113,7 +113,7 @@ export class AddMemberAsset extends BaseAsset {
                 }
 
                 const membership: Membership = {
-					started: BigInt(0),
+					started: BigInt(stateStore.chain.lastBlockHeaders[0].timestamp),
 					accountId: receiverAddress.id,
 					autonId: asset.autonId,
 					invitation: membershipInvite,
