@@ -20,8 +20,8 @@ export class MultiChoicePollAsset extends BaseAsset {
 			title: {
 				dataType: 'string',
 				fieldNumber: 1,
-				minLength: 2,
-				maxLength: 32,
+				minLength: 1,
+				maxLength: 100,
 			},
 			campaignComment: {
 				dataType: 'string',
