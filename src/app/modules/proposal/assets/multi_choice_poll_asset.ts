@@ -4,7 +4,7 @@ import { MembershipValidationError, ProposalResult, ProposalStatus, ProposalType
 import { RowContext } from '../../../database/row_context';
 import { ProposalCampaignComment } from '../../../database/table/proposal_campaign_comment_table';
 import { ProposalProvisions } from '../../../database/table/proposal_provisions_table';
-import { BinaryVoteResult, MembershipInvitationArguments, MultiChoicePollArguments, MultiChoiceVoteResult, Proposal } from '../../../database/table/proposal_table';
+import { BinaryVoteResult, MembershipInvitationArguments, MultiChoiceCount, MultiChoicePollArguments, MultiChoiceVoteResult, Proposal } from '../../../database/table/proposal_table';
 
 export class MultiChoicePollAsset extends BaseAsset {
 	public name = 'MultiChoicePoll';
@@ -59,49 +59,34 @@ export class MultiChoicePollAsset extends BaseAsset {
 
 	// eslint-disable-next-line @typescript-eslint/require-await
 	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
-		console.log("1")
 		const TYPE = ProposalType.MULTI_CHOICE_POLL
 		//  Get latest provision for auton by proposal type membership-invtitation
-		console.log("2")
 		const senderAddress = transaction.senderAddress;
 
 		//Kalipo account
-		console.log("3")
 		const accountIdWrapper = await db.indices.liskId.getRecord(stateStore, senderAddress.toString('hex'))
-		console.log("4")
 		const accountId = accountIdWrapper?.id
-		console.log("5")
 		if (accountId == null) {
 			throw new Error("No Kalipo account found for this Lisk account")
 		}
-		console.log("6")
 		const kalipoAccount = await db.tables.kalipoAccount.getRecord(stateStore, accountId)
-		console.log("7")
 		// Auton
-		console.log("8")
 		const auton = await db.tables.auton.getRecord(stateStore, asset.autonId)
 		if (auton == null) {
 			throw new Error("The auton cannot be found")
 		}
-		console.log("9")
 		// Membership
-		console.log("10")
 		const membershipCheck = await db.tables.membership.validateMembership(kalipoAccount, asset.autonId, stateStore);
-		console.log("11")
 		const submitterMembershipId: string | null = membershipCheck.membershipId
-		console.log("12")
 		if (membershipCheck.error == MembershipValidationError.ACCOUNT_NOT_FOUND) {
 			throw new Error("No Kalipo account found")
 		}
-		console.log("13")
 		if (membershipCheck.error == MembershipValidationError.NO_ACTIVE_MEMBERSHIP) {
 			throw new Error("You need a membership to submit new proposals")
 		}
-		console.log("14")
 		if (membershipCheck.error == MembershipValidationError.OPEN_INVITATION_NOT_ACCEPTED_OR_REFUSED) {
 			throw new Error("You aren't member yet, you still need to accept the invitation")
 		}
-		console.log("15")
 		// Provisions
 		let provisionId: string | null = null;
 		let provision: ProposalProvisions | null = null;
@@ -155,9 +140,18 @@ export class MultiChoicePollAsset extends BaseAsset {
 		const windowOpen = created + Number(provision.campaigning) * 60
 		const windowClosed = windowOpen + Number(provision.votingWindow) * 60
 
+		const answersObjects: Array<MultiChoiceCount> = [];
+		for (let index = 0; index < asset.answers.length; index++) {
+			const multiChoiceCount: MultiChoiceCount = {
+				answer: asset.answers[index],
+				count: 0
+			}
+			answersObjects.push(multiChoiceCount);
+		}
+
 		const multiChoicePollArguments: MultiChoicePollArguments = {
 			question: asset.question,
-			answers: asset.answers
+			answers: answersObjects
 		}
 
 		const multiChoiceVoteResult: MultiChoiceVoteResult = {
@@ -200,9 +194,7 @@ export class MultiChoicePollAsset extends BaseAsset {
 
 		console.log("proposal")
 		console.log(proposal)
-		console.log("20")
 		const proposalId = await db.tables.proposal.createRecord(stateStore, transaction, proposal, new RowContext());
-		console.log("21")
 		// Setting scheduling
 		const index = await db.indices.scheduledProposal.getRecord(stateStore, "current");
 		if (index !== null) {
@@ -217,12 +209,9 @@ export class MultiChoicePollAsset extends BaseAsset {
 			const newIndex = { data: [{ id: proposalId, scheduled: BigInt(windowOpen) }] }
 			await db.indices.scheduledProposal.setRecord(stateStore, "current", newIndex);
 		}
-		console.log("22")
 		// Setting reference in auton
 		auton.proposals.push(proposalId);
-		console.log("23")
 		await db.tables.auton.updateRecord(stateStore, asset.autonId, auton)
-		console.log("24")
 		// Setting reference in membership
 		if (membershipCheck.membership != null && membershipCheck.membershipId != null) {
 			membershipCheck.membership.proposals.push(proposalId);

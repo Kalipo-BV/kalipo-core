@@ -21,7 +21,7 @@ import { MembershipValidationError, ProposalResult, ProposalStatus, ProposalType
 import { RowContext } from '../../../database/row_context';
 import { ProposalCampaignComment } from '../../../database/table/proposal_campaign_comment_table';
 import { ProposalProvisions } from '../../../database/table/proposal_provisions_table';
-import { BinaryVoteResult, MembershipInvitationArguments, MultiChoicePollArguments, MultiChoiceVoteResult, Proposal } from '../../../database/table/proposal_table';
+import { BinaryVoteResult, MembershipInvitationArguments, MultiChoiceCount, MultiChoicePollArguments, MultiChoiceVoteResult, Proposal } from '../../../database/table/proposal_table';
 
 export class MembershipInvitationAsset extends BaseAsset {
 	public name = 'membershipInvitation';
@@ -200,9 +200,16 @@ export class MembershipInvitationAsset extends BaseAsset {
 			decided: BigInt(0)
 		}
 		
+		const multiChoiceCount: MultiChoiceCount = {
+			answer: "",
+			count: 0
+		}
+
 		const multiChoicePollArguments: MultiChoicePollArguments = {
 			question: "",
-			answers: [""]
+			answers: [
+				multiChoiceCount
+			]
 		}
 
 		const multiChoiceVoteResult: MultiChoiceVoteResult = {
