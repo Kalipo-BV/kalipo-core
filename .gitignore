@@ -9,3 +9,4 @@ config/genesis_block.json
 config/password.json
 node_modules
 src/.DS_Store
+.secrets/default/accounts.json
