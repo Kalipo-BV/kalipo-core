@@ -57,21 +57,7 @@ export class CreatePoaAsset extends BaseAsset {
 		// Validate your asset
 	}
 
-
-    // VRAGEN
-    // Wanneer wordt de apply functie aangeroepen?
-    // Waar wordt het op de blockhain opgeslagen?
-
-
-
-	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
-        // create a new Poa
-        const auton =  await db.tables.auton.getRecord( stateStore, asset.autonId );
-
-        if ( auton == null ) {
-            throw new Error(`Auton can not be found`);
-        }
-
+    private createPoa (asset): Poa {
         const poa: Poa = {
             autonId: asset.autonId,
             name: asset.name,
@@ -79,6 +65,37 @@ export class CreatePoaAsset extends BaseAsset {
             issuedPoas: [],
         }
 
+        return poa;
+    }
+
+    private async updateAllPoaIds(stateStore, asset, auton, poaId, allPoaIds) {
+        if (allPoaIds == null) {
+            const index = { ids: [poaId] }
+            console.log(index)
+            await db.indices.fullTable.setRecord(stateStore, "poas", index)
+        } else {
+            allPoaIds.ids.push(poaId)
+            await db.indices.fullTable.setRecord(stateStore, "poas", allPoaIds)
+        }
+    }
+
+
+
+
+	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
+        // create a new Poa
+        const auton =  await db.tables.auton.getRecord( stateStore, asset.autonId );
+
+        // Validating is done in apply because the db table is not available in validate
+        if ( auton == null ) {
+            throw new Error(`Auton can not be found`);
+        }
+
+        if (!asset.name) {
+            throw new Error(`An POA is required to have a name`);
+        }
+
+        const poa = this.createPoa(asset);
         
         const poaRowContext: RowContext = new RowContext;
         const poaId: string = await db.tables.poa.createRecord(stateStore, transaction, poa, poaRowContext);
@@ -89,14 +106,17 @@ export class CreatePoaAsset extends BaseAsset {
 
         let allPoaIds = await db.indices.fullTable.getRecord(stateStore, "poas");
 
-		if (allPoaIds == null) {
-			const index = { ids: [poaId] }
-			console.log(index)
-			await db.indices.fullTable.setRecord(stateStore, "poas", index)
-		} else {
-			allPoaIds.ids.push(poaId)
-			await db.indices.fullTable.setRecord(stateStore, "poas", allPoaIds)
-		}
+        await this.updateAllPoaIds(stateStore, asset, auton, poaId, allPoaIds);
+
+
+		// if (allPoaIds == null) {
+		// 	const index = { ids: [poaId] }
+		// 	console.log(index)
+		// 	await db.indices.fullTable.setRecord(stateStore, "poas", index)
+		// } else {
+		// 	allPoaIds.ids.push(poaId)
+		// 	await db.indices.fullTable.setRecord(stateStore, "poas", allPoaIds)
+		// }
 
         auton.poas.push(poaId);
 		await db.tables.auton.updateRecord(stateStore, asset.autonId, auton)
