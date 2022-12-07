@@ -47,6 +47,9 @@ export class CreatePoaIssueAsset extends BaseAsset {
 
     public validate({ asset }: ValidateAssetContext<{}>): void {
         // Validate your asset
+        if (asset.poaIds.length < 1) {
+            throw new Error("poaIds should not be an empty list")
+        }
     }
 
     private async _getPoas(stateStore, asset) {
