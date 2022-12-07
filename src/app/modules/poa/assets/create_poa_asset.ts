@@ -59,10 +59,6 @@ export class CreatePoaAsset extends BaseAsset {
     }
 
 
-    // VRAGEN
-    // Wanneer wordt de apply functie aangeroepen?
-    // Waar wordt het op de blockhain opgeslagen?
-
 
 
     public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {

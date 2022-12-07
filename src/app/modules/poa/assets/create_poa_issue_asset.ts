@@ -16,17 +16,9 @@
  */
 
 import { BaseAsset, ApplyAssetContext, ValidateAssetContext } from 'lisk-sdk';
-import { Membership, MembershipInvitation } from '../../../database/table/membership_table';
-import { Auton, ProposalTypeConstitution } from '../../../database/table/auton_table';
 import { db } from '../../../database/db';
-import { KalipoAccount } from '../../../database/table/kalipo_account_table';
 import { RowContext } from '../../../database/row_context';
-import { templates } from '../../../database/templates';
-import { VALID_INVITATION_WINDOW } from '../../membership/membership_module';
-import { AutonTypeEnum } from '../../../database/enums';
-import { Poa } from '../../../database/table/poa_table';
 import { PoaIssue } from '../../../database/table/poa_issue_table';
-
 
 export class CreatePoaIssueAsset extends BaseAsset {
 
@@ -57,25 +49,16 @@ export class CreatePoaIssueAsset extends BaseAsset {
         // Validate your asset
     }
 
-
-
-    public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
-
-        console.log()
-        console.log("-----------------------------------CREATE POA ISSUE APPLY FUNC------------------------------------")
-        console.log()
-
-        const poas: any[] = [];
-
+    private async _getPoas(stateStore, asset) {
+        let poas: any[] = [];
         for (let i = 0; i < asset.poaIds.length; i++) {
             const poa = await db.tables.poa.getRecord(stateStore, asset.poaIds[i]);
             poas.push({ poaId: asset.poaIds[i], poa: poa })
         }
+        return poas;
+    }
 
-        console.log("POAS: ")
-        console.log(poas)
-        console.log()
-
+    private async _getKalipoAccount(stateStore, asset) {
         const kalipoAccountId = asset.receiverAddress;
 
         if (kalipoAccountId == null) {
@@ -88,15 +71,18 @@ export class CreatePoaIssueAsset extends BaseAsset {
             throw new Error("Receiver account not found")
         }
 
-        console.log("RECEIVER KALIPO ACCOUNT: ")
-        console.log(receiverAccount)
-        console.log()
+        return receiverAccount;
+    }
 
+    private async _poaIssues(poas, transaction) {
         const poaIssues: Array<string> = [db.tables.poaIssue.getDeterministicId(transaction, 0)]
         for (let index = 0; index < poas.length; index++) {
             poaIssues.push(db.tables.poaIssue.getDeterministicId(transaction, index + 1));
         }
+        return poaIssues;
+    }
 
+    private async _issuePoas(poas, kalipoAccountId, stateStore, transaction, receiverAccount) {
         const poaIssueRowContext: RowContext = new RowContext;
 
         for (let i = 0; i < poas.length; i++) {
@@ -113,28 +99,12 @@ export class CreatePoaIssueAsset extends BaseAsset {
 
             const poaIssueId: string = await db.tables.poaIssue.createRecord(stateStore, transaction, poaIssue, poaIssueRowContext)
 
-            console.log("POA ISSUE ID:")
-            console.log(poaIssueId)
-            console.log()
-
-            console.log("POA:")
-            console.log(poas[i].poa);
-            console.log()
-
             // add poa issue to poa (update record)
             poas[i].poa.issuedPoas.push(poaIssueId)
             await db.tables.poa.updateRecord(stateStore, poas[i].poaId, poas[i].poa)
 
-            console.log("UPDATED POA WITH POA ISSUE:")
-            console.log(poas[i].poa);
-            console.log()
-
             receiverAccount?.issuedPoas.push(poaIssueId);
             await db.tables.kalipoAccount.updateRecord(stateStore, kalipoAccountId, receiverAccount)
-
-            console.log("RECEIVER ACCOUNT WITH ISSUED POA:")
-            console.log(receiverAccount);
-            console.log()
 
             // poa issue in membership
             for (let x = 0; x < receiverAccount.memberships.length; x++) {
@@ -143,13 +113,8 @@ export class CreatePoaIssueAsset extends BaseAsset {
                 if (mship != null) {
                     if (mship?.autonId == poas[i].poa.autonId) {
 
-                        console.log("FOUND AUTON IN MEMBERSHIP")
-
                         mship?.poasIssued.push(poaIssueId);
                         await db.tables.membership.updateRecord(stateStore, receiverAccount.memberships[x], mship)
-
-                        console.log()
-                        console.log(mship)
 
                         // update membership id
                         const poaIssue = await db.tables.poaIssue.getRecord(stateStore, poaIssueId)
@@ -158,13 +123,22 @@ export class CreatePoaIssueAsset extends BaseAsset {
 
                             await db.tables.poaIssue.updateRecord(stateStore, poaIssueId, poaIssue);
                         }
-
-                        console.log()
-                        console.log("POA ISSUE WITH UPDATED MEMBERSHIP ID")
-                        console.log(poaIssue)
                     }
                 }
             }
         }
     }
+
+    public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
+
+        const poas = await this._getPoas(stateStore, asset);
+
+        const receiverAccount = await this._getKalipoAccount(stateStore, asset)
+
+        this._poaIssues(poas, transaction)
+
+        const kalipoAccountId = asset.receiverAddress;
+        this._issuePoas(poas, kalipoAccountId, stateStore, transaction, receiverAccount)
+    }
 }
+
