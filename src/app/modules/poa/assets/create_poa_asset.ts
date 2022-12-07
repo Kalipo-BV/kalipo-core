@@ -54,7 +54,9 @@ export class CreatePoaAsset extends BaseAsset {
     }
 
     public validate({ asset }: ValidateAssetContext<{}>): void {
-		// Validate your asset
+        if (!asset.name) {
+            throw new Error(`An POA is required to have a name`);
+        }
 	}
 
     private createPoa (asset): Poa {
@@ -91,9 +93,6 @@ export class CreatePoaAsset extends BaseAsset {
             throw new Error(`Auton can not be found`);
         }
 
-        if (!asset.name) {
-            throw new Error(`An POA is required to have a name`);
-        }
 
         const poa = this.createPoa(asset);
         
