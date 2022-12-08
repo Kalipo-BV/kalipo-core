@@ -23,6 +23,9 @@ import { KalipoAccount } from '../../../database/table/kalipo_account_table';
 import { RowContext } from '../../../database/row_context';
 import { templates } from '../../../database/templates';
 import { VALID_INVITATION_WINDOW } from '../../membership/membership_module';
+import { KalipoAccountNotFoundError } from '../../../exceptions/kalipoAccount/KalipoAccountNotFoundError';
+import { AutonNameAlreadyTakenError } from '../../../exceptions/auton/AutonNameAlreadyTakenError';
+import { CantSentMultipleInvitesError } from '../../../exceptions/membership/CantSentMultipleInvitesError';
 
 export class CreateAutonAsset extends BaseAsset {
 	public name = 'createAuton';
@@ -90,20 +93,17 @@ export class CreateAutonAsset extends BaseAsset {
 	// eslint-disable-next-line @typescript-eslint/require-await
 	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
 		const senderAddress = transaction.senderAddress;
-		console.log("CHECK THIS IDDDDD")
-		console.log(senderAddress)
-		console.log(transaction)
 
 		const accountIdWrapper = await db.indices.liskId.getRecord(stateStore, senderAddress.toString('hex'))
 		const accountId = accountIdWrapper?.id
 
 		if (accountId == null) {
-			throw new Error("No Kalipo account found for this Lisk account")
+			throw new KalipoAccountNotFoundError();
 		}
 
 		const alreadyRegisteredAuton = await db.indices.autonName.getRecord(stateStore, asset.name);
 		if (alreadyRegisteredAuton !== null) {
-			throw new Error("Oops this auton name is already taken")
+			throw new AutonNameAlreadyTakenError();
 		}
 		// Get bulk kalipoAccounts to check if they exists
 		const bulkAccounts: Array<KalipoAccount> = [];
@@ -129,7 +129,7 @@ export class CreateAutonAsset extends BaseAsset {
 		}
 
 		if (multipleInvitesToSameAccount) {
-			throw new Error("Cannot send multiple invites to the same account")
+			throw new CantSentMultipleInvitesError();
 		}
 
 		// Founder membership is automaticly set as accepted
