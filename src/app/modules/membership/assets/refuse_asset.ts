@@ -17,6 +17,12 @@
 
 import { BaseAsset, ApplyAssetContext, ValidateAssetContext } from 'lisk-sdk';
 import { db } from '../../../database/db';
+import { KalipoAccountNotBoundToMembershipError } from '../../../exceptions/kalipoAccount/KalipoAccountNotBoundToMembershipError';
+import { KalipoAccountNotFoundError } from '../../../exceptions/kalipoAccount/KalipoAccountNotFoundError';
+import { MembershipNotBoundToKalipoAccountError } from '../../../exceptions/kalipoAccount/MembershipNotBoundToKalipoAccountError';
+import { MembershipAlreadyStartedError } from '../../../exceptions/membership/MembershipAlreadyStartedError';
+import { InvitationAlreadyAcceptedError } from '../../../exceptions/membershipInvitation/InvitationAlreadyAcceptedError';
+import { InvitationAlreadyRefusedError } from '../../../exceptions/membershipInvitation/InvitationAlreadyRefusedError';
 
 
 export class RefuseAsset extends BaseAsset {
@@ -48,37 +54,37 @@ export class RefuseAsset extends BaseAsset {
 		const accountId = accountIdWrapper?.id
 
 		if (accountId == null) {
-			throw new Error("No Kalipo account found for this Lisk account")
+			throw new KalipoAccountNotFoundError();
 		}
 
 		const kalipoAccount = await db.tables.kalipoAccount.getRecord(stateStore, accountId)
 
 		if (kalipoAccount !== null) {
 			if (!kalipoAccount.memberships.includes(asset.membershipId)) {
-				throw new Error("This kalipo-account is not bound to this membership")
+				throw new KalipoAccountNotBoundToMembershipError();
 			}
 		}
 
 		const membership = await db.tables.membership.getRecord(stateStore, asset.membershipId)
 		if (membership !== null) {
 			if (membership.accountId !== accountId) {
-				throw new Error("This membership is not bound to this kalipo-account")
+				throw new MembershipNotBoundToKalipoAccountError();
 			}
 
 			if (membership.invitation.accepted !== BigInt(0)) {
-				throw new Error("This invitation is already accepted")
+				throw new InvitationAlreadyAcceptedError();
 			}
 
 			if (membership.invitation.refused !== BigInt(0)) {
-				throw new Error("This invitation is already refused")
+				throw new InvitationAlreadyRefusedError();
 			}
 
 			if (membership.started !== BigInt(0)) {
-				throw new Error("This membership already started")
+				throw new MembershipAlreadyStartedError();
 			}
 
 			if (BigInt(stateStore.chain.lastBlockHeaders[0].timestamp) < membership.invitation.validStart) {
-				throw new Error("Invitation can only be accepted after <" + membership.invitation.validStart + ">")
+				throw new Error("Invitation can only be refused after <" + membership.invitation.validStart + ">")
 			}
 
 			if (BigInt(stateStore.chain.lastBlockHeaders[0].timestamp) >= membership.invitation.validEnd) {

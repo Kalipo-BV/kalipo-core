@@ -21,6 +21,15 @@ import { ProposalStatus, MembershipValidationError } from '../../../database/enu
 import { RowContext } from '../../../database/row_context';
 import { Membership } from '../../../database/table/membership_table';
 import { Vote } from '../../../database/table/vote_table';
+import { AutonNotFoundError } from '../../../exceptions/auton/AutonNotFoundError';
+import { KalipoAccountNotFoundError } from '../../../exceptions/kalipoAccount/KalipoAccountNotFoundError';
+import { MembershipInvitationStillOpenError } from '../../../exceptions/membership/MembershipInvitationStillOpenError';
+import { MembershipNotActiveError } from '../../../exceptions/membership/MembershipNotActiveError';
+import { ProposalClosedError } from '../../../exceptions/proposal/ProposalClosedError';
+import { ProposalNewVotesBlockedError } from '../../../exceptions/proposal/ProposalNewVotesBlockedError';
+import { ProposalNotFoundError } from '../../../exceptions/proposal/ProposalNotFoundError';
+import { ProposalNotOpenedError } from '../../../exceptions/proposal/ProposalNotOpenedError';
+import { AlreadyVotedError } from '../../../exceptions/vote/AlreadyVotedError';
 
 export class BinaryVotingAsset extends BaseAsset {
 	public name = 'binaryVoting';
@@ -54,7 +63,6 @@ export class BinaryVotingAsset extends BaseAsset {
 	// eslint-disable-next-line @typescript-eslint/require-await
 	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
 		const now = BigInt(stateStore.chain.lastBlockHeaders[0].timestamp)
-		console.log(now)
 		const senderAddress = transaction.senderAddress;
 
 		//Kalipo account
@@ -62,7 +70,7 @@ export class BinaryVotingAsset extends BaseAsset {
 		const accountId = accountIdWrapper?.id
 
 		if (accountId == null) {
-			throw new Error("No Kalipo account found for this Lisk account")
+			throw new KalipoAccountNotFoundError();
 		}
 
 		const kalipoAccount = await db.tables.kalipoAccount.getRecord(stateStore, accountId)
@@ -70,19 +78,19 @@ export class BinaryVotingAsset extends BaseAsset {
 		// Proposal
 		const proposal = await db.tables.proposal.getRecord(stateStore, asset.proposalId)
 		if (proposal == null) {
-			throw new Error("The proposal cannot be found")
+			throw new ProposalNotFoundError();
 		}
 
 		if (now < proposal.windowOpen) {
-			throw new Error("The proposal has not been opened yet for voting")
+			throw new ProposalNotOpenedError();
 		}
 
 		if (now > proposal.windowClosed) {
-			throw new Error("The proposal is closed and therefore does not accept new votes")
+			throw new ProposalClosedError();
 		}
 
 		if (proposal.status != ProposalStatus.DECIDED && proposal.status != ProposalStatus.VOTING) {
-			throw new Error("The current status does not allow new votes")
+			throw new ProposalNewVotesBlockedError();
 		}
 
 		// Membership
@@ -91,15 +99,15 @@ export class BinaryVotingAsset extends BaseAsset {
 		const membership: Membership | null = membershipCheck.membership
 
 		if (membershipCheck.error == MembershipValidationError.ACCOUNT_NOT_FOUND) {
-			throw new Error("No Kalipo account found")
+			throw new KalipoAccountNotFoundError();
 		}
 
 		if (membershipCheck.error == MembershipValidationError.NO_ACTIVE_MEMBERSHIP) {
-			throw new Error("You need a membership to vote on this proposal")
+			throw new MembershipNotActiveError();
 		}
 
 		if (membershipCheck.error == MembershipValidationError.OPEN_INVITATION_NOT_ACCEPTED_OR_REFUSED) {
-			throw new Error("You aren't member yet, you still need to accept the invitation")
+			throw new MembershipInvitationStillOpenError();
 		}
 
 		// Votes
@@ -107,14 +115,14 @@ export class BinaryVotingAsset extends BaseAsset {
 			const voteId = proposal.votes[index];
 			const otherVote = await db.tables.vote.getRecord(stateStore, voteId)
 			if (otherVote?.membershipId == membershipId) {
-				throw new Error("You already voted: " + otherVote?.answer)
+				throw new AlreadyVotedError(otherVote?.answer);
 			}
 		}
 
 		// Auton
 		const auton = await db.tables.auton.getRecord(stateStore, proposal.autonId)
 		if (auton == null) {
-			throw new Error("The auton cannot be found")
+			throw new AutonNotFoundError();
 		}
 
 		// Place vote

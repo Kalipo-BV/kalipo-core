@@ -5,6 +5,13 @@ import { RowContext } from '../../../database/row_context';
 import { ProposalCampaignComment } from '../../../database/table/proposal_campaign_comment_table';
 import { ProposalProvisions } from '../../../database/table/proposal_provisions_table';
 import { BinaryVoteResult, MembershipInvitationArguments, MultiChoiceCount, MultiChoicePollArguments, MultiChoiceVoteResult, Proposal } from '../../../database/table/proposal_table';
+import { AutonNotFoundError } from '../../../exceptions/auton/AutonNotFoundError';
+import { KalipoAccountNotFoundError } from '../../../exceptions/kalipoAccount/KalipoAccountNotFoundError';
+import { MembershipInvitationStillOpenError } from '../../../exceptions/membership/MembershipInvitationStillOpenError';
+import { MembershipNotActiveError } from '../../../exceptions/membership/MembershipNotActiveError';
+import { ProposalTypeNoProvisionError } from '../../../exceptions/provision/ProposalTypeNoProvisionError';
+import { ProvisionNotConstitutionalisedError } from '../../../exceptions/provision/ProvisionNotConstitutionalisedError';
+import { ProvisionNotFoundError } from '../../../exceptions/provision/ProvisionNotFoundError';
 
 export class MultiChoicePollAsset extends BaseAsset {
 	public name = 'MultiChoicePoll';
@@ -67,57 +74,50 @@ export class MultiChoicePollAsset extends BaseAsset {
 		const accountIdWrapper = await db.indices.liskId.getRecord(stateStore, senderAddress.toString('hex'))
 		const accountId = accountIdWrapper?.id
 		if (accountId == null) {
-			throw new Error("No Kalipo account found for this Lisk account")
+			throw new KalipoAccountNotFoundError();
 		}
 		const kalipoAccount = await db.tables.kalipoAccount.getRecord(stateStore, accountId)
 		// Auton
 		const auton = await db.tables.auton.getRecord(stateStore, asset.autonId)
 		if (auton == null) {
-			throw new Error("The auton cannot be found")
+			throw new AutonNotFoundError();
 		}
 		// Membership
 		const membershipCheck = await db.tables.membership.validateMembership(kalipoAccount, asset.autonId, stateStore);
 		const submitterMembershipId: string | null = membershipCheck.membershipId
 		if (membershipCheck.error == MembershipValidationError.ACCOUNT_NOT_FOUND) {
-			throw new Error("No Kalipo account found")
+			throw new KalipoAccountNotFoundError();
 		}
 		if (membershipCheck.error == MembershipValidationError.NO_ACTIVE_MEMBERSHIP) {
-			throw new Error("You need a membership to submit new proposals")
+			throw new MembershipNotActiveError();
 		}
 		if (membershipCheck.error == MembershipValidationError.OPEN_INVITATION_NOT_ACCEPTED_OR_REFUSED) {
-			throw new Error("You aren't member yet, you still need to accept the invitation")
+			throw new MembershipInvitationStillOpenError();
 		}
 		// Provisions
 		let provisionId: string | null = null;
 		let provision: ProposalProvisions | null = null;
-		console.log("AUTON: ")
-		console.log(auton)
-		console.log(auton.constitution[0].provisions)
 		for (let index = 0; index < auton.constitution.length; index++) {
 			const proposalType = auton.constitution[index];
 			if (proposalType.type == TYPE) {
-				console.log("TYPE FOUND")
 				if (proposalType.provisions.length > 0) {
-					console.log("LENGTH: " + proposalType.provisions.length)
 					const lastProvisionId = proposalType.provisions[proposalType.provisions.length - 1]
 					const provisionResult = await db.tables.provisions.getRecord(stateStore, lastProvisionId)
-					console.log(provisionResult)
 					if (provisionResult !== null) {
 						provision = provisionResult
 						provisionId = lastProvisionId
 						break;
 					} else {
-						throw new Error("Provision not found")
+						throw new ProvisionNotFoundError();
 					}
-
 				} else {
-					throw new Error("This type has been constitutionalised but is not yet provisioned. Submit a bill to create the first provisions.")
+					throw new ProposalTypeNoProvisionError();
 				}
 			}
 		}
 
 		if (provision == null) {
-			throw new Error("This type has not been constitutionalised")
+			throw new ProvisionNotConstitutionalisedError();
 		}
 
 		const created = stateStore.chain.lastBlockHeaders[0].timestamp
@@ -192,8 +192,6 @@ export class MultiChoicePollAsset extends BaseAsset {
 			multiChoicePollArguments: multiChoicePollArguments
 		}
 
-		console.log("proposal")
-		console.log(proposal)
 		const proposalId = await db.tables.proposal.createRecord(stateStore, transaction, proposal, new RowContext());
 		// Setting scheduling
 		const index = await db.indices.scheduledProposal.getRecord(stateStore, "current");

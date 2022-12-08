@@ -17,6 +17,7 @@
 
 import { BaseAsset, ApplyAssetContext, ValidateAssetContext } from 'lisk-sdk';
 import { db } from '../../../database/db';
+import { KalipoAccountNotFoundError } from '../../../exceptions/kalipoAccount/KalipoAccountNotFoundError';
 
 export class UpdateSocialAsset extends BaseAsset {
 	public name = 'updateSocial';
@@ -83,7 +84,7 @@ export class UpdateSocialAsset extends BaseAsset {
 		const accountId = accountIdWrapper?.id
 
 		if (accountId == null) {
-			throw new Error("No Kalipo account found for this Lisk account")
+			throw new KalipoAccountNotFoundError();
 		}
 
 		const kalipoAccount = await db.tables.kalipoAccount.getRecord(stateStore, accountId)
