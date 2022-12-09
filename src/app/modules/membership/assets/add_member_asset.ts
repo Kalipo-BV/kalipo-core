@@ -57,17 +57,7 @@ export class AddMemberAsset extends BaseAsset {
         // Validate your asset
     }
 
-    public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
-
-        const senderAddress = transaction.senderAddress;
-
-        const accountIdWrapper = await db.indices.liskId.getRecord(stateStore, senderAddress.toString('hex'))
-        const accountId = accountIdWrapper?.id
-
-        if (accountId == null) {
-            throw new Error("No Kalipo account found for this Lisk account")
-        }
-        
+    private async _getReceiverAdresses(stateStore, asset) {
         const receiverAddressesToInvite: Array<KalipoAccount> = [];
         const receiverAddressesCheckList: Array<string> = [];
         let multipleInvitesToSameAccount = false;
@@ -92,7 +82,10 @@ export class AddMemberAsset extends BaseAsset {
         if (multipleInvitesToSameAccount) {
 			throw new Error("Cannot send multiple invites to the same account")
 		}
+        return receiverAddressesToInvite;
+    }
 
+    private async _addMembership(stateStore, asset, transaction, receiverAddressesToInvite) {
         const memberships: Array<string> = [];
         for (let index = 0; index < receiverAddressesToInvite.length; index++) {
 			memberships.push(db.tables.membership.getDeterministicId(transaction, index + 1));
@@ -134,9 +127,10 @@ export class AddMemberAsset extends BaseAsset {
 
             }
         }
+        return memberships;
+    }
 
-
-
+    private async _addToAuton(stateStore, asset, memberships) {
         const auton = await db.tables.auton.getRecord(stateStore, asset.autonId);
 
         if (auton == null) {
@@ -148,5 +142,28 @@ export class AddMemberAsset extends BaseAsset {
         }
 
         await db.tables.auton.updateRecord(stateStore, asset.autonId, auton)
+    }
+
+
+
+
+
+    public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
+
+        const senderAddress = transaction.senderAddress;
+
+        const accountIdWrapper = await db.indices.liskId.getRecord(stateStore, senderAddress.toString('hex'))
+        const accountId = accountIdWrapper?.id
+
+        if (accountId == null) {
+            throw new Error("No Kalipo account found for this Lisk account")
+        }
+        
+        const receiverAddressesToInvite: Array<KalipoAccount> = await this._getReceiverAdresses(stateStore, asset);
+
+        const memberships: Array<string> = await this._addMembership(stateStore, asset, transaction, receiverAddressesToInvite);
+
+        this._addToAuton(stateStore, asset, memberships)
+
     }
 }
