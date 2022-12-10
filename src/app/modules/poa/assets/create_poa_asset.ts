@@ -16,14 +16,8 @@
  */
 
 import { BaseAsset, ApplyAssetContext, ValidateAssetContext } from 'lisk-sdk';
-import { Membership, MembershipInvitation } from '../../../database/table/membership_table';
-import { Auton, ProposalTypeConstitution } from '../../../database/table/auton_table';
 import { db } from '../../../database/db';
-import { KalipoAccount } from '../../../database/table/kalipo_account_table';
 import { RowContext } from '../../../database/row_context';
-import { templates } from '../../../database/templates';
-import { VALID_INVITATION_WINDOW } from '../../membership/membership_module';
-import { AutonTypeEnum } from '../../../database/enums';
 import { Poa } from '../../../database/table/poa_table';
 
 
@@ -71,7 +65,7 @@ export class CreatePoaAsset extends BaseAsset {
         return poa;
     }
 
-    private async updateAllPoaIds(stateStore, asset, auton, poaId, allPoaIds) {
+    private async updateAllPoaIds(stateStore, poaId, allPoaIds) {
         if (allPoaIds == null) {
             const index = { ids: [poaId] }
             console.log(index)
@@ -106,7 +100,7 @@ export class CreatePoaAsset extends BaseAsset {
 
         let allPoaIds = await db.indices.fullTable.getRecord(stateStore, "poas");
 
-        await this.updateAllPoaIds(stateStore, asset, auton, poaId, allPoaIds);
+        await this.updateAllPoaIds(stateStore, poaId, allPoaIds);
 
 
 		// if (allPoaIds == null) {
