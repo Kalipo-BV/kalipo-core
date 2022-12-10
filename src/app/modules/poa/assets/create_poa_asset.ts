@@ -55,25 +55,12 @@ export class CreatePoaAsset extends BaseAsset {
     }
 
     public validate({ asset }: ValidateAssetContext<{}>): void {
-        // Validate your asset
-    }
-
-
-
-
-    public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
-
-        console.log()
-        console.log("-----------------------------------CREATE POA APPLY FUNC------------------------------------")
-        console.log()
-
-        // create a new Poa
-        const auton = await db.tables.auton.getRecord(stateStore, asset.autonId);
-
-        if (auton == null) {
-            throw new Error(`Auton can not be found`);
+        if (!asset.name) {
+            throw new Error(`An POA is required to have a name`);
         }
+	}
 
+    private createPoa (asset): Poa {
         const poa: Poa = {
             autonId: asset.autonId,
             name: asset.name,
@@ -81,23 +68,58 @@ export class CreatePoaAsset extends BaseAsset {
             issuedPoas: [],
         }
 
-        const poaRowContext: RowContext = new RowContext;
-        const poaId: string = await db.tables.poa.createRecord(stateStore, transaction, poa, poaRowContext);
+        return poa;
+    }
 
-        await db.indices.poaName.setRecord(stateStore, asset.name, { id: poaId })
-
-        let allPoaIds = await db.indices.fullTable.getRecord(stateStore, "poas");
-
+    private async updateAllPoaIds(stateStore, asset, auton, poaId, allPoaIds) {
         if (allPoaIds == null) {
             const index = { ids: [poaId] }
+            console.log(index)
             await db.indices.fullTable.setRecord(stateStore, "poas", index)
         } else {
             allPoaIds.ids.push(poaId)
             await db.indices.fullTable.setRecord(stateStore, "poas", allPoaIds)
         }
+    }
+
+
+
+
+	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
+        // create a new Poa
+        const auton =  await db.tables.auton.getRecord( stateStore, asset.autonId );
+
+        // Validating is done in apply because the db table is not available in validate
+        if ( auton == null ) {
+            throw new Error(`Auton can not be found`);
+        }
+
+
+        const poa = this.createPoa(asset);
+
+        const poaRowContext: RowContext = new RowContext;
+        const poaId: string = await db.tables.poa.createRecord(stateStore, transaction, poa, poaRowContext);
+
+
+        await db.indices.poaName.setRecord(stateStore, asset.name, {id: poaId})
+
+
+        let allPoaIds = await db.indices.fullTable.getRecord(stateStore, "poas");
+
+        await this.updateAllPoaIds(stateStore, asset, auton, poaId, allPoaIds);
+
+
+		// if (allPoaIds == null) {
+		// 	const index = { ids: [poaId] }
+		// 	console.log(index)
+		// 	await db.indices.fullTable.setRecord(stateStore, "poas", index)
+		// } else {
+		// 	allPoaIds.ids.push(poaId)
+		// 	await db.indices.fullTable.setRecord(stateStore, "poas", allPoaIds)
+		// }
 
         auton.poas.push(poaId);
-        await db.tables.auton.updateRecord(stateStore, asset.autonId, auton)
+		await db.tables.auton.updateRecord(stateStore, asset.autonId, auton)
 
     }
 }
