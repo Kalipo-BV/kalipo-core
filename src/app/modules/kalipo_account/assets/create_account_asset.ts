@@ -19,6 +19,9 @@ import { BaseAsset, ApplyAssetContext, ValidateAssetContext } from 'lisk-sdk';
 import { db } from '../../../database/db';
 import { RowContext } from '../../../database/row_context';
 import { KalipoAccount } from '../../../database/table/kalipo_account_table';
+import { DuplicateUsernameError } from '../../../exceptions/kalipoAccount/DuplicateUsernameError';
+import { UsernameAlreadyTakenError } from '../../../exceptions/kalipoAccount/UsernameAlreadyTakenError';
+import { UsernameContainsSpacesError } from '../../../exceptions/kalipoAccount/UsernameContainsSpacesError';
 
 export class CreateAccountAsset extends BaseAsset {
 	public name = 'createAccount';
@@ -48,9 +51,7 @@ export class CreateAccountAsset extends BaseAsset {
 
 	public validate({ asset }: ValidateAssetContext<{}>): void {
 		if (asset.username.indexOf(" ") !== -1) {
-			throw new Error(
-				'A username cannot contain spaces'
-			);
+			throw new UsernameContainsSpacesError();
 		}
 	}
 
@@ -58,9 +59,7 @@ export class CreateAccountAsset extends BaseAsset {
 	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
 		const usernameIndex = await db.indices.username.getRecord(stateStore, asset.username);
 		if (usernameIndex !== null && usernameIndex.id !== "") {
-			throw new Error(
-				'Username is already taken!'
-			);
+			throw new UsernameAlreadyTakenError();
 		}
 
 		const senderAddress = transaction.senderAddress;
@@ -98,9 +97,7 @@ export class CreateAccountAsset extends BaseAsset {
 		} else {
 			const existingKalipoAccount = await db.tables.kalipoAccount.getRecord(stateStore, accountId.toString('hex'))
 			if (existingKalipoAccount?.username === asset.username) {
-				throw new Error(
-					'New username is the same as old username'
-				);
+				throw new DuplicateUsernameError();
 			}
 
 			// Release previous claimed username by setting index to null

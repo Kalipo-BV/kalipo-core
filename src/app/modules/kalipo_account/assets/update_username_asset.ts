@@ -17,7 +17,10 @@
 
 import { BaseAsset, ApplyAssetContext, ValidateAssetContext } from 'lisk-sdk';
 import { db } from '../../../database/db';
-import { KalipoAccount } from '../../../database/table/kalipo_account_table';
+import { DuplicateUsernameError } from '../../../exceptions/kalipoAccount/DuplicateUsernameError';
+import { KalipoAccountNotFoundError } from '../../../exceptions/kalipoAccount/KalipoAccountNotFoundError';
+import { UsernameAlreadyTakenError } from '../../../exceptions/kalipoAccount/UsernameAlreadyTakenError';
+import { UsernameContainsSpacesError } from '../../../exceptions/kalipoAccount/UsernameContainsSpacesError';
 
 export class UpdateUsernameAsset extends BaseAsset {
 	public name = 'updateUsername';
@@ -41,9 +44,7 @@ export class UpdateUsernameAsset extends BaseAsset {
 
 	public validate({ asset }: ValidateAssetContext<{}>): void {
 		if (asset.username.indexOf(" ") !== -1) {
-			throw new Error(
-				'A username cannot contain spaces'
-			);
+			throw new UsernameContainsSpacesError();
 		}
 	}
 
@@ -52,9 +53,7 @@ export class UpdateUsernameAsset extends BaseAsset {
 		const usernameIndex = await db.indices.username.getRecord(stateStore, asset.username);
 
 		if (usernameIndex !== null && usernameIndex.id !== "") {
-			throw new Error(
-				'Username is already taken!'
-			);
+			throw new UsernameAlreadyTakenError();
 		}
 
 		const senderAddress = transaction.senderAddress;
@@ -62,14 +61,12 @@ export class UpdateUsernameAsset extends BaseAsset {
 		let accountId = accountIdWrapper?.id
 
 		if (accountId == null) {
-			throw new Error("No Kalipo account found for this Lisk account")
+			throw new KalipoAccountNotFoundError();
 		}
 
 		const existingKalipoAccount = await db.tables.kalipoAccount.getRecord(stateStore, accountId.toString('hex'))
 		if (existingKalipoAccount?.username === asset.username) {
-			throw new Error(
-				'New username is the same as old username'
-			);
+			throw new DuplicateUsernameError();
 		}
 
 		// Release previous claimed username by setting index to null

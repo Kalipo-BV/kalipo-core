@@ -21,6 +21,12 @@ import { ProposalStatus, MembershipValidationError } from '../../../database/enu
 import { RowContext } from '../../../database/row_context';
 import { Membership } from '../../../database/table/membership_table';
 import { ProposalCampaignComment } from '../../../database/table/proposal_campaign_comment_table';
+import { CommentNotAllowedError } from '../../../exceptions/comment/CommentNotAllowedError';
+import { KalipoAccountNotFoundError } from '../../../exceptions/kalipoAccount/KalipoAccountNotFoundError';
+import { CantInviteYourselfError } from '../../../exceptions/membership/CantInviteYourselfError';
+import { MembershipInvitationStillOpenError } from '../../../exceptions/membership/MembershipInvitationStillOpenError';
+import { MembershipNotActiveError } from '../../../exceptions/membership/MembershipNotActiveError';
+import { ProposalNotFoundError } from '../../../exceptions/proposal/ProposalNotFoundError';
 
 export class CreateCampaignCommentAsset extends BaseAsset {
 	public name = 'createCampaignComment';
@@ -59,11 +65,11 @@ export class CreateCampaignCommentAsset extends BaseAsset {
 		const accountId = accountIdWrapper?.id
 
 		if (accountId == null) {
-			throw new Error("No Kalipo account found for this Lisk account")
+			throw new KalipoAccountNotFoundError();
 		}
 
 		if (accountId == asset.accountIdToInvite) {
-			throw new Error("You cannot invite yourself")
+			throw new CantInviteYourselfError();
 		}
 
 		const kalipoAccount = await db.tables.kalipoAccount.getRecord(stateStore, accountId)
@@ -71,7 +77,7 @@ export class CreateCampaignCommentAsset extends BaseAsset {
 		// Proposal
 		const proposal = await db.tables.proposal.getRecord(stateStore, asset.proposalId)
 		if (proposal == null) {
-			throw new Error("The proposal cannot be found")
+			throw new ProposalNotFoundError();
 		}
 
 		// Membership
@@ -80,20 +86,20 @@ export class CreateCampaignCommentAsset extends BaseAsset {
 		const membership: Membership | null = membershipCheck.membership
 
 		if (membershipCheck.error == MembershipValidationError.ACCOUNT_NOT_FOUND) {
-			throw new Error("No Kalipo account found")
+			throw new KalipoAccountNotFoundError();
 		}
 
 		if (membershipCheck.error == MembershipValidationError.NO_ACTIVE_MEMBERSHIP) {
-			throw new Error("You need a membership to submit new proposals")
+			throw new MembershipNotActiveError();
 		}
 
 		if (membershipCheck.error == MembershipValidationError.OPEN_INVITATION_NOT_ACCEPTED_OR_REFUSED) {
-			throw new Error("You aren't member yet, you still need to accept the invitation")
+			throw new MembershipInvitationStillOpenError();
 		}
 
 		// Proposal status
 		if (proposal.status != ProposalStatus.CAMPAIGNING) {
-			throw new Error("New comments are only allowed when the proposal is in the campaining phase")
+			throw new CommentNotAllowedError();
 		}
 		const created = stateStore.chain.lastBlockHeaders[0].timestamp
 
