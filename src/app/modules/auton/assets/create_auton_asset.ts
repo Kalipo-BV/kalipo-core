@@ -24,7 +24,6 @@ import { RowContext } from '../../../database/row_context';
 import { templates } from '../../../database/templates';
 import { VALID_INVITATION_WINDOW } from '../../membership/membership_module';
 import { AutonTypeEnum, RoleEnum } from '../../../database/enums';
-import { CreatePoaAsset } from '../../poa/assets/create_poa_asset';
 
 export class CreateAutonAsset extends BaseAsset {
 	public name = 'createAuton';
@@ -108,6 +107,10 @@ export class CreateAutonAsset extends BaseAsset {
 			end: {
 				dataType: 'uint64',
 				fieldNumber: 14,
+			},
+			subject: {
+				dataType: 'string',
+				fieldNumber: 15,
 			}
 		},
 	};
@@ -140,6 +143,7 @@ export class CreateAutonAsset extends BaseAsset {
 			type: asset.type,
 			poas: [],
 			event: {},
+			lesson: {},
 		};
 
 		if (asset.type == AutonTypeEnum.EVENT) {
@@ -155,6 +159,16 @@ export class CreateAutonAsset extends BaseAsset {
 			}
 		}
 
+		if (asset.type == AutonTypeEnum.LESSON) {
+			auton.poas = [];
+			auton.lesson = {
+				subject: asset.subject,
+				description: asset.description,
+				location: asset.location,
+				start: asset.start,
+				end: asset.end,
+			}
+		}
 
 		return auton;
 	}
@@ -163,6 +177,8 @@ export class CreateAutonAsset extends BaseAsset {
 	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
 
 		console.log("-----------------------APPLY FUNC CREATE AUTON ASSET-----------------------")
+
+		console.log(asset)
 
 		const senderAddress = transaction.senderAddress;
 		const accountIdWrapper = await db.indices.liskId.getRecord(stateStore, senderAddress.toString('hex'))
@@ -286,16 +302,21 @@ export class CreateAutonAsset extends BaseAsset {
 		for (let index = 0; index < bulkAccounts.length; index++) {
 			const bulkKalipoAccount = bulkAccounts[index];
 			if (bulkKalipoAccount !== null) {
-				const bulkMembershipInvitation: MembershipInvitation = {
+
+				let bulkMembershipInvitation: MembershipInvitation = {
 					validStart: BigInt(stateStore.chain.lastBlockHeaders[0].timestamp),
 					validEnd: BigInt(stateStore.chain.lastBlockHeaders[0].timestamp + VALID_INVITATION_WINDOW),
 					accepted: BigInt(0),
 					refused: BigInt(0),
 					proposalId: "Founder invitation",
 					message: "Founder"
+				};
+
+				if (asset.type == AutonTypeEnum.LESSON) {
+					bulkMembershipInvitation.accepted = BigInt(stateStore.chain.lastBlockHeaders[0].timestamp)
 				}
 
-				const bulkMembership: Membership = {
+				let bulkMembership: Membership = {
 					started: BigInt(0),
 					accountId: bulkKalipoAccount.id,
 					autonId: db.tables.auton.getDeterministicId(transaction, autonRowContext.getNonce()),
@@ -307,6 +328,10 @@ export class CreateAutonAsset extends BaseAsset {
 					proposals: [],
 					role: RoleEnum.AFFILIATE_MEMBER,
 					poasIssued: []
+				};
+
+				if (asset.type == AutonTypeEnum.LESSON) {
+					bulkMembership.started = BigInt(stateStore.chain.lastBlockHeaders[0].timestamp)
 				}
 
 				membershipRowContext.increment();
@@ -317,7 +342,6 @@ export class CreateAutonAsset extends BaseAsset {
 				bulkKalipoAccount.memberships.push(membershipId)
 
 				await db.tables.kalipoAccount.updateRecord(stateStore, bulkKalipoAccount.id, bulkKalipoAccount)
-
 			}
 		}
 	}

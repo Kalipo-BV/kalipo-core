@@ -21,7 +21,8 @@ export enum ProposalType {
 
 export enum AutonTypeEnum {
     DEFAULT = "DEFAULT",
-    EVENT = "EVENT"
+    EVENT = "EVENT",
+    LESSON = "LESSON"
 }
 
 export enum RoleEnum {

@@ -23,7 +23,7 @@ import { AutonTypeEnum } from "../enums";
 
 
 export interface AutonProfile {
-    name: string, 
+    name: string,
     subtitle: string,
     icon: string,
     mission: string,
@@ -47,14 +47,23 @@ export interface Auton {
     type: AutonTypeEnum,
     autonProfile: AutonProfile,
     poas: Array<string>,
-    event: EventProfile
+    event: EventProfile,
+    lesson: LessonProfile
+}
+
+export interface LessonProfile {
+    subject?: string,
+    description?: string,
+    location?: string,
+    start?: BigInt,
+    end?: BigInt,
 }
 
 export interface EventProfile {
     description?: string,
     location?: string,
     capacity?: BigInt,
-    price?: BigInt, 
+    price?: BigInt,
     start?: BigInt,
     end?: BigInt,
 }
@@ -186,9 +195,34 @@ export class AutonTable extends BaseTable<Auton> {
                         fieldNumber: 6,
                     }
                 }
+            },
+            lesson: {
+                type: "object",
+                fieldNumber: 10,
+                required: [],
+                properties: {
+                    subject: {
+                        dataType: "string",
+                        fieldNumber: 1,
+                    },
+                    description: {
+                        dataType: "string",
+                        fieldNumber: 2,
+                    },
+                    location: {
+                        dataType: "string",
+                        fieldNumber: 3,
+                    },
+                    start: {
+                        dataType: "uint64",
+                        fieldNumber: 5,
+                    },
+                    end: {
+                        dataType: "uint64",
+                        fieldNumber: 6,
+                    }
+                }
             }
         }
     }
-
 }
-
