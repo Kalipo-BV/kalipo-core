@@ -17,7 +17,8 @@
 
 export enum ProposalType {
     MEMBERSHIP_INVITATION = 'membership-invitation',
-    MULTI_CHOICE_POLL = 'multi-choice-poll'
+    MULTI_CHOICE_POLL = 'multi-choice-poll',
+    QUESTIONNAIRE = 'questionnaire',
 }
 
 export enum ProposalStatus {
