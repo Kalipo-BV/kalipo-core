@@ -29,8 +29,22 @@ export interface MultiChoicePollArguments {
     answers: Array<MultiChoiceCount>
 }
 
+export interface QuestionnaireArguments {
+    content: Array<QuestionTypeArguments>
+}
+
+export interface QuestionTypeArguments {
+    question: string,
+    options: Array<OptionProperties>
+}
+
 export interface MultiChoiceCount {
     answer: string,
+    count: number
+}
+
+export interface OptionProperties {
+    option: string,
     count: number
 }
 
@@ -69,6 +83,7 @@ export interface Proposal {
     multiChoiceVoteResult: MultiChoiceVoteResult | null
     membershipInvitationArguments: MembershipInvitationArguments | null
     multiChoicePollArguments: MultiChoicePollArguments | null
+    questionnaireArguments: QuestionnaireArguments | null
 }
 
 export class ProposalTable extends BaseTable<Proposal> {
@@ -225,6 +240,37 @@ export class ProposalTable extends BaseTable<Proposal> {
                                 count: {
                                     dataType: 'uint64',
                                     fieldNumber: 2,
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            questionnaireArguments: {
+                type: "array",
+                fieldNumber: 18,
+                items: {
+                    type: "object",
+                    required: ["question", "answers"],
+                    properties: {
+                        question: {
+                            dataType: "string",
+                            fieldNumber: 1,
+                        },
+                        options: {
+                            type: "array",
+                            fieldNumber: 2,
+                            items: {
+                                type: "object",
+                                properties: {
+                                    option: {
+                                        dataType: 'string',
+                                        fieldNumber: 1,
+                                    },
+                                    count: {
+                                        dataType: 'uint64',
+                                        fieldNumber: 2,
+                                    }
                                 }
                             }
                         }
