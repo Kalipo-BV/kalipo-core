@@ -4,7 +4,8 @@ import { MembershipValidationError, ProposalResult, ProposalStatus, ProposalType
 import { RowContext } from '../../../database/row_context';
 import { ProposalCampaignComment } from '../../../database/table/proposal_campaign_comment_table';
 import { ProposalProvisions } from '../../../database/table/proposal_provisions_table';
-import { BinaryVoteResult, MembershipInvitationArguments, MultiChoiceCount, MultiChoicePollArguments, MultiChoiceVoteResult, Proposal } from '../../../database/table/proposal_table';
+import { BinaryVoteResult, MembershipInvitationArguments, MultiChoiceCount, MultiChoicePollArguments, MultiChoiceVoteResult, OptionProperties, Proposal, QuestionnaireArguments, QuestionTypeArguments } from '../../../database/table/proposal_table';
+import { emptyBinaryVoteResult, emptyMembershipInvitationArguments, emptyMultiChoiceVoteResult, emptyQuestionnaireArguments } from '../../../database/empty_proposal_variables';
 import { AutonNotFoundError } from '../../../exceptions/auton/AutonNotFoundError';
 import { KalipoAccountNotFoundError } from '../../../exceptions/kalipoAccount/KalipoAccountNotFoundError';
 import { MembershipInvitationStillOpenError } from '../../../exceptions/membership/MembershipInvitationStillOpenError';
@@ -154,23 +155,6 @@ export class MultiChoicePollAsset extends BaseAsset {
 			answers: answersObjects
 		}
 
-		const multiChoiceVoteResult: MultiChoiceVoteResult = {
-			memberCount: 0,
-		}
-
-		const membershipInvitationArguments: MembershipInvitationArguments = {
-			accountId: "",
-			message: ""
-		}
-
-		const binaryVoteResult: BinaryVoteResult = {
-			result: ProposalResult.UNDECIDED,
-			memberCount: 0,
-			acceptedCount: 0,
-			refusedCount: 0,
-			decided: BigInt(0)
-		}
-
 		// Creating proposal
 		const proposal: Proposal = {
 			title: asset.title,
@@ -186,10 +170,11 @@ export class MultiChoicePollAsset extends BaseAsset {
 			created: BigInt(created),
 			windowOpen: BigInt(windowOpen),
 			windowClosed: BigInt(windowClosed),
-			binaryVoteResult: binaryVoteResult,
-			membershipInvitationArguments: membershipInvitationArguments,
-			multiChoiceVoteResult: multiChoiceVoteResult,
-			multiChoicePollArguments: multiChoicePollArguments
+			binaryVoteResult: emptyBinaryVoteResult,
+			membershipInvitationArguments: emptyMembershipInvitationArguments,
+			multiChoiceVoteResult: emptyMultiChoiceVoteResult,
+			multiChoicePollArguments: multiChoicePollArguments,
+			questionnaireArguments: emptyQuestionnaireArguments
 		}
 
 		const proposalId = await db.tables.proposal.createRecord(stateStore, transaction, proposal, new RowContext());

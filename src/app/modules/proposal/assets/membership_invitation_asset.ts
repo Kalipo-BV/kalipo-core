@@ -17,11 +17,12 @@
 
 import { BaseAsset, ApplyAssetContext, ValidateAssetContext } from 'lisk-sdk';
 import { db } from '../../../database/db';
+import { emptyBinaryVoteResult, emptyMultiChoicePollArguments, emptyMultiChoiceVoteResult, emptyQuestionnaireArguments } from '../../../database/empty_proposal_variables';
 import { MembershipValidationError, ProposalResult, ProposalStatus, ProposalType } from '../../../database/enums';
 import { RowContext } from '../../../database/row_context';
 import { ProposalCampaignComment } from '../../../database/table/proposal_campaign_comment_table';
 import { ProposalProvisions } from '../../../database/table/proposal_provisions_table';
-import { BinaryVoteResult, MembershipInvitationArguments, MultiChoiceCount, MultiChoicePollArguments, MultiChoiceVoteResult, Proposal } from '../../../database/table/proposal_table';
+import { BinaryVoteResult, MembershipInvitationArguments, MultiChoiceCount, MultiChoicePollArguments, MultiChoiceVoteResult, OptionProperties, Proposal, QuestionnaireArguments, QuestionTypeArguments } from '../../../database/table/proposal_table';
 import { AutonNotFoundError } from '../../../exceptions/auton/AutonNotFoundError';
 import { KalipoAccountNotFoundError } from '../../../exceptions/kalipoAccount/KalipoAccountNotFoundError';
 import { CantInviteYourselfError } from '../../../exceptions/membership/CantInviteYourselfError';
@@ -196,30 +197,6 @@ export class MembershipInvitationAsset extends BaseAsset {
 			message: invitationMessage
 		}
 
-		const binaryVoteResult: BinaryVoteResult = {
-			result: ProposalResult.UNDECIDED,
-			memberCount: 0,
-			acceptedCount: 0,
-			refusedCount: 0,
-			decided: BigInt(0)
-		}
-		
-		const multiChoiceCount: MultiChoiceCount = {
-			answer: "",
-			count: 0
-		}
-
-		const multiChoicePollArguments: MultiChoicePollArguments = {
-			question: "",
-			answers: [
-				multiChoiceCount
-			]
-		}
-
-		const multiChoiceVoteResult: MultiChoiceVoteResult = {
-			memberCount: 0,
-		}
-
 		// Creating proposal
 		const proposal: Proposal = {
 			title: asset.title,
@@ -235,10 +212,11 @@ export class MembershipInvitationAsset extends BaseAsset {
 			created: BigInt(created),
 			windowOpen: BigInt(windowOpen),
 			windowClosed: BigInt(windowClosed),
-			binaryVoteResult: binaryVoteResult,
+			binaryVoteResult: emptyBinaryVoteResult,
 			membershipInvitationArguments: membershipInvitationArguments,
-			multiChoiceVoteResult: multiChoiceVoteResult,
-			multiChoicePollArguments: multiChoicePollArguments
+			multiChoiceVoteResult: emptyMultiChoiceVoteResult,
+			multiChoicePollArguments: emptyMultiChoicePollArguments,
+			questionnaireArguments: emptyQuestionnaireArguments
 		}
 
 		const proposalId = await db.tables.proposal.createRecord(stateStore, transaction, proposal, new RowContext());
