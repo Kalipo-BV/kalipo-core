@@ -103,15 +103,6 @@ export class CreatePoaAsset extends BaseAsset {
         await this.updateAllPoaIds(stateStore, poaId, allPoaIds);
 
 
-		// if (allPoaIds == null) {
-		// 	const index = { ids: [poaId] }
-		// 	console.log(index)
-		// 	await db.indices.fullTable.setRecord(stateStore, "poas", index)
-		// } else {
-		// 	allPoaIds.ids.push(poaId)
-		// 	await db.indices.fullTable.setRecord(stateStore, "poas", allPoaIds)
-		// }
-
         auton.poas.push(poaId);
 		await db.tables.auton.updateRecord(stateStore, asset.autonId, auton)
 

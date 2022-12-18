@@ -43,6 +43,7 @@ export interface Membership {
     proposals: Array<string>,
     role: RoleEnum,
     poasIssued: Array<string>,
+    checkedIn: boolean,
 }
 
 export interface MembershipValidation {
@@ -146,6 +147,10 @@ export class MembershipTable extends BaseTable<Membership> {
                 items: {
                     dataType: "string",
                 }
+            },
+            checkedIn: {
+                dataType: "boolean",
+                fieldNumber: 12
             },
         }
     }
