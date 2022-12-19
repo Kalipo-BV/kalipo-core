@@ -21,6 +21,7 @@ import { ProposalProvisions } from "./table/proposal_provisions_table";
 export const templates = {
     starter: [
         new ProposalProvisions(ProposalType.MEMBERSHIP_INVITATION, 1, 1, BigInt(0), BigInt(60 * 24 * 3), false, "system"),
-        new ProposalProvisions(ProposalType.MULTI_CHOICE_POLL, 0, 0, BigInt(0), BigInt(60*10), false, "system")
+        new ProposalProvisions(ProposalType.MULTI_CHOICE_POLL, 0, 0, BigInt(0), BigInt(60*10), false, "system"),
+        new ProposalProvisions(ProposalType.QUESTIONNAIRE, 0, 0, BigInt(0), BigInt(60*10), false, "system")
     ],
 }
