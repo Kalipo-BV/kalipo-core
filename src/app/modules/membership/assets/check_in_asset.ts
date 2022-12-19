@@ -25,6 +25,7 @@ import { templates } from '../../../database/templates';
 import { VALID_INVITATION_WINDOW } from '../../membership/membership_module';
 import { AutonTypeEnum, RoleEnum } from '../../../database/enums';
 import { CreatePoaAsset } from '../../poa/assets/create_poa_asset';
+import { PoaIssue } from '../../../database/table/poa_issue_table';
 
 export class CheckInAsset extends BaseAsset {
     public name = 'checkIn';
@@ -54,9 +55,9 @@ export class CheckInAsset extends BaseAsset {
         const senderAddress = transaction.senderAddress;
 
         const accountIdWrapper = await db.indices.liskId.getRecord(stateStore, senderAddress.toString('hex'))
-        const accountId = accountIdWrapper?.id
+        const kalipoAccountId = accountIdWrapper?.id
 
-        if (accountId == null) {
+        if (kalipoAccountId == null) {
             throw new Error("No Kalipo account found for this Lisk account")
         }
 
@@ -67,7 +68,7 @@ export class CheckInAsset extends BaseAsset {
             throw new Error("Membership not found")
         }
 
-        if (membership.accountId != accountId) {
+        if (membership.accountId != kalipoAccountId) {
             throw new Error("Membership does not belong to this account")
         }
 
@@ -79,6 +80,66 @@ export class CheckInAsset extends BaseAsset {
 
         await db.tables.membership.updateRecord(stateStore, asset.membershipId, membership)
 
-        
+        // create an poa issue for the first poa in the auton
+        const auton = await db.tables.auton.getRecord(stateStore, membership.autonId)
+
+        if (auton == null) {
+            throw new Error("Auton not found")
+        }
+
+        const poaId = auton.poas[0]
+
+        if (poaId == null) {
+            throw new Error("Auton does not have a poa")
+        }
+
+        const now: BigInt = (BigInt)(new Date().getTime());
+
+        const poaIssue: PoaIssue = {
+            accountId: kalipoAccountId,
+            poaId: poaId,
+            membershipId: asset.membershipId,
+            issueDate: now,
+        }
+
+        const poaIssueRowContext: RowContext = new RowContext;
+        const poaIssueId: string = await db.tables.poaIssue.createRecord(stateStore, transaction, poaIssue, poaIssueRowContext)
+
+        const poa = await db.tables.poa.getRecord(stateStore, poaId)
+
+        if (poa == null) {
+            throw new Error("Poa not found")
+        }
+
+        poa.issuedPoas.push(poaIssueId)
+        await db.tables.poa.updateRecord(stateStore, poaId , poa)
+
+
+        const receiverAccount = await db.tables.kalipoAccount.getRecord(stateStore, kalipoAccountId)
+
+        if (receiverAccount == null) {
+            throw new Error("Kalipo account not found")
+        }
+
+        receiverAccount?.issuedPoas.push(poaIssueId);
+        await db.tables.kalipoAccount.updateRecord(stateStore, kalipoAccountId, receiverAccount)
+
+        const mship = await db.tables.membership.getRecord(stateStore, asset.membershipId)
+
+        if (mship != null) {
+            if (mship?.autonId == poa.autonId) {
+
+                mship?.poasIssued.push(poaIssueId);
+                await db.tables.membership.updateRecord(stateStore, asset.membershipId, mship)
+
+                // update membership id
+                const poaIssue = await db.tables.poaIssue.getRecord(stateStore, poaIssueId)
+                if (poaIssue != null) {
+                    poaIssue.membershipId = asset.membershipId;
+
+                    await db.tables.poaIssue.updateRecord(stateStore, poaIssueId, poaIssue);
+                }
+            }
+        }
     }
 }
