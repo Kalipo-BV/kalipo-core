@@ -50,6 +50,9 @@ export class AutonModule extends BaseModule {
         getAll: async (params: Record<string, unknown>) => {
             return await db.indices.fullTable.getRecordInJSON(this._dataAccess.getChainState.bind(this), "autons")
         },
+        getAutonIdByUUID: async (params: Record<string, unknown>) => {
+            return await db.indices.autonUuid.getRecordInJSON(this._dataAccess.getChainState.bind(this), (params as {uuid: string}).uuid)
+        }
     };
     public reducers = {
         // Example below

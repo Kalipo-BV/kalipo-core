@@ -34,6 +34,7 @@ import { PoaNameIndex } from './index/poa_index'
 import { PoaIssueTable } from './table/poa_issue_table'
 import { PoaIssueIndex } from './index/poa_issue_index'
 import { MembershipIndex } from './index/membership_index'
+import { AutonUuidIndex } from './index/auton_uuid_index'
 
 export const tableRegistrationClasses: Array<BaseTable> = [new KalipoAccountTable(), new AutonTable(), new MembershipTable(),
 new ProposalTable(), new ProposalProvisionsTable(), new VoteTable(), new ProposalCampaignCommentTable()]
@@ -56,6 +57,7 @@ export const db = {
         username: new UsernameIndex(),
         autonName: new AutonNameIndex(),
         autonTag: new AutonTagIndex(),
+        autonUuid: new AutonUuidIndex(),
         fullTable: new FullTableIndex(),
         scheduledProposal: new ScheduledProposalIndex(),
         poaName: new PoaNameIndex(),
