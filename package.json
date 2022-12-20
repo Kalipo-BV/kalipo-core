@@ -106,7 +106,8 @@
 		"lisk-commander": "^5.1.10",
 		"lisk-sdk": "^5.2.2",
 		"tar": "6.0.2",
-		"tslib": "1.13.0"
+		"tslib": "1.13.0",
+		"uuid": "^9.0.0"
 	},
 	"devDependencies": {
 		"@oclif/config": "1.18.3",

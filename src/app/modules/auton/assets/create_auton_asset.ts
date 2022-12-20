@@ -24,6 +24,7 @@ import { RowContext } from '../../../database/row_context';
 import { templates } from '../../../database/templates';
 import { VALID_INVITATION_WINDOW } from '../../membership/membership_module';
 import { AutonTypeEnum, RoleEnum } from '../../../database/enums';
+import { v4 as uuidv4 } from 'uuid';
 
 export class CreateAutonAsset extends BaseAsset {
 	public name = 'createAuton';
@@ -167,6 +168,7 @@ export class CreateAutonAsset extends BaseAsset {
 				location: asset.location,
 				start: asset.start,
 				end: asset.end,
+				uuid: uuidv4()
 			}
 		}
 
