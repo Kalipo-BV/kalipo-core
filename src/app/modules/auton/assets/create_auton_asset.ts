@@ -242,6 +242,7 @@ export class CreateAutonAsset extends BaseAsset {
 			commentDislikes: [],
 			proposals: [],
 			role: RoleEnum.FULL_MEMBER,
+			checkedIn: true,
 			poasIssued: []
 		}
 
