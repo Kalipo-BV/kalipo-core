@@ -57,7 +57,8 @@ export interface LessonProfile {
     location?: string,
     start?: BigInt,
     end?: BigInt,
-    uuid?: string
+    uuid?: string,
+    checkoutRequired?: boolean
 }
 
 export interface EventProfile {
@@ -225,6 +226,10 @@ export class AutonTable extends BaseTable<Auton> {
                     uuid: {
                         dataType: "string",
                         fieldNumber: 7
+                    },
+                    checkoutRequired: {
+                        datatype: "boolean",
+                        fieldNumber: 8
                     }
                 }
             }

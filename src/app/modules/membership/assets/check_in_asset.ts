@@ -72,21 +72,45 @@ export class CheckInAsset extends BaseAsset {
             throw new Error("Membership does not belong to this account")
         }
 
-        if (membership.checkedIn) {
-            throw new Error("You are already checked in")
-        }
-
-        membership.checkedIn = true;
-
-        await db.tables.membership.updateRecord(stateStore, asset.membershipId, membership)
-
-        // create an poa issue for the first poa in the auton
+        console.log(membership.checkedIn);
+         
         const auton = await db.tables.auton.getRecord(stateStore, membership.autonId)
 
         if (auton == null) {
             throw new Error("Auton not found")
         }
+        
+        // Some autons (lessons) only require an check in for an poa
+        if (auton.lesson.checkoutRequired) {
 
+            if (membership.checkedIn === false) {
+                throw new Error("You are already checked out!")
+            }
+
+            if (membership.checkedIn) {
+                membership.checkedIn = false;
+            } else if (!membership.checkedIn) {
+                membership.checkedIn = true;
+            }
+        } else {
+
+            if (membership.checkedIn ) {
+                throw new Error("You are already checked in, you can't check out for this lesson!")
+            }
+            
+            membership.checkedIn = true;
+        }
+
+
+        await db.tables.membership.updateRecord(stateStore, asset.membershipId, membership)
+
+
+        // if the auton does require a checkout and the user is not checkedout yet, we are done (the code below is for poa generation)
+        if (auton.checkoutRequired && membership.checkedIn !== false) {
+            return;
+        }
+
+        // create an poa issue for the first poa in the auton (checkin poa is automatically generated so it is always the first one)
         const poaId = auton.poas[0]
 
         if (poaId == null) {
@@ -123,6 +147,8 @@ export class CheckInAsset extends BaseAsset {
 
         receiverAccount?.issuedPoas.push(poaIssueId);
         await db.tables.kalipoAccount.updateRecord(stateStore, kalipoAccountId, receiverAccount)
+
+
 
         const mship = await db.tables.membership.getRecord(stateStore, asset.membershipId)
 
