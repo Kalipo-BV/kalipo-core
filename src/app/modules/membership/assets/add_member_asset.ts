@@ -23,7 +23,7 @@ import { KalipoAccount } from '../../../database/table/kalipo_account_table';
 import { RowContext } from '../../../database/row_context';
 import { templates } from '../../../database/templates';
 import { VALID_INVITATION_WINDOW } from '../../membership/membership_module';
-import { AutonTypeEnum, RoleEnum } from '../../../database/enums';
+import { AutonTypeEnum, checkStatus, RoleEnum } from '../../../database/enums';
 import { CreatePoaAsset } from '../../poa/assets/create_poa_asset';
 
 export class AddMemberAsset extends BaseAsset {
@@ -116,7 +116,8 @@ export class AddMemberAsset extends BaseAsset {
 					commentDislikes: [],
 					proposals: [],
                     role: RoleEnum.AFFILIATE_MEMBER,
-                    poasIssued: []
+                    poasIssued: [],
+                    checkedStatus: checkStatus.NOTCHECKEDIN,
 				}
 
                 membershipRowContext.increment();

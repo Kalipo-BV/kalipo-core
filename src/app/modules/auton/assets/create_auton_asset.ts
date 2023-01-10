@@ -23,7 +23,7 @@ import { KalipoAccount } from '../../../database/table/kalipo_account_table';
 import { RowContext } from '../../../database/row_context';
 import { templates } from '../../../database/templates';
 import { VALID_INVITATION_WINDOW } from '../../membership/membership_module';
-import { AutonTypeEnum, RoleEnum } from '../../../database/enums';
+import { AutonTypeEnum, checkStatus, RoleEnum } from '../../../database/enums';
 import { v4 as uuidv4 } from 'uuid';
 
 export class CreateAutonAsset extends BaseAsset {
@@ -112,6 +112,10 @@ export class CreateAutonAsset extends BaseAsset {
 			subject: {
 				dataType: 'string',
 				fieldNumber: 15,
+			},
+			checkoutRequired: {
+				dataType: 'string',
+				fieldNumber: 16,
 			}
 		},
 	};
@@ -168,7 +172,8 @@ export class CreateAutonAsset extends BaseAsset {
 				location: asset.location,
 				start: asset.start,
 				end: asset.end,
-				uuid: uuidv4()
+				uuid: uuidv4(),
+				checkoutRequired: true //asset.checkoutRequired,
 			}
 		}
 
@@ -242,7 +247,7 @@ export class CreateAutonAsset extends BaseAsset {
 			commentDislikes: [],
 			proposals: [],
 			role: RoleEnum.FULL_MEMBER,
-			checkedIn: true,
+			checkedStatus: checkStatus.CHECKEDIN,
 			poasIssued: []
 		}
 

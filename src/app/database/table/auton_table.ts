@@ -228,7 +228,7 @@ export class AutonTable extends BaseTable<Auton> {
                         fieldNumber: 7
                     },
                     checkoutRequired: {
-                        datatype: "boolean",
+                        dataType: "boolean",
                         fieldNumber: 8
                     }
                 }

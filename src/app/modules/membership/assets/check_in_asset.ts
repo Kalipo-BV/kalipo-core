@@ -23,7 +23,7 @@ import { KalipoAccount } from '../../../database/table/kalipo_account_table';
 import { RowContext } from '../../../database/row_context';
 import { templates } from '../../../database/templates';
 import { VALID_INVITATION_WINDOW } from '../../membership/membership_module';
-import { AutonTypeEnum, RoleEnum } from '../../../database/enums';
+import { AutonTypeEnum, checkStatus, RoleEnum } from '../../../database/enums';
 import { CreatePoaAsset } from '../../poa/assets/create_poa_asset';
 import { PoaIssue } from '../../../database/table/poa_issue_table';
 
@@ -72,7 +72,7 @@ export class CheckInAsset extends BaseAsset {
             throw new Error("Membership does not belong to this account")
         }
 
-        console.log(membership.checkedIn);
+        console.log(membership.checkedStatus);
          
         const auton = await db.tables.auton.getRecord(stateStore, membership.autonId)
 
@@ -83,22 +83,22 @@ export class CheckInAsset extends BaseAsset {
         // Some autons (lessons) only require an check in for an poa
         if (auton.lesson.checkoutRequired) {
 
-            if (membership.checkedIn === false) {
-                throw new Error("You are already checked out!")
+            if (membership.checkedStatus === checkStatus.CHECKEDOUT) {
+                throw new Error("You are already checked out, you can't check in for this lesson!")
             }
 
-            if (membership.checkedIn) {
-                membership.checkedIn = false;
-            } else if (!membership.checkedIn) {
-                membership.checkedIn = true;
+            if (membership.checkedStatus === checkStatus.CHECKEDIN) {
+                membership.checkedStatus = checkStatus.CHECKEDOUT;
+            } else if (membership.checkedStatus === checkStatus.NOTCHECKEDIN) {
+                membership.checkedStatus = checkStatus.CHECKEDIN;
             }
         } else {
 
-            if (membership.checkedIn ) {
+            if (membership.checkedStatus === checkStatus.CHECKEDIN ) {
                 throw new Error("You are already checked in, you can't check out for this lesson!")
             }
             
-            membership.checkedIn = true;
+            membership.checkedStatus = checkStatus.CHECKEDIN;
         }
 
 
@@ -106,7 +106,7 @@ export class CheckInAsset extends BaseAsset {
 
 
         // if the auton does require a checkout and the user is not checkedout yet, we are done (the code below is for poa generation)
-        if (auton.checkoutRequired && membership.checkedIn !== false) {
+        if (auton.lesson.checkoutRequired && membership.checkedStatus === checkStatus.CHECKEDIN) {
             return;
         }
 
