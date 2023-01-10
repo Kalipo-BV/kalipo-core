@@ -173,7 +173,7 @@ export class CreateAutonAsset extends BaseAsset {
 				start: asset.start,
 				end: asset.end,
 				uuid: uuidv4(),
-				checkoutRequired: true //asset.checkoutRequired,
+				checkoutRequired: asset.checkoutRequired === "true" ? true : false,
 			}
 		}
 

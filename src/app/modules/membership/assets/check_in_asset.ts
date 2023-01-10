@@ -89,7 +89,7 @@ export class CheckInAsset extends BaseAsset {
 
             if (membership.checkedStatus === checkStatus.CHECKEDIN) {
                 membership.checkedStatus = checkStatus.CHECKEDOUT;
-            } else if (membership.checkedStatus === checkStatus.NOTCHECKEDIN) {
+            } else {
                 membership.checkedStatus = checkStatus.CHECKEDIN;
             }
         } else {
