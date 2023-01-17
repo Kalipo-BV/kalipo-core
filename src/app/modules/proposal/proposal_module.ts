@@ -35,6 +35,7 @@ import { ProposalProvisions } from '../../database/table/proposal_provisions_tab
 import { Proposal } from '../../database/table/proposal_table';
 import { MembershipInvitationAsset } from "./assets/membership_invitation_asset";
 import { MultiChoicePollAsset } from "./assets/multi_choice_poll_asset";
+import { QuestionnaireAsset } from "./assets/questionnaire_asset";
 
 export interface BinaryVoteCount {
     acceptCount: number,
@@ -72,7 +73,7 @@ export class ProposalModule extends BaseModule {
         // },
     };
     public name = 'proposal';
-    public transactionAssets = [new MembershipInvitationAsset(), new MultiChoicePollAsset()];
+    public transactionAssets = [new MembershipInvitationAsset(), new MultiChoicePollAsset(), new QuestionnaireAsset()];
     public events = [
         // Example below
         'gotDecided'
