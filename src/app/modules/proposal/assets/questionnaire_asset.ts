@@ -1,11 +1,11 @@
 import { BaseAsset, ApplyAssetContext, ValidateAssetContext } from 'lisk-sdk';
 import { db } from '../../../database/db';
-import { MembershipValidationError, ProposalStatus, ProposalType } from '../../../database/enums';
+import { emptyBinaryVoteResult, emptyMembershipInvitationArguments, emptyMultiChoicePollArguments, emptyMultiChoiceVoteResult } from '../../../database/empty_proposal_variables';
+import { MembershipValidationError, ProposalType } from '../../../database/enums';
 import { RowContext } from '../../../database/row_context';
 import { ProposalCampaignComment } from '../../../database/table/proposal_campaign_comment_table';
 import { ProposalProvisions } from '../../../database/table/proposal_provisions_table';
-import { MultiChoiceCount, MultiChoicePollArguments, Proposal } from '../../../database/table/proposal_table';
-import { emptyBinaryVoteResult, emptyMembershipInvitationArguments, emptyMultiChoiceVoteResult, emptyQuestionnaireArguments } from '../../../database/empty_proposal_variables';
+import { OptionProperties, Proposal, QuestionnaireArguments, QuestionTypeArguments } from '../../../database/table/proposal_table';
 import { AutonNotFoundError } from '../../../exceptions/auton/AutonNotFoundError';
 import { KalipoAccountNotFoundError } from '../../../exceptions/kalipoAccount/KalipoAccountNotFoundError';
 import { MembershipInvitationStillOpenError } from '../../../exceptions/membership/MembershipInvitationStillOpenError';
@@ -14,16 +14,16 @@ import { ProposalTypeNoProvisionError } from '../../../exceptions/provision/Prop
 import { ProvisionNotConstitutionalisedError } from '../../../exceptions/provision/ProvisionNotConstitutionalisedError';
 import { ProvisionNotFoundError } from '../../../exceptions/provision/ProvisionNotFoundError';
 
-export class MultiChoicePollAsset extends BaseAsset {
-	public name = 'MultiChoicePoll';
-	public id = 1;
+export class QuestionnaireAsset extends BaseAsset {
+	public name = 'questionnaire';
+	public id = 2;
 
 	// Define schema for asset
 	public schema = {
-		$id: 'proposal/MultiChoicePoll-asset',
-		title: 'MultiChoicePollAsset transaction asset for proposal module',
+		$id: 'proposal/questionnaire-asset',
+		title: 'QuestionnaireAsset transaction asset for proposal module',
 		type: 'object',
-		required: ["title", "proposalType", "autonId", "question", "answers"],
+		required: ["title", "proposalType", "autonId", "content"],
 		properties: {
 			title: {
 				dataType: 'string',
@@ -46,18 +46,28 @@ export class MultiChoicePollAsset extends BaseAsset {
 				fieldNumber: 4,
 				maxLength: 256,
 			},
-			question: {
-				dataType: 'string',
-				fieldNumber: 5,
-			},
-			answers: {
+			content: {
 				type: 'array',
-				fieldNumber: 6,
-				maxItems: 4,
+				fieldNumber: 5,
 				items: {
-					dataType: 'string'
+					type: "object",
+					required: ["question", "options"],
+					properties: {
+						question: {
+							dataType: 'string',
+							fieldNumber: 1,
+						},
+						options: {
+							type: 'array',
+							fieldNumber: 2,
+							maxItems: 4,
+							items: {
+								dataType: 'string'
+							}
+						}
+					}
 				}
-			}
+			},
 		},
 	};
 
@@ -67,7 +77,7 @@ export class MultiChoicePollAsset extends BaseAsset {
 
 	// eslint-disable-next-line @typescript-eslint/require-await
 	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
-		const TYPE = ProposalType.MULTI_CHOICE_POLL
+		const TYPE = ProposalType.QUESTIONNAIRE
 		//  Get latest provision for auton by proposal type membership-invtitation
 		const senderAddress = transaction.senderAddress;
 
@@ -141,18 +151,30 @@ export class MultiChoicePollAsset extends BaseAsset {
 		const windowOpen = created + Number(provision.campaigning) * 60
 		const windowClosed = windowOpen + Number(provision.votingWindow) * 60
 
-		const answersObjects: Array<MultiChoiceCount> = [];
-		for (let index = 0; index < asset.answers.length; index++) {
-			const multiChoiceCount: MultiChoiceCount = {
-				answer: asset.answers[index],
-				count: 0
+		const questionTypeArguments: Array<QuestionTypeArguments> = [];
+
+		for (let index = 0; index < asset.content.length; index++) {
+			const options: Array<OptionProperties> = [];
+
+			for (let index2 = 0; index < asset.content[index].options.length; index++) {
+				const optionProperties: OptionProperties = {
+					option: asset.content[index].options[index2],
+					count: 0
+				}
+
+				options.push(optionProperties);
 			}
-			answersObjects.push(multiChoiceCount);
+
+			const questionTypeArgument: QuestionTypeArguments = {
+				question: asset.content[index].question,
+				options: options
+			}
+
+			questionTypeArguments.push(questionTypeArgument);
 		}
 
-		const multiChoicePollArguments: MultiChoicePollArguments = {
-			question: asset.question,
-			answers: answersObjects
+		const questionnaireArguments: QuestionnaireArguments = {
+			content: questionTypeArguments
 		}
 
 		// Creating proposal
@@ -160,7 +182,7 @@ export class MultiChoicePollAsset extends BaseAsset {
 			title: asset.title,
 			status: ProposalStatus.CAMPAIGNING,
 			actions: [],
-			type: ProposalType.MULTI_CHOICE_POLL,
+			type: ProposalType.QUESTIONNAIRE,
 			membershipId: submitterMembershipId,
 			provisionId: provisionId,
 			autonId: asset.autonId,
@@ -173,8 +195,8 @@ export class MultiChoicePollAsset extends BaseAsset {
 			binaryVoteResult: emptyBinaryVoteResult,
 			membershipInvitationArguments: emptyMembershipInvitationArguments,
 			multiChoiceVoteResult: emptyMultiChoiceVoteResult,
-			multiChoicePollArguments: multiChoicePollArguments,
-			questionnaireArguments: emptyQuestionnaireArguments
+			multiChoicePollArguments: emptyMultiChoicePollArguments,
+			questionnaireArguments: questionnaireArguments
 		}
 
 		const proposalId = await db.tables.proposal.createRecord(stateStore, transaction, proposal, new RowContext());
