@@ -165,6 +165,9 @@ export class CreateAutonAsset extends BaseAsset {
 		}
 
 		if (asset.type == AutonTypeEnum.LESSON) {
+			const getUuid = require('uuid-by-string');
+			const seed = asset.name + asset.location;
+
 			auton.poas = [];
 			auton.lesson = {
 				subject: asset.subject,
@@ -172,7 +175,7 @@ export class CreateAutonAsset extends BaseAsset {
 				location: asset.location,
 				start: asset.start,
 				end: asset.end,
-				uuid: uuidv4(),
+				uuid: getUuid(seed),
 				checkoutRequired: asset.checkoutRequired === "true" ? true : false,
 			}
 		}
