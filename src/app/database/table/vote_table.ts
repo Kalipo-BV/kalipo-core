@@ -21,7 +21,7 @@ import { BaseTable } from "../base_table";
 export interface Vote {
     proposalId: string,
     membershipId: string,
-    answer: string,
+    answer: Array<Array<string>>,
     casted: BigInt,
     transaction: string
 }
@@ -42,9 +42,16 @@ export class VoteTable extends BaseTable<Vote> {
                 fieldNumber: 2,
             },
             answer: {
-                dataType: "string",
-                fieldNumber: 3,
-            },
+				type: 'array',
+				fieldNumber: 3,
+				answerPerQuestion: {
+                    type: 'array',
+                    fieldNumber: 2,
+                    items: {
+                        dataType: 'string'
+                    }
+                }
+			},
             casted: {
                 dataType: "uint64",
                 fieldNumber: 4,
