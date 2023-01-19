@@ -42,16 +42,16 @@ export class VoteTable extends BaseTable<Vote> {
                 fieldNumber: 2,
             },
             answer: {
-		type: 'array',
-		fieldNumber: 3,
-		items: {
+                type: 'array',
+                fieldNumber: 3,
+                items: {
                     type: 'array',
                     fieldNumber: 1,
                     items: {
                         dataType: 'string'
                     }
                 }
-			},
+            },
             casted: {
                 dataType: "uint64",
                 fieldNumber: 4,

@@ -113,11 +113,17 @@ export class MultiChoiceVotingAsset extends BaseAsset {
 			throw new AutonNotFoundError();
 		}
 
+		const answersArrayParent:Array<Array<string>> = [];
+		const answerArrayChild:Array<string> = [];
+
+		answerArrayChild.push(asset.answer);
+		answersArrayParent.push(answerArrayChild);
+
 		// Place vote
 		const vote: Vote = {
 			proposalId: asset.proposalId,
 			membershipId: membershipId,
-			answer: asset.answer,
+			answer: answersArrayParent,
 			transaction: transaction.id.toString('hex'),
 			casted: BigInt(stateStore.chain.lastBlockHeaders[0].timestamp)
 		}
