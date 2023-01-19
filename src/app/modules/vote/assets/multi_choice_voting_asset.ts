@@ -103,7 +103,7 @@ export class MultiChoiceVotingAsset extends BaseAsset {
 			const voteId = proposal.votes[index];
 			const otherVote = await db.tables.vote.getRecord(stateStore, voteId)
 			if (otherVote?.membershipId == membershipId) {
-				throw new AlreadyVotedError(otherVote?.answer)
+				throw new AlreadyVotedError(otherVote?.answer[0][0])
 			}
 		}
 
