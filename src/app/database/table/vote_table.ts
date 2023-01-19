@@ -44,9 +44,9 @@ export class VoteTable extends BaseTable<Vote> {
             answer: {
 				type: 'array',
 				fieldNumber: 3,
-				answerPerQuestion: {
+				items: {
                     type: 'array',
-                    fieldNumber: 2,
+                    fieldNumber: 1,
                     items: {
                         dataType: 'string'
                     }
