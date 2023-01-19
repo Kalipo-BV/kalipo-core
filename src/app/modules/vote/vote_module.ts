@@ -29,6 +29,7 @@ import {
 import { db } from '../../database/db';
 import { BinaryVotingAsset } from "./assets/binary_voting_asset";
 import { MultiChoiceVotingAsset } from "./assets/multi_choice_voting_asset";
+import { QuestionnaireAsset } from "./assets/questionnaire_asset";
 
 export class VoteModule extends BaseModule {
     public actions = {
@@ -54,7 +55,7 @@ export class VoteModule extends BaseModule {
         // },
     };
     public name = 'vote';
-    public transactionAssets = [new BinaryVotingAsset(), new MultiChoiceVotingAsset()];
+    public transactionAssets = [new BinaryVotingAsset(), new MultiChoiceVotingAsset(), new QuestionnaireAsset()];
     public events = [
         // Example below
         'newVote',
