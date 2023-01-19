@@ -57,7 +57,7 @@ export class BinaryVotingAsset extends BaseAsset {
 		// Validate your asset
 		if (asset.answer !== "ACCEPT" && asset.answer !== "REFUSE") {
 			throw new Error('Answer can only be ACCEPT or REFUSE');
-		} 
+		}
 	}
 
 	// eslint-disable-next-line @typescript-eslint/require-await
@@ -125,11 +125,17 @@ export class BinaryVotingAsset extends BaseAsset {
 			throw new AutonNotFoundError();
 		}
 
+		const answersArrayParent: Array<Array<string>> = [];
+		const answerArrayChild: Array<string> = [];
+
+		answerArrayChild.push(asset.answer);
+		answersArrayParent.push(answerArrayChild);
+
 		// Place vote
 		const vote: Vote = {
 			proposalId: asset.proposalId,
 			membershipId: membershipId,
-			answer: asset.answer,
+			answer: answersArrayParent,
 			transaction: transaction.id.toString('hex'),
 			casted: BigInt(stateStore.chain.lastBlockHeaders[0].timestamp)
 		}
@@ -157,8 +163,6 @@ export class BinaryVotingAsset extends BaseAsset {
 
 				await db.indices.scheduledProposal.setRecord(stateStore, "current", index);
 			}
-
 		}
-
 	}
 }
