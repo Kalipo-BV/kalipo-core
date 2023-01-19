@@ -31,16 +31,16 @@ export class QuestionnaireAsset extends BaseAsset {
 				fieldNumber: 1,
 			},
 			answer: {
-                type: 'array',
-                fieldNumber: 2,
-                items: {
-                    type: 'array',
-                    fieldNumber: 1,
-                    items: {
-                        dataType: 'string'
-                    }
-                }
-            },
+				type: 'array',
+				fieldNumber: 2,
+				items: {
+					type: 'array',
+					fieldNumber: 1,
+					items: {
+						dataType: 'string'
+					}
+				}
+			},
 		},
 	};
 
@@ -71,7 +71,7 @@ export class QuestionnaireAsset extends BaseAsset {
 		if (proposal.status != ProposalStatus.DECIDED && proposal.status != ProposalStatus.VOTING) {
 			throw new ProposalNewVotesBlockedError();
 		}
-		
+
 		if (proposal.questionnaireArguments?.content == undefined) {
 			throw new ProposalQuestionnaireArgumentsUndefinedError();
 		}
@@ -131,7 +131,7 @@ export class QuestionnaireAsset extends BaseAsset {
 
 		membership?.votes.push(voteId)
 		await db.tables.membership.updateRecord(stateStore, membershipId, membership);
-		
+
 		for (let index = 0; index < proposal.questionnaireArguments.content.length; index++) {
 			for (let index2 = 0; index < proposal.questionnaireArguments.content[index].options.length; index++) {
 				if (asset.answer[index][index2] == proposal.questionnaireArguments.content[index].options[index2].option) {
