@@ -12,3 +12,4 @@ node_modules
 src/.DS_Store
 .secrets/default/accounts.json
 package-lock.json
+config/default/config.json

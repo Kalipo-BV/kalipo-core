@@ -1,7 +1,7 @@
 import { BaseAsset, ApplyAssetContext, ValidateAssetContext } from 'lisk-sdk';
 import { db } from '../../../database/db';
 import { emptyBinaryVoteResult, emptyMembershipInvitationArguments, emptyMultiChoicePollArguments, emptyMultiChoiceVoteResult } from '../../../database/empty_proposal_variables';
-import { MembershipValidationError, ProposalType } from '../../../database/enums';
+import { MembershipValidationError, ProposalStatus, ProposalType } from '../../../database/enums';
 import { RowContext } from '../../../database/row_context';
 import { ProposalCampaignComment } from '../../../database/table/proposal_campaign_comment_table';
 import { ProposalProvisions } from '../../../database/table/proposal_provisions_table';
@@ -152,11 +152,13 @@ export class QuestionnaireAsset extends BaseAsset {
 		const windowClosed = windowOpen + Number(provision.votingWindow) * 60
 
 		const questionTypeArguments: Array<QuestionTypeArguments> = [];
+		console.log("0")
 
 		for (let index = 0; index < asset.content.length; index++) {
 			const options: Array<OptionProperties> = [];
-
-			for (let index2 = 0; index < asset.content[index].options.length; index++) {
+			console.log("1")
+			for (let index2 = 0; index2 < asset.content[index].options.length; index2++) {
+				console.log("2")
 				const optionProperties: OptionProperties = {
 					option: asset.content[index].options[index2],
 					count: 0
@@ -176,7 +178,7 @@ export class QuestionnaireAsset extends BaseAsset {
 		const questionnaireArguments: QuestionnaireArguments = {
 			content: questionTypeArguments
 		}
-
+		console.log("3")
 		// Creating proposal
 		const proposal: Proposal = {
 			title: asset.title,
@@ -198,6 +200,7 @@ export class QuestionnaireAsset extends BaseAsset {
 			multiChoicePollArguments: emptyMultiChoicePollArguments,
 			questionnaireArguments: questionnaireArguments
 		}
+		console.log(proposal)
 
 		const proposalId = await db.tables.proposal.createRecord(stateStore, transaction, proposal, new RowContext());
 		// Setting scheduling

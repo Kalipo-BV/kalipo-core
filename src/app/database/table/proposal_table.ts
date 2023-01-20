@@ -251,7 +251,7 @@ export class ProposalTable extends BaseTable<Proposal> {
                 fieldNumber: 18,
                 items: {
                     type: "object",
-                    required: ["question", "answers"],
+                    required: ["question", "options"],
                     properties: {
                         question: {
                             dataType: "string",
