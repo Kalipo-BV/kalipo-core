@@ -131,7 +131,9 @@ export class QuestionnaireAsset extends BaseAsset {
 
 		membership?.votes.push(voteId)
 		await db.tables.membership.updateRecord(stateStore, membershipId, membership);
-
+		
+		proposal.votes.push(voteId);
+		
 		for (let index = 0; index < proposal.questionnaireArguments.content.length; index++) {
 			for (let index2 = 0; index < proposal.questionnaireArguments.content[index].options.length; index++) {
 				if (asset.answer[index][index2] == proposal.questionnaireArguments.content[index].options[index2].option) {
@@ -141,7 +143,7 @@ export class QuestionnaireAsset extends BaseAsset {
 		}
 
 		await db.tables.proposal.updateRecord(stateStore, asset.proposalId, proposal);
-		proposal.votes.push(voteId);
+
 
 		// Schedule a determination of the voting result
 		if (proposal.status == ProposalStatus.VOTING) {
