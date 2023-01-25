@@ -152,13 +152,10 @@ export class QuestionnaireAsset extends BaseAsset {
 		const windowClosed = windowOpen + Number(provision.votingWindow) * 60
 
 		const questionTypeArguments: Array<QuestionTypeArguments> = [];
-		console.log("0")
 
 		for (let index = 0; index < asset.content.length; index++) {
 			const options: Array<OptionProperties> = [];
-			console.log("1")
 			for (let index2 = 0; index2 < asset.content[index].options.length; index2++) {
-				console.log("2")
 				const optionProperties: OptionProperties = {
 					option: asset.content[index].options[index2],
 					count: 0
@@ -178,7 +175,7 @@ export class QuestionnaireAsset extends BaseAsset {
 		const questionnaireArguments: QuestionnaireArguments = {
 			content: questionTypeArguments
 		}
-		console.log("3")
+
 		// Creating proposal
 		const proposal: Proposal = {
 			title: asset.title,
@@ -200,7 +197,6 @@ export class QuestionnaireAsset extends BaseAsset {
 			multiChoicePollArguments: emptyMultiChoicePollArguments,
 			questionnaireArguments: questionnaireArguments
 		}
-		console.log(proposal)
 
 		const proposalId = await db.tables.proposal.createRecord(stateStore, transaction, proposal, new RowContext());
 		// Setting scheduling

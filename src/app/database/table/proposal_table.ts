@@ -247,35 +247,43 @@ export class ProposalTable extends BaseTable<Proposal> {
                 }
             },
             questionnaireArguments: {
-                type: "array",
+                type: "object",
                 fieldNumber: 18,
-                items: {
-                    type: "object",
-                    required: ["question", "options"],
-                    properties: {
-                        question: {
-                            dataType: "string",
-                            fieldNumber: 1,
-                        },
-                        options: {
-                            type: "array",
-                            fieldNumber: 2,
-                            items: {
-                                type: "object",
-                                properties: {
-                                    option: {
-                                        dataType: 'string',
-                                        fieldNumber: 1,
-                                    },
-                                    count: {
-                                        dataType: 'uint64',
-                                        fieldNumber: 2,
+                required: ["content"],
+                properties: {
+                    content: {
+                        type: "array",
+                        fieldNumber: 1,
+                        items: {
+                            type: "object",
+                            required: ["question", "options"],
+                            properties: {
+                                question: {
+                                    dataType: "string",
+                                    fieldNumber: 1,
+                                },
+                                options: {
+                                    type: "array",
+                                    fieldNumber: 2,
+                                    items: {
+                                        type: "object",
+                                        properties: {
+                                            option: {
+                                                dataType: 'string',
+                                                fieldNumber: 1,
+                                            },
+                                            count: {
+                                                dataType: 'uint64',
+                                                fieldNumber: 2,
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
+
             }
         }
     }
