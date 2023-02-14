@@ -18,6 +18,9 @@
 import { Schema } from "lisk-sdk";
 import { BaseTable } from "../base_table";
 import { ProposalType } from "../enums";
+import { AutonTypeEnum } from "../enums";
+
+
 
 export interface AutonProfile {
     name: string,
@@ -26,6 +29,8 @@ export interface AutonProfile {
     mission: string,
     vision: string
     foundingDate: BigInt
+    // these are the event fields
+    // the title of the event is the name of the auton
 }
 
 export interface ProposalTypeConstitution {
@@ -35,11 +40,34 @@ export interface ProposalTypeConstitution {
 
 export interface Auton {
     memberships: Array<string>,
-    autonProfile: AutonProfile,
     tags: Array<string>,
     constitution: Array<ProposalTypeConstitution>,
     proposals: Array<string>,
-    transaction: string
+    transaction: string,
+    type: AutonTypeEnum,
+    autonProfile: AutonProfile,
+    poas: Array<string>,
+    event: EventProfile,
+    lesson: LessonProfile
+}
+
+export interface LessonProfile {
+    subject?: string,
+    description?: string,
+    location?: string,
+    start?: BigInt,
+    end?: BigInt,
+    uuid?: string,
+    checkoutRequired?: boolean
+}
+
+export interface EventProfile {
+    description?: string,
+    location?: string,
+    capacity?: BigInt,
+    price?: BigInt,
+    start?: BigInt,
+    end?: BigInt,
 }
 
 export class AutonTable extends BaseTable<Auton> {
@@ -47,7 +75,7 @@ export class AutonTable extends BaseTable<Auton> {
     protected schema: Schema = {
         $id: "kalipo/tables/auton_table",
         type: "object",
-        required: ["memberships", "autonProfile"],
+        required: ["memberships", "autonProfile", "type"],
         properties: {
             memberships: {
                 type: "array",
@@ -128,8 +156,83 @@ export class AutonTable extends BaseTable<Auton> {
                 dataType: "string",
                 fieldNumber: 6,
             },
+            type: {
+                dataType: "string",
+                fieldNumber: 7
+            },
+            poas: {
+                type: "array",
+                fieldNumber: 8,
+                items: {
+                    dataType: "string",
+                }
+            },
+            event: {
+                type: "object",
+                fieldNumber: 9,
+                required: [],
+                properties: {
+                    description: {
+                        dataType: "string",
+                        fieldNumber: 1,
+                    },
+                    location: {
+                        dataType: "string",
+                        fieldNumber: 2,
+                    },
+                    capacity: {
+                        dataType: "uint64",
+                        fieldNumber: 3,
+                    },
+                    price: {
+                        dataType: "uint64",
+                        fieldNumber: 4,
+                    },
+                    start: {
+                        dataType: "uint64",
+                        fieldNumber: 5,
+                    },
+                    end: {
+                        dataType: "uint64",
+                        fieldNumber: 6,
+                    }
+                }
+            },
+            lesson: {
+                type: "object",
+                fieldNumber: 10,
+                required: [],
+                properties: {
+                    subject: {
+                        dataType: "string",
+                        fieldNumber: 1,
+                    },
+                    description: {
+                        dataType: "string",
+                        fieldNumber: 2,
+                    },
+                    location: {
+                        dataType: "string",
+                        fieldNumber: 3,
+                    },
+                    start: {
+                        dataType: "uint64",
+                        fieldNumber: 4,
+                    },
+                    end: {
+                        dataType: "uint64",
+                        fieldNumber: 5,
+                    },
+                    uuid: {
+                        dataType: "string",
+                        fieldNumber: 6
+                    },
+                    checkoutRequired: {
+                        dataType: "boolean",
+                        fieldNumber: 7
+                    }
+                }
+            }
         }
     }
-
 }
-

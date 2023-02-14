@@ -34,8 +34,6 @@ export abstract class BaseTable<T = unknown> {
             res = await chainGetter(id);
         }
 
-        console.log("TESTTTT")
-        console.log(res)
 
         if (res === undefined) {
             return null;

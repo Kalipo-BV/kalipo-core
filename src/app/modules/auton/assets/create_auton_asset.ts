@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { BaseAsset, ApplyAssetContext, ValidateAssetContext } from 'lisk-sdk';
+import { BaseAsset, ApplyAssetContext, ValidateAssetContext, HTTPAPIPlugin } from 'lisk-sdk';
 import { Membership, MembershipInvitation } from '../../../database/table/membership_table';
 import { Auton, ProposalTypeConstitution } from '../../../database/table/auton_table';
 import { db } from '../../../database/db';
@@ -23,6 +23,8 @@ import { KalipoAccount } from '../../../database/table/kalipo_account_table';
 import { RowContext } from '../../../database/row_context';
 import { templates } from '../../../database/templates';
 import { VALID_INVITATION_WINDOW } from '../../membership/membership_module';
+import { AutonTypeEnum, checkStatus, RoleEnum } from '../../../database/enums';
+import { v4 as uuidv4 } from 'uuid';
 
 export class CreateAutonAsset extends BaseAsset {
 	public name = 'createAuton';
@@ -33,7 +35,7 @@ export class CreateAutonAsset extends BaseAsset {
 		$id: 'auton/createAuton-asset',
 		title: 'CreateAutonAsset transaction asset for auton module',
 		type: 'object',
-		required: [],
+		required: ["name", "type"],
 		properties: {
 			name: {
 				dataType: 'string',
@@ -78,22 +80,117 @@ export class CreateAutonAsset extends BaseAsset {
 					dataType: "string",
 					maxLength: 128
 				}
+			},
+			type: {
+				dataType: 'string',
+				fieldNumber: 8,
+			},
+			description: {
+				dataType: 'string',
+				fieldNumber: 9,
+			},
+			location: {
+				dataType: 'string',
+				fieldNumber: 10,
+			},
+			capacity: {
+				dataType: 'uint64',
+				fieldNumber: 11,
+			},
+			price: {
+				dataType: 'uint64',
+				fieldNumber: 12,
+			},
+			start: {
+				dataType: 'uint64',
+				fieldNumber: 13,
+			},
+			end: {
+				dataType: 'uint64',
+				fieldNumber: 14,
+			},
+			subject: {
+				dataType: 'string',
+				fieldNumber: 15,
+			},
+			checkoutRequired: {
+				dataType: 'string',
+				fieldNumber: 16,
 			}
 		},
 	};
 
 	public validate({ asset }: ValidateAssetContext<{}>): void {
 		// Validate your asset
+	}
 
+
+	private _createAuton(asset, constitution, memberships, transaction, stateStore) {
+
+		// This is the default auton, where poas and event are empty
+		// these fields are only needed for the auton type 'event'
+		let auton: Auton = {
+			memberships: memberships,
+			autonProfile: {
+				name: asset.name,
+				subtitle: asset.subtitle,
+				icon: asset.icon,
+				mission: asset.mission,
+				vision: asset.vision,
+				foundingDate: BigInt(stateStore.chain.lastBlockHeaders[0].timestamp),
+
+			},
+			tags: asset.tags,
+
+			constitution: constitution,
+			proposals: [],
+			transaction: transaction.id.toString('hex'),
+			type: asset.type,
+			poas: [],
+			event: {},
+			lesson: {},
+		};
+
+		if (asset.type == AutonTypeEnum.EVENT) {
+
+			auton.poas = [];
+			auton.event = {
+				description: asset.description,
+				location: asset.location,
+				capacity: asset.capacity,
+				price: asset.price,
+				start: asset.start,
+				end: asset.end,
+			}
+		}
+
+		if (asset.type == AutonTypeEnum.LESSON) {
+			const getUuid = require('uuid-by-string');
+			const seed = asset.name + asset.location;
+
+			auton.poas = [];
+			auton.lesson = {
+				subject: asset.subject,
+				description: asset.description,
+				location: asset.location,
+				start: asset.start,
+				end: asset.end,
+				uuid: getUuid(seed),
+				checkoutRequired: asset.checkoutRequired === "true" ? true : false,
+			}
+		}
+
+		return auton;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/require-await
 	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
-		const senderAddress = transaction.senderAddress;
-		console.log("CHECK THIS IDDDDD")
-		console.log(senderAddress)
-		console.log(transaction)
 
+		console.log("-----------------------APPLY FUNC CREATE AUTON ASSET-----------------------")
+
+		console.log(asset)
+
+		const senderAddress = transaction.senderAddress;
 		const accountIdWrapper = await db.indices.liskId.getRecord(stateStore, senderAddress.toString('hex'))
 		const accountId = accountIdWrapper?.id
 
@@ -141,9 +238,6 @@ export class CreateAutonAsset extends BaseAsset {
 			proposalId: "Founder invitation",
 			message: "Founder"
 		}
-		console.log(BigInt(stateStore.chain.lastBlockHeaders[0].timestamp))
-		console.log("Big 1")
-
 
 		const membership: Membership = {
 			started: BigInt(stateStore.chain.lastBlockHeaders[0].timestamp),
@@ -154,10 +248,11 @@ export class CreateAutonAsset extends BaseAsset {
 			comments: [],
 			commentLikes: [],
 			commentDislikes: [],
-			proposals: []
+			proposals: [],
+			role: RoleEnum.FULL_MEMBER,
+			checkedStatus: checkStatus.CHECKEDIN,
+			poasIssued: []
 		}
-		console.log("Big 2")
-
 
 		// Setting row contexts for each id for the total amount of accounts 
 		const memberships: Array<string> = [db.tables.membership.getDeterministicId(transaction, 0)];
@@ -175,22 +270,7 @@ export class CreateAutonAsset extends BaseAsset {
 			constitution.push(porposalType)
 		}
 
-		const auton: Auton = {
-			memberships: memberships,
-			autonProfile: {
-				name: asset.name,
-				subtitle: asset.subtitle,
-				icon: asset.icon,
-				mission: asset.mission,
-				vision: asset.vision,
-				foundingDate: BigInt(stateStore.chain.lastBlockHeaders[0].timestamp)
-			},
-			tags: asset.tags,
-			constitution: constitution,
-			proposals: [],
-			transaction: transaction.id.toString('hex')
-		}
-		console.log("Big 3")
+		const auton: Auton = this._createAuton(asset, constitution, memberships, transaction, stateStore)
 
 
 		const autonRowContext: RowContext = new RowContext;
@@ -205,7 +285,6 @@ export class CreateAutonAsset extends BaseAsset {
 
 		if (allAutonIds == null) {
 			const index = { ids: [autonId] }
-			console.log(index)
 			await db.indices.fullTable.setRecord(stateStore, "autons", index)
 		} else {
 			allAutonIds.ids.push(autonId)
@@ -234,19 +313,21 @@ export class CreateAutonAsset extends BaseAsset {
 		for (let index = 0; index < bulkAccounts.length; index++) {
 			const bulkKalipoAccount = bulkAccounts[index];
 			if (bulkKalipoAccount !== null) {
-				const bulkMembershipInvitation: MembershipInvitation = {
+
+				let bulkMembershipInvitation: MembershipInvitation = {
 					validStart: BigInt(stateStore.chain.lastBlockHeaders[0].timestamp),
 					validEnd: BigInt(stateStore.chain.lastBlockHeaders[0].timestamp + VALID_INVITATION_WINDOW),
 					accepted: BigInt(0),
 					refused: BigInt(0),
 					proposalId: "Founder invitation",
 					message: "Founder"
+				};
+
+				if (asset.type == AutonTypeEnum.LESSON) {
+					bulkMembershipInvitation.accepted = BigInt(stateStore.chain.lastBlockHeaders[0].timestamp)
 				}
 
-				console.log("Big 4")
-
-
-				const bulkMembership: Membership = {
+				let bulkMembership: Membership = {
 					started: BigInt(0),
 					accountId: bulkKalipoAccount.id,
 					autonId: db.tables.auton.getDeterministicId(transaction, autonRowContext.getNonce()),
@@ -255,21 +336,24 @@ export class CreateAutonAsset extends BaseAsset {
 					comments: [],
 					commentLikes: [],
 					commentDislikes: [],
-					proposals: []
-				}
-				console.log("Big 5")
+					proposals: [],
+					role: RoleEnum.AFFILIATE_MEMBER,
+					poasIssued: []
+				};
 
+				if (asset.type == AutonTypeEnum.LESSON) {
+					bulkMembership.started = BigInt(stateStore.chain.lastBlockHeaders[0].timestamp)
+				}
 
 				membershipRowContext.increment();
+				console.log("Big 5.1")
 
 				const membershipId: string = await db.tables.membership.createRecord(stateStore, transaction, bulkMembership, membershipRowContext)
-
+				console.log("Big 5.2")
 				bulkKalipoAccount.memberships.push(membershipId)
+
 				await db.tables.kalipoAccount.updateRecord(stateStore, bulkKalipoAccount.id, bulkKalipoAccount)
-
 			}
-
 		}
-
 	}
 }

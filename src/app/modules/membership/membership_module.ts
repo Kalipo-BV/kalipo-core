@@ -29,6 +29,8 @@ import {
 import { AcceptAsset } from "./assets/accept_asset";
 import { db } from '../../database/db';
 import { RefuseAsset } from './assets/refuse_asset';
+import { AddMemberAsset } from './assets/add_member_asset';
+import { CheckInAsset } from './assets/check_in_asset';
 
 
 export const VALID_INVITATION_WINDOW = (60 * 60 * 24 * 7)
@@ -66,7 +68,7 @@ export class MembershipModule extends BaseModule {
         // },
     };
     public name = 'membership';
-    public transactionAssets = [new AcceptAsset(), new RefuseAsset()];
+    public transactionAssets = [new AcceptAsset(), new RefuseAsset(), new AddMemberAsset(), new CheckInAsset()];
     public events = [
         // Example below
         // 'membership:newBlock',

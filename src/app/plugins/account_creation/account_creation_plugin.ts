@@ -126,9 +126,11 @@ export class AccountCreationPlugin extends BasePlugin {
 				passphrase
 			);
 			const address = cryptography.getAddressFromPassphrase(passphrase);
+			console.log(address)
 			const account = await channel.invoke('app:getAccount', {
 				address,
 			});
+			console.log(account)
 			const { sequence: { nonce } } = codec.decodeAccount(account);
 
 			const { id, ...tx } = transactions.signTransaction(

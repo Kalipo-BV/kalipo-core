@@ -18,7 +18,8 @@
 import { Schema, StateStore } from "lisk-sdk";
 import { BaseTable } from "../base_table";
 import { db } from "../db";
-import { MembershipValidationError } from "../enums";
+import { checkStatus, MembershipValidationError } from "../enums";
+import { RoleEnum } from "../enums";
 import { KalipoAccount } from "./kalipo_account_table";
 
 export interface MembershipInvitation {
@@ -40,6 +41,9 @@ export interface Membership {
     commentLikes: Array<string>,
     commentDislikes: Array<string>,
     proposals: Array<string>,
+    role: RoleEnum,
+    poasIssued: Array<string>,
+    checkedStatus: checkStatus,
 }
 
 export interface MembershipValidation {
@@ -132,6 +136,21 @@ export class MembershipTable extends BaseTable<Membership> {
                 items: {
                     dataType: "string",
                 }
+            },
+            role: {
+                dataType: "string",
+                fieldNumber: 10
+            },
+            poasIssued: {
+                type: "array",
+                fieldNumber: 11,
+                items: {
+                    dataType: "string",
+                }
+            },
+            checkedStatus: {
+                dataType: "string",
+                fieldNumber: 12
             },
         }
     }

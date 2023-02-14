@@ -15,8 +15,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
+//q: what do you call when someone has not checked in yet, something with check
+// a: 
+
+export enum checkStatus {
+    NOTCHECKEDIN = 'NOTCHECKEDIN',
+    CHECKEDIN = 'CHECKEDIN',
+    CHECKEDOUT = 'CHECKEDOUT',
+}
+
 export enum ProposalType {
     MEMBERSHIP_INVITATION = 'membership-invitation',
+}
+
+export enum AutonTypeEnum {
+    DEFAULT = "DEFAULT",
+    EVENT = "EVENT",
+    LESSON = "LESSON"
+}
+
+export enum RoleEnum {
+    FULL_MEMBER = "FULL_MEMBER",
+    AFFILIATE_MEMBER = "AFFILIATE_MEMBER"
 }
 
 export enum ProposalStatus {

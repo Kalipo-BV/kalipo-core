@@ -92,11 +92,6 @@
 		"/config",
 		"/docs"
 	],
-	"husky": {
-		"hooks": {
-			"pre-commit": "lint-staged"
-		}
-	},
 	"dependencies": {
 		"@liskhq/lisk-api-client": "^5.1.6",
 		"@liskhq/lisk-framework-dashboard-plugin": "^0.1.7",
@@ -111,7 +106,8 @@
 		"lisk-commander": "^5.1.10",
 		"lisk-sdk": "^5.2.2",
 		"tar": "6.0.2",
-		"tslib": "1.13.0"
+		"tslib": "1.13.0",
+		"uuid": "^9.0.0"
 	},
 	"devDependencies": {
 		"@oclif/config": "1.18.3",
@@ -128,7 +124,6 @@
 		"eslint-plugin-import": "2.22.1",
 		"eslint-plugin-jest": "24.3.2",
 		"globby": "10.0.2",
-		"husky": "4.2.5",
 		"jest": "26.6.3",
 		"jest-extended": "0.11.5",
 		"jest-when": "3.2.1",
