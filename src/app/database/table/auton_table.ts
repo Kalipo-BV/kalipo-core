@@ -217,19 +217,19 @@ export class AutonTable extends BaseTable<Auton> {
                     },
                     start: {
                         dataType: "uint64",
-                        fieldNumber: 5,
+                        fieldNumber: 4,
                     },
                     end: {
                         dataType: "uint64",
-                        fieldNumber: 6,
+                        fieldNumber: 5,
                     },
                     uuid: {
                         dataType: "string",
-                        fieldNumber: 7
+                        fieldNumber: 6
                     },
                     checkoutRequired: {
                         dataType: "boolean",
-                        fieldNumber: 8
+                        fieldNumber: 7
                     }
                 }
             }
