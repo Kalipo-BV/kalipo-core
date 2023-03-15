@@ -41,6 +41,12 @@ export interface BinaryVoteCount {
     totalVotes: number,
 }
 
+export interface StakeholderVoteCount {
+    acceptCount: number,
+    refuseCount: number,
+    totalVotes: number,
+}
+
 export const currentRowContexts: Record<string, RowContext> = {}
 
 export class ProposalModule extends BaseModule {
@@ -194,6 +200,27 @@ export class ProposalModule extends BaseModule {
         return { acceptCount, refuseCount, totalVotes }
     }
 
+    private async calculateStakeholderVoteCount(proposal: Proposal, _input: AfterBlockApplyContext): Promise<StakeholderVoteCount> {
+        let acceptCount = 0;
+        let refuseCount = 0;
+
+        for (let vI = 0; vI < proposal.votes.length; vI++) {
+            const voteId = proposal.votes[vI];
+            const vote = await db.tables.vote.getRecord(_input.stateStore, voteId)
+
+            if (vote?.answer == "ACCEPT") {
+                acceptCount++
+            }
+            if (vote?.answer == "REFUSE") {
+                refuseCount++
+            }
+        }
+        const totalVotes = acceptCount + refuseCount;
+        return { acceptCount, refuseCount, totalVotes }
+
+
+    }
+
     private async calculateTotalActiveMembers(auton: Auton, proposal: Proposal, _input: AfterBlockApplyContext): Promise<number> {
         let totalActiveMemberships = 0;
         for (let mI = 0; mI < auton.memberships.length; mI++) {
@@ -208,11 +235,20 @@ export class ProposalModule extends BaseModule {
         return totalActiveMemberships;
     }
 
-    private isProposalSupportReached(provision: ProposalProvisions, totalActiveMemberships: number, binaryVoteCount: BinaryVoteCount): boolean {
+    private isProposalSupportReached(provision: ProposalProvisions, totalActiveMemberships: number, binaryVoteCount: BinaryVoteCount, stakeholderVoteCount: StakeholderVoteCount): boolean {
+        
         if (binaryVoteCount.totalVotes / totalActiveMemberships > provision.attendance / 100) {
             // QUORUM REACHED
             if (binaryVoteCount.acceptCount / totalActiveMemberships > provision.acceptance / 100) {
                 // Acceptance REACHED
+                return true;
+            }
+        }
+
+        if(stakeholderVoteCount.totalVotes / totalActiveMemberships > provision.attendance /100){
+            //QUOROM REACHED
+            if(stakeholderVoteCount.acceptCount/totalActiveMemberships > provision.acceptance/100){
+                //Acceptance reached
                 return true;
             }
         }

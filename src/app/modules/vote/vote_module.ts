@@ -30,6 +30,7 @@ import { x } from 'tar';
 import { db } from '../../database/db';
 import { BinaryVotingAsset } from "./assets/binary_voting_asset";
 import { MultiOptionVotingAsset } from "./assets/multi_option_voting_asset";
+import { StakeholderVotingAsset } from './assets/stakeholder_voting_asset';
 
 export class VoteModule extends BaseModule {
     public actions = {
@@ -55,7 +56,8 @@ export class VoteModule extends BaseModule {
         // },
     };
     public name = 'vote';
-    public transactionAssets = [new BinaryVotingAsset(), new MultiOptionVotingAsset()];
+    //stakeholder voting hier toevoegen
+    public transactionAssets = [new BinaryVotingAsset(), new MultiOptionVotingAsset(), new StakeholderVotingAsset()];
     public events = [
         // Example below
         'newVote',

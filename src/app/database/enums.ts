@@ -27,6 +27,7 @@ export enum checkStatus {
 
 export enum ProposalType {
     MEMBERSHIP_INVITATION = 'membership-invitation',
+    PROPOSAL_TEST = 'test_proposaltype'
 }
 
 export enum AutonTypeEnum {
