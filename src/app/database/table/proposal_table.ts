@@ -24,6 +24,20 @@ export interface MembershipInvitationArguments {
     message: string
 }
 
+export interface ImprovementArguments {
+    proposers: Array<string>,           //List of persons who are directly involved in the proposal.
+    abstract: string,                   //Summary of the idea of the proposal.
+    motivation: string,             
+    specification: string,
+    references?: string,                //Extra information like links, citations ...
+    budget?: string,                    //Explanation of the budget.
+    excecutionRoles?: Array<String>,    //Persons who excecute the proposal.
+    timeBasedConstraint?: string,       //Information about for example deadline...
+    
+    /* should have ↓ */ 
+    // additionalHeaders?: Array<String>,  //The submitter can add extra headers if needed.
+}
+
 export interface BinaryVoteResult {
     result: ProposalResult,
     decided: BigInt,
