@@ -66,7 +66,8 @@ export interface Proposal {
     windowOpen: BigInt,
     windowClosed: BigInt,
     binaryVoteResult: BinaryVoteResult,
-    membershipInvitationArguments: MembershipInvitationArguments | null
+    membershipInvitationArguments: MembershipInvitationArguments | null,
+    improvementArguments: ImprovementArguments | null
 }
 
 export class ProposalTable extends BaseTable<Proposal> {
