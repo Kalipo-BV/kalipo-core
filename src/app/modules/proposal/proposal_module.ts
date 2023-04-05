@@ -82,7 +82,7 @@ export class ProposalModule extends BaseModule {
 
     // public constructor(genesisConfig: GenesisConfig) {
     //     super(genesisConfig);
-    // }
+    //  }
 
     // Lifecycle hooks
     public async beforeBlockApply(_input: BeforeBlockApplyContext) {
