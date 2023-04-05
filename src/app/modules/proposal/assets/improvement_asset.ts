@@ -25,7 +25,7 @@ import { BinaryVoteResult, ImprovementArguments, Proposal } from '../../../datab
 
 export class ImprovementAsset extends BaseAsset {
 	public name = 'Improvement';
-	public id = 0;
+	public id = 1;
 
 	// Define schema for asset
 	public schema = {
@@ -55,17 +55,51 @@ export class ImprovementAsset extends BaseAsset {
 				fieldNumber: 4,
 				maxLength: 256,
 			},
-			accountIdToInvite: {
-				dataType: 'string',
+			proposers: {
+				type: "array",
 				fieldNumber: 5,
-				maxLength: 256
+				maxItems: 5,
+				items: {
+					dataType: "string"
+				}
 			},
-			invitationMessage: {
+			abstract: {
 				dataType: 'string',
 				fieldNumber: 6,
-				maxLength: 128
+				maxLength: 512,
 			},
-
+			motivation: {
+				dataType: 'string',
+				fieldNumber: 7,
+				maxLength: 2048,
+			},
+			specification: {
+				dataType: 'string',
+				fieldNumber: 8,
+				maxLength: 2048,
+			},
+			references: {
+				dataType: 'string',
+				fieldNumber: 9,
+				maxLength: 512,
+			},
+			budget: {
+				dataType: 'string',
+				fieldNumber: 10,
+				maxLength: 512,
+			},
+			excecutionRoles: {
+				type: "array",
+				fieldNumber: 11,
+				items: {
+					dataType: "string"
+				}
+			},
+			timeBasedConstraint: {
+				dataType: 'string',
+				fieldNumber: 12,
+				maxLength: 512,
+			},
 		},
 	};
 
