@@ -31,7 +31,7 @@ export interface ImprovementArguments {
     specification: string,
     references?: string,                //Extra information like links, citations ...
     budget?: string,                    //Explanation of the budget.
-    excecutionRoles?: Array<String>,    //Persons who excecute the proposal, example: 'id; role' -> '1; developer'.
+    executionRoles?: Array<String>,    //Persons who excecute the proposal, example: 'id; role' -> '1; developer'.
     timeBasedConstraint?: string,       //Information about for example deadline...
     
     /* should have ↓ */ 

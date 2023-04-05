@@ -88,7 +88,7 @@ export class ImprovementAsset extends BaseAsset {
 				fieldNumber: 10,
 				maxLength: 512,
 			},
-			excecutionRoles: {
+			executionRoles: {
 				type: "array",
 				fieldNumber: 11,
 				items: {
@@ -109,6 +109,7 @@ export class ImprovementAsset extends BaseAsset {
 
 	// eslint-disable-next-line @typescript-eslint/require-await
 	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
+		console.log("test")
 		const TYPE = ProposalType.IMPROVEMENT
 		//  Get latest provision for auton by proposal type membership-invtitation
 		const senderAddress = transaction.senderAddress;
@@ -219,7 +220,7 @@ export class ImprovementAsset extends BaseAsset {
 			specification: asset.specification,
 			references: asset.references,
 			budget: asset.budget,
-			excecutionRoles: asset.excecutionRoles,
+			executionRoles: asset.executionRoles,
 			timeBasedConstraint: asset.timeBasedConstrant,       
 		}
 

@@ -34,6 +34,7 @@ import { Auton } from '../../database/table/auton_table';
 import { ProposalProvisions } from '../../database/table/proposal_provisions_table';
 import { Proposal } from '../../database/table/proposal_table';
 import { MembershipInvitationAsset } from "./assets/membership_invitation_asset";
+import { ImprovementAsset } from "./assets/improvement_asset";
 
 export interface BinaryVoteCount {
     acceptCount: number,
@@ -67,7 +68,7 @@ export class ProposalModule extends BaseModule {
         // },
     };
     public name = 'proposal';
-    public transactionAssets = [new MembershipInvitationAsset()];
+    public transactionAssets = [new MembershipInvitationAsset(), new ImprovementAsset()];
     public events = [
         // Example below
         'gotDecided'
