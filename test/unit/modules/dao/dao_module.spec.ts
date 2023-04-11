@@ -15,9 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-// import * as modules from '../../../src/app/modules/hello'
+// import * as modules from '../../../src/app/modules/dao'
 
-describe('HelloModuleModule', () => {
+describe('DaoModuleModule', () => {
 	describe('constructor', () => {
 		it.todo('should have valid id');
 		it.todo('should have valid name');

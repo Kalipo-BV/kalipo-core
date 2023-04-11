@@ -17,6 +17,7 @@
 
 import { KalipoAccountTable } from './table/kalipo_account_table'
 import { AutonTable } from './table/auton_table'
+import { DaoTable } from './table/dao_table'
 import { MembershipTable } from './table/membership_table'
 import { UsernameIndex } from './index/username_index'
 import { AutonNameIndex } from './index/auton_name_index'
@@ -43,6 +44,7 @@ export const db = {
     tables: {
         kalipoAccount: new KalipoAccountTable(),
         auton: new AutonTable(),
+        dao: new DaoTable(),
         membership: new MembershipTable(),
         proposal: new ProposalTable(),
         provisions: new ProposalProvisionsTable(),

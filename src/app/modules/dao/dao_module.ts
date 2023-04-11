@@ -27,43 +27,21 @@ import {
     BeforeBlockApplyContext, TransactionApplyContext,
     codec
 } from 'lisk-sdk';
-import { CreateHelloAsset } from "./assets/create_hello_asset";
+import { db } from '../../database/db';
+import { CreateDaoAsset } from "./assets/create_dao";
 
-const {
-    helloCounterSchema,
-    helloAssetSchema,
-    CHAIN_STATE_HELLO_COUNTER
-} = require('./schemas');
 
-// const { CreateHelloAsset } = require('./assets/create_hello_asset');
 
-export class HelloModule extends BaseModule {
-    public accountSchema = {
-        type: 'object',
-        properties: {
-            helloMessage: {
-                fieldNumber: 1,
-                dataType: 'string',
-                maxLength: 64,
-            },
-        },
-        default: {
-            helloMessage: '',
-        },
-    };
-
-    // public transactionAssets = [
-    //     new CreateHelloAsset()
-    // ];
-
+export class DaoModule extends BaseModule {
     public actions = {
-        amountOfHellos: async () => {
-            const res = await this._dataAccess.getChainState(CHAIN_STATE_HELLO_COUNTER);
-            const count = codec.decode(
-                helloCounterSchema,
-                res
-            );
-            return count;
+        getByID: async (params: Record<string, unknown>) => {
+            return await db.tables.dao.getRecordInJSON(this._dataAccess.getChainState.bind(this), (params as { id: string }).id)
+        },
+        getDaoIdByName: async (params: Record<string, unknown>) => {
+            return await db.indices.autonName.getRecord(this._dataAccess.getChainState.bind(this), (params as { name: string }).name)
+        },
+        getAll: async (params: Record<string, unknown>) => {
+            return await db.indices.fullTable.getRecordInJSON(this._dataAccess.getChainState.bind(this), "daos")
         },
     };
 
@@ -81,10 +59,9 @@ export class HelloModule extends BaseModule {
         // 	return account.token.balance;
         // },
     };
-    public name = 'hello';
-    public transactionAssets = [new CreateHelloAsset()];
+    public name = 'dao';
+    public transactionAssets = [new CreateDaoAsset()];
     public events = [
-        "newHello"
     ];
     public id = 1000;
 
@@ -111,31 +88,9 @@ export class HelloModule extends BaseModule {
     }
 
     public async afterTransactionApply(_input: TransactionApplyContext) {
-        // Publish a `newHello` event for every received hello transaction
-        // 1. Check for correct module and asset IDs
-        if (_input.transaction.moduleID === this.id && _input.transaction.assetID === 0) {
-
-            // 2. Decode the transaction asset
-            const helloAsset = codec.decode(
-                helloAssetSchema,
-                _input.transaction.asset
-            );
-
-            // 3. Publish the event 'hello:newHello' and
-            // attach information about the sender address and the posted hello message.
-            this._channel.publish('hello:newHello', {
-                sender: _input.transaction._senderAddress.toString('hex'),
-                hello: helloAsset.helloString
-            });
-        }
     }
 
     public async afterGenesisBlockApply(_input: AfterGenesisBlockApplyContext) {
-        // Set the hello counter to zero after the genesis block is applied
-        await _input.stateStore.chain.set(
-            CHAIN_STATE_HELLO_COUNTER,
-            codec.encode(helloCounterSchema, { helloCounter: 0 })
-        );
     }
 
 

@@ -48,7 +48,9 @@ export interface Auton {
     autonProfile: AutonProfile,
     poas: Array<string>,
     event: EventProfile,
-    lesson: LessonProfile
+    lesson: LessonProfile,
+    daoId: string,
+    parentAutonId?: string,
 }
 
 export interface LessonProfile {
@@ -232,7 +234,15 @@ export class AutonTable extends BaseTable<Auton> {
                         fieldNumber: 7
                     }
                 }
-            }
+            },
+            daoId: {
+                dataType: "string",
+                fieldNumber: 11,
+            },
+            parentAutonId: {
+                dataType: "string",
+                fieldNumber: 12,
+            },
         }
     }
 }

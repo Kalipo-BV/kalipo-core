@@ -24,7 +24,7 @@ import {
     AfterGenesisBlockApplyContext, BaseModule,
 
 
-    BeforeBlockApplyContext, codec, TransactionApplyContext
+    BeforeBlockApplyContext, TransactionApplyContext
 } from 'lisk-sdk';
 import { process } from '../../database/action_pipeline';
 import { db, tableRegistrationClasses } from '../../database/db';
@@ -33,6 +33,7 @@ import { RowContext } from '../../database/row_context';
 import { Auton } from '../../database/table/auton_table';
 import { ProposalProvisions } from '../../database/table/proposal_provisions_table';
 import { Proposal } from '../../database/table/proposal_table';
+import { AutonCreationAsset } from "./assets/auton_creation_asset";
 import { MembershipInvitationAsset } from "./assets/membership_invitation_asset";
 
 export interface BinaryVoteCount {
@@ -67,7 +68,7 @@ export class ProposalModule extends BaseModule {
         // },
     };
     public name = 'proposal';
-    public transactionAssets = [new MembershipInvitationAsset()];
+    public transactionAssets = [new MembershipInvitationAsset(), new AutonCreationAsset()];
     public events = [
         // Example below
         'gotDecided'

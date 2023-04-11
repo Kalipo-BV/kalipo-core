@@ -19,7 +19,7 @@
 import { Application } from 'lisk-sdk';
 import { AutonModule } from "./modules/auton/auton_module";
 import { CommentModule } from "./modules/comment/comment_module";
-import { HelloModule } from "./modules/hello/hello_module";
+import { DaoModule } from "./modules/dao/dao_module";
 import { KalipoAccountModule } from "./modules/kalipo_account/kalipo_account_module";
 import { MembershipModule } from "./modules/membership/membership_module";
 import { PoaIssueModule } from './modules/poa/poa_issue_module';
@@ -29,7 +29,7 @@ import { VoteModule } from "./modules/vote/vote_module";
 
 // @ts-expect-error Unused variable error happens here until at least one module is registered
 export const registerModules = (app: Application): void => {
-    app.registerModule(HelloModule);
+    app.registerModule(DaoModule);
     app.registerModule(KalipoAccountModule);
     app.registerModule(MembershipModule);
     app.registerModule(AutonModule);

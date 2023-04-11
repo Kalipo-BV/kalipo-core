@@ -15,13 +15,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { CreateHelloAsset } from '../../../../../src/app/modules/hello/assets/create_hello_asset';
+import { CreateDao } from '../../../../../src/app/modules/dao/assets/create_dao';
 
-describe('CreateHelloAsset', () => {
-	let transactionAsset: CreateHelloAsset;
+describe('CreateDao', () => {
+	let transactionAsset: CreateDao;
 
 	beforeEach(() => {
-		transactionAsset = new CreateHelloAsset();
+		transactionAsset = new CreateDao();
 	});
 
 	describe('constructor', () => {
@@ -30,7 +30,7 @@ describe('CreateHelloAsset', () => {
 		});
 
 		it('should have valid name', () => {
-			expect(transactionAsset.name).toEqual('createHello');
+			expect(transactionAsset.name).toEqual('CreateDao');
 		});
 
 		it('should have valid schema', () => {
