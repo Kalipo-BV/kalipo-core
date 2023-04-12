@@ -188,61 +188,11 @@ export class ProposalTable extends BaseTable<Proposal> {
                     },
                     message: {
                         dataType: "string",
-                        fieldNumber: 3,
-                    },
-                    message: {
-                        dataType: "string",
-                        fieldNumber: 3,
+                        fieldNumber: 2,
                     },
                 }
             },
-            improvementArguments: {
-                type: "object",
-                fieldNumber: 16,
-                                                                    //proposers horen ook nog bij required.
-                required: ["abstract", "motivation", "specification"],
-                properties: {
-                    proposers: {
-                        type: "array",
-                        fieldNumber: 1,
-                        items: {
-                            dataType: "string"
-                        }
-                    },
-                    abstract: {
-                        dataType: 'string',
-                        fieldNumber: 2
-                    },
-                    motivation: {
-                        dataType: 'string',
-                        fieldNumber: 3
-                    },
-                    specification: {
-                        dataType: 'string',
-                        fieldNumber: 4
-                    },
-                    references: {
-                        dataType: 'string',
-                        fieldNumber: 5
-                    },
-                    budget: {
-                        dataType: 'string',
-                        fieldNumber: 6
-                    },
-                    executionRoles: {
-                        type: "array",
-                        fieldNumber: 7,
-                        items: {
-                            dataType: "string"
-                        }
-                    },
-                    timeBasedConstraint: {
-                        dataType: 'string',
-                        fieldNumber: 8
-                    },
-                }
-            },
-
+            
             // improvementArguments: {
             //     type: "string",
             //     fieldNumber: 16,
