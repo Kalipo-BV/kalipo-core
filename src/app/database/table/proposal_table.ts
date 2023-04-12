@@ -75,7 +75,7 @@ export class ProposalTable extends BaseTable<Proposal> {
     protected schema: Schema = {
         $id: "kalipo/tables/proposal_table",
         type: "object",
-        required: ["title", "status", "actions", "type", "membershipId", "provisionId", "autonId", "comments", "votes", "transaction", "created", "windowOpen", "windowClosed", "binaryVoteResult", "improvementArguments"],
+        required: ["title", "status", "actions", "type", "membershipId", "provisionId", "autonId", "comments", "votes", "transaction", "created", "windowOpen", "windowClosed", "binaryVoteResult"],
         properties: {
             title: {
                 dataType: 'string',
@@ -185,13 +185,9 @@ export class ProposalTable extends BaseTable<Proposal> {
                         dataType: "string",
                         fieldNumber: 1,
                     },
-                    test: {
-                        dataType: "string",
-                        fieldNumber: 2,
-                    },
                     message: {
                         dataType: "string",
-                        fieldNumber: 3,
+                        fieldNumber: 2,
                     },
                 }
             },
