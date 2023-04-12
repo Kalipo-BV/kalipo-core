@@ -32,7 +32,7 @@ export class ImprovementAsset extends BaseAsset {
 		$id: 'proposal/Improvement-asset',
 		title: 'ImprovementAsset transaction asset for proposal module',
 		type: 'object',
-		required: ["title", "proposalType", "autonId", "accountIdToInvite"],
+		required: ["title", "proposalType", "autonId"],
 		properties: {
 			title: {
 				dataType: 'string',
@@ -120,10 +120,6 @@ export class ImprovementAsset extends BaseAsset {
 
 		if (accountId == null) {
 			throw new Error("No Kalipo account found for this Lisk account")
-		}
-
-		if (accountId == asset.accountIdToInvite) {
-			throw new Error("You cannot invite yourself")
 		}
 
 		const kalipoAccount = await db.tables.kalipoAccount.getRecord(stateStore, accountId)
