@@ -32,7 +32,7 @@ export class ImprovementAsset extends BaseAsset {
 		$id: 'proposal/Improvement-asset',
 		title: 'ImprovementAsset transaction asset for proposal module',
 		type: 'object',
-		required: ["title", "proposalType", "autonId", "accountIdToInvite"],
+		required: ["title", "proposalType", "autonId"],
 		properties: {
 			title: {
 				dataType: 'string',
@@ -88,7 +88,7 @@ export class ImprovementAsset extends BaseAsset {
 				fieldNumber: 10,
 				maxLength: 512,
 			},
-			excecutionRoles: {
+			executionRoles: {
 				type: "array",
 				fieldNumber: 11,
 				items: {
@@ -109,6 +109,7 @@ export class ImprovementAsset extends BaseAsset {
 
 	// eslint-disable-next-line @typescript-eslint/require-await
 	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
+		console.log("Ik ben in de backend.")
 		const TYPE = ProposalType.IMPROVEMENT
 		//  Get latest provision for auton by proposal type membership-invtitation
 		const senderAddress = transaction.senderAddress;
@@ -119,10 +120,6 @@ export class ImprovementAsset extends BaseAsset {
 
 		if (accountId == null) {
 			throw new Error("No Kalipo account found for this Lisk account")
-		}
-
-		if (accountId == asset.accountIdToInvite) {
-			throw new Error("You cannot invite yourself")
 		}
 
 		const kalipoAccount = await db.tables.kalipoAccount.getRecord(stateStore, accountId)
@@ -219,7 +216,7 @@ export class ImprovementAsset extends BaseAsset {
 			specification: asset.specification,
 			references: asset.references,
 			budget: asset.budget,
-			excecutionRoles: asset.excecutionRoles,
+			executionRoles: asset.executionRoles,
 			timeBasedConstraint: asset.timeBasedConstrant,       
 		}
 
@@ -238,7 +235,7 @@ export class ImprovementAsset extends BaseAsset {
 			title: asset.title,
 			status: ProposalStatus.CAMPAIGNING,
 			actions: [],
-			type: ProposalType.MEMBERSHIP_INVITATION,
+			type: TYPE,
 			membershipId: submitterMembershipId,
 			provisionId: provisionId,
 			autonId: asset.autonId,
@@ -248,6 +245,10 @@ export class ImprovementAsset extends BaseAsset {
 			created: BigInt(created),
 			windowOpen: BigInt(windowOpen),
 			windowClosed: BigInt(windowClosed),
+			membershipInvitationArguments: {
+				accountId: "",
+				message: ""
+			},
 			improvementArguments: improvementArguments,
 			binaryVoteResult: binaryVoteResult
 		}

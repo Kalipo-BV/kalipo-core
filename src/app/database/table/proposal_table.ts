@@ -24,6 +24,7 @@ export interface MembershipInvitationArguments {
     message: string
 }
 
+
 export interface ImprovementArguments {
     proposers: Array<string>,           //List of persons who are directly involved in the proposal.
     abstract: string,                   //Summary of the idea of the proposal.
@@ -31,7 +32,7 @@ export interface ImprovementArguments {
     specification: string,
     references?: string,                //Extra information like links, citations ...
     budget?: string,                    //Explanation of the budget.
-    excecutionRoles?: Array<String>,    //Persons who excecute the proposal, example: 'id; role' -> '1; developer'.
+    executionRoles?: Array<String>,    //Persons who excecute the proposal, example: 'id; role' -> '1; developer'.
     timeBasedConstraint?: string,       //Information about for example deadline...
     
     /* should have ↓ */ 
@@ -75,7 +76,7 @@ export class ProposalTable extends BaseTable<Proposal> {
     protected schema: Schema = {
         $id: "kalipo/tables/proposal_table",
         type: "object",
-        required: ["title", "status", "actions", "type", "membershipId", "provisionId", "autonId", "comments", "votes", "transaction", "created", "windowOpen", "windowClosed", "binaryVoteResult"],
+        required: ["title", "status", "actions", "type", "membershipId", "provisionId", "autonId", "comments", "votes", "transaction", "created", "windowOpen", "windowClosed", "binaryVoteResult", "improvementArguments"],
         properties: {
             title: {
                 dataType: 'string',
@@ -191,6 +192,17 @@ export class ProposalTable extends BaseTable<Proposal> {
                     },
                 }
             },
+            
+            // improvementArguments: {
+            //     type: "string",
+            //     fieldNumber: 16,
+            //     properties : {
+            //         abstract: {
+            //             dataType: "string",
+            //             fieldNumber: 1,
+            //         },
+            //     }
+            // },
         }
     }
 
