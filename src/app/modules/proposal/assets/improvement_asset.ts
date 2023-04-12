@@ -109,7 +109,7 @@ export class ImprovementAsset extends BaseAsset {
 
 	// eslint-disable-next-line @typescript-eslint/require-await
 	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
-		console.log("test")
+		console.log("Ik ben in de backend.")
 		const TYPE = ProposalType.IMPROVEMENT
 		//  Get latest provision for auton by proposal type membership-invtitation
 		const senderAddress = transaction.senderAddress;
@@ -235,7 +235,7 @@ export class ImprovementAsset extends BaseAsset {
 			title: asset.title,
 			status: ProposalStatus.CAMPAIGNING,
 			actions: [],
-			type: ProposalType.MEMBERSHIP_INVITATION,
+			type: TYPE,
 			membershipId: submitterMembershipId,
 			provisionId: provisionId,
 			autonId: asset.autonId,
@@ -245,6 +245,10 @@ export class ImprovementAsset extends BaseAsset {
 			created: BigInt(created),
 			windowOpen: BigInt(windowOpen),
 			windowClosed: BigInt(windowClosed),
+			membershipInvitationArguments: {
+				accountId: "",
+				message: ""
+			},
 			improvementArguments: improvementArguments,
 			binaryVoteResult: binaryVoteResult
 		}

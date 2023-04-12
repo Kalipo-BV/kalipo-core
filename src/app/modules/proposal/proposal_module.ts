@@ -34,7 +34,7 @@ import { Auton } from '../../database/table/auton_table';
 import { ProposalProvisions } from '../../database/table/proposal_provisions_table';
 import { Proposal } from '../../database/table/proposal_table';
 import { MembershipInvitationAsset } from "./assets/membership_invitation_asset";
-import { ImprovementAsset } from "./assets/improvement_asset";
+import { ImprovementAsset } from './assets/improvement_asset';
 
 export interface BinaryVoteCount {
     acceptCount: number,
