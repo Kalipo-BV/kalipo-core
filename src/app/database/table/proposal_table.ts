@@ -24,6 +24,7 @@ export interface MembershipInvitationArguments {
     message: string
 }
 
+
 export interface ImprovementArguments {
     proposers: Array<string>,           //List of persons who are directly involved in the proposal.
     abstract: string,                   //Summary of the idea of the proposal.
@@ -185,12 +186,27 @@ export class ProposalTable extends BaseTable<Proposal> {
                         dataType: "string",
                         fieldNumber: 1,
                     },
+                    // test: {
+                    //     dataType: "string",
+                    //     fieldNumber: 2,
+                    // },
                     message: {
                         dataType: "string",
-                        fieldNumber: 2,
+                        fieldNumber: 3,
                     },
                 }
             },
+
+            // improvementArguments: {
+            //     type: "string",
+            //     fieldNumber: 16,
+            //     properties : {
+            //         abstract: {
+            //             dataType: "string",
+            //             fieldNumber: 1,
+            //         },
+            //     }
+            // },
         }
     }
 
