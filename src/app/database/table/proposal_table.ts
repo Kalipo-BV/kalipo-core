@@ -247,3 +247,4 @@ export class ProposalTable extends BaseTable<Proposal> {
 
 }
 
+ 
