@@ -25,14 +25,14 @@ import { Membership } from '../../../database/table/membership_table';
 import { Vote } from '../../../database/table/vote_table';
 
 
-export class StakeholderVotingAsset extends BaseAsset{
-    public name = "StakeholderVoting";
+export class StakeholderApprovalAsset extends BaseAsset{
+    public name = "StakeholderApproval";
     public id = 2;
 
     //define schema for asset
     public schema = {
-		$id: 'vote/stakeholderVoting-asset',
-		title: 'StakeholderVoting transaction asset for vote module',
+		$id: 'vote/stakeholderApproval-asset',
+		title: 'StakeholderApproval transaction asset for vote module',
 		type: 'object',
 		required: ["proposalId", "answer"],
 		properties: {

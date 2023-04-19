@@ -17,7 +17,7 @@
 
 import { Schema } from "lisk-sdk";
 import { BaseTable } from "../base_table";
-import { ProposalResult, ProposalStatus, ProposalType } from "../enums";
+import { ProposalResult, ProposalStatus, ProposalType, StakeholderVote } from "../enums";
 
 export interface MembershipInvitationArguments {
     accountId: string,
@@ -31,6 +31,20 @@ export interface BinaryVoteResult {
     acceptedCount: number,
     refusedCount: number
 }
+
+//stembus van de approval voor het proposal
+export interface StakeholderApproval{
+    stakeholderBills: Array<Stakeholderbill>,
+    memberCount: number
+}
+//stembiljet van de stakeholder voor de approval
+export interface Stakeholderbill{
+    stakeholderId: BigInt,
+    expertise: string,
+    result: StakeholderVote
+
+}
+
 
 export interface ProposalAction {
     executed: BigInt,
@@ -52,6 +66,8 @@ export interface Proposal {
     windowOpen: BigInt,
     windowClosed: BigInt,
     binaryVoteResult: BinaryVoteResult,
+    //stakeholder
+    stakeholderApproval: StakeholderApproval,
     membershipInvitationArguments: MembershipInvitationArguments | null
 }
 
@@ -174,6 +190,33 @@ export class ProposalTable extends BaseTable<Proposal> {
                         dataType: "string",
                         fieldNumber: 2,
                     },
+                }
+            },
+            stakeholderApproval: {
+                type: "object",
+                fieldNumber: 16,
+                required: ["stakeholderBills", "memberCount"],
+                properties: {
+                    stakeholderBills: {
+                        stakeholderBill: {
+                            stakeholderId:{
+                                dataType: "BigInt",
+                                fieldNumber: 1
+                            },
+                            expertise: {
+                                dataType: "string",
+                                fieldNumber: 2
+                            },
+                            result: {
+                                dataType: StakeholderVote,
+                                fieldNumber: 3
+                            }
+                        }
+                    },
+                    memberCount: {
+                        dataType: "uint32",
+                        fieldNumber: 4,
+                    }
                 }
             },
         }

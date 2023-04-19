@@ -41,7 +41,7 @@ export interface BinaryVoteCount {
     totalVotes: number,
 }
 
-export interface StakeholderVoteCount {
+export interface StakeholderApprovalCount {
     acceptCount: number,
     refuseCount: number,
     totalVotes: number,
@@ -130,6 +130,7 @@ export class ProposalModule extends BaseModule {
 
                             if (auton != null && provision != null) {
                                 const binaryVoteCount = await this.calculateBinaryVoteCount(proposal, _input)
+                                //const stakeholderApprovalCount = await this.calculateStakeholderApprovalCount(proposal, _input)
                                 const totalActiveMembers = await this.calculateTotalActiveMembers(auton, proposal, _input)
                                 const isProposalSupportReached = this.isProposalSupportReached(provision, totalActiveMembers, binaryVoteCount)
                                 const isProposalResistanceReached = this.isProposalResistanceReached(provision, totalActiveMembers, binaryVoteCount)
@@ -200,7 +201,7 @@ export class ProposalModule extends BaseModule {
         return { acceptCount, refuseCount, totalVotes }
     }
 
-    private async calculateStakeholderVoteCount(proposal: Proposal, _input: AfterBlockApplyContext): Promise<StakeholderVoteCount> {
+    private async calculateStakeholderApprovalCount(proposal: Proposal, _input: AfterBlockApplyContext): Promise<StakeholderApprovalCount> {
         let acceptCount = 0;
         let refuseCount = 0;
 
@@ -235,7 +236,7 @@ export class ProposalModule extends BaseModule {
         return totalActiveMemberships;
     }
 
-    private isProposalSupportReached(provision: ProposalProvisions, totalActiveMemberships: number, binaryVoteCount: BinaryVoteCount, stakeholderVoteCount: StakeholderVoteCount): boolean {
+    private isProposalSupportReached(provision: ProposalProvisions, totalActiveMemberships: number, binaryVoteCount: BinaryVoteCount): boolean {
         
         if (binaryVoteCount.totalVotes / totalActiveMemberships > provision.attendance / 100) {
             // QUORUM REACHED
@@ -245,13 +246,15 @@ export class ProposalModule extends BaseModule {
             }
         }
 
-        if(stakeholderVoteCount.totalVotes / totalActiveMemberships > provision.attendance /100){
-            //QUOROM REACHED
-            if(stakeholderVoteCount.acceptCount/totalActiveMemberships > provision.acceptance/100){
-                //Acceptance reached
-                return true;
-            }
-        }
+        // if(stakeholderApprovalCount.totalVotes / totalActiveMemberships > provision.attendance /100){
+        //     //QUOROM REACHED
+        //     if(stakeholderApprovalCount.acceptCount/totalActiveMemberships > provision.acceptance/100){
+        //         //Acceptance reached
+        //         return true;
+        //     }
+
+        //     //stakeholderapproval hier toevoegen
+        // }
         return false;
     }
 
@@ -263,6 +266,7 @@ export class ProposalModule extends BaseModule {
                 return true;
             }
         }
+        //stakeholderapproval hier aantoevoegen
         return false;
     }
 
