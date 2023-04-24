@@ -89,11 +89,9 @@ export class ImprovementAsset extends BaseAsset {
 				maxLength: 512,
 			},
 			executionRoles: {
-				type: "array",
+				dataType: 'string',
 				fieldNumber: 11,
-				items: {
-					dataType: "string"
-				}
+				maxLength: 512,
 			},
 			timeBasedConstraint: {
 				dataType: 'string',

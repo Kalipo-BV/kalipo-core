@@ -32,7 +32,7 @@ export interface ImprovementArguments {
     specification: string,
     references?: string,                //Extra information like links, citations ...
     budget?: string,                    //Explanation of the budget.
-    executionRoles?: Array<String>,    //Persons who excecute the proposal, example: 'id; role' -> '1; developer'.
+    executionRoles?: string,    //Persons who excecute the proposal, example: 'id; role' -> '1; developer'.
     timeBasedConstraint?: string,       //Information about for example deadline...
 }
 
@@ -223,11 +223,8 @@ export class ProposalTable extends BaseTable<Proposal> {
                         fieldNumber: 6
                     },
                     executionRoles: {
-                        type: "array",
-                        fieldNumber: 7,
-                        items: {
-                            dataType: "string"
-                        }
+                        dataType: 'string',
+                        fieldNumber: 7
                     },
                     timeBasedConstraint: {
                         dataType: 'string',
