@@ -146,14 +146,6 @@ export class ImprovementAsset extends BaseAsset {
 			throw new Error("You aren't member yet, you still need to accept the invitation")
 		}
 
-
-		//ons gedeelte....
-		// const kalipoAccountToBeInvited
-
-		// Membership check invited account
-		// const invitedMembershipCheck 
-		// throw errors
-
 		// Provisions
 		let provisionId: string | null = null;
 		let provision: ProposalProvisions | null = null;
