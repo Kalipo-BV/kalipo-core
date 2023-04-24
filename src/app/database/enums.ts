@@ -35,6 +35,12 @@ export enum AutonTypeEnum {
     EVENT = "EVENT",
     LESSON = "LESSON"
 }
+//stakeholders resultaten
+export enum StakeholderVote{
+    UNDECIDED = 'UNDECIDED',
+    REJECTED = 'REJECTED',
+    ACCEPTED = 'ACCEPTED',
+}
 
 export enum RoleEnum {
     FULL_MEMBER = "FULL_MEMBER",
@@ -53,6 +59,8 @@ export enum ProposalResult {
     REJECTED = 'REJECTED',
     ACCEPTED = 'ACCEPTED',
 }
+
+
 
 export enum MembershipValidationError {
     NO_ERROR = 'NO_ERROR',
