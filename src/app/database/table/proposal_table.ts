@@ -34,9 +34,6 @@ export interface ImprovementArguments {
     budget?: string,                    //Explanation of the budget.
     executionRoles?: Array<String>,    //Persons who excecute the proposal, example: 'id; role' -> '1; developer'.
     timeBasedConstraint?: string,       //Information about for example deadline...
-    
-    /* should have ↓ */ 
-    // additionalHeaders?: Array<String>,  //The submitter can add extra headers if needed.
 }
 
 export interface BinaryVoteResult {
