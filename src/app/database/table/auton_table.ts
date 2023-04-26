@@ -234,5 +234,5 @@ export class AutonTable extends BaseTable<Auton> {
                 }
             }
         }
-    }
+    };
 }

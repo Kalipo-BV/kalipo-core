@@ -35,9 +35,10 @@ import { PoaIssueTable } from './table/poa_issue_table'
 import { PoaIssueIndex } from './index/poa_issue_index'
 import { MembershipIndex } from './index/membership_index'
 import { AutonUuidIndex } from './index/auton_uuid_index'
+import { GrantContractTable } from './table/grant_contract_table'
 
 export const tableRegistrationClasses: Array<BaseTable> = [new KalipoAccountTable(), new AutonTable(), new MembershipTable(),
-new ProposalTable(), new ProposalProvisionsTable(), new VoteTable(), new ProposalCampaignCommentTable()]
+new ProposalTable(), new ProposalProvisionsTable(), new VoteTable(), new ProposalCampaignCommentTable(), new GrantContractTable()]
 
 export const db = {
     tables: {
@@ -50,7 +51,8 @@ export const db = {
         campaignComment: new ProposalCampaignCommentTable(),
         poa: new PoaTable(),
         poaIssue: new PoaIssueTable(),
-        memberships: new MembershipTable()
+        memberships: new MembershipTable(),
+        grantContractTable: new GrantContractTable(),
     },
     indices: {
         liskId: new LiskIdIndex(),
@@ -62,6 +64,6 @@ export const db = {
         scheduledProposal: new ScheduledProposalIndex(),
         poaName: new PoaNameIndex(),
         poaIssue: new PoaIssueIndex(),
-        memberships: new MembershipIndex()
+        memberships: new MembershipIndex(),
     }
 }

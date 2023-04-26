@@ -19,6 +19,7 @@
 import { Application } from 'lisk-sdk';
 import { AutonModule } from "./modules/auton/auton_module";
 import { CommentModule } from "./modules/comment/comment_module";
+import { GrantContractModule } from "./modules/grant_contract/grant_contract_module";
 import { HelloModule } from "./modules/hello/hello_module";
 import { KalipoAccountModule } from "./modules/kalipo_account/kalipo_account_module";
 import { MembershipModule } from "./modules/membership/membership_module";
@@ -38,4 +39,5 @@ export const registerModules = (app: Application): void => {
     app.registerModule(CommentModule);
     app.registerModule(PoaModule);
     app.registerModule(PoaIssueModule);
+    app.registerModule(GrantContractModule);
 };
