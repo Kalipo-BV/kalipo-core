@@ -13,33 +13,33 @@ export class SignConctractAsset extends BaseAsset {
         type: "object",
         required: ["editFase", "status", "type", "fullySigned", "date", "formData"],
         properties: {
-            contractId: {
-                dataType: "string",
-                fieldNumber: 1,
-            },
+            // contractId: {
+            //     dataType: "string",
+            //     fieldNumber: 1,
+            // },
             editFase: {
                 dataType: "uint32",
-                fieldNumber: 2,
+                fieldNumber: 1,
             },
             status: {
                 dataType: "string",
-                fieldNumber: 3,
+                fieldNumber: 2,
             },
             type: {
                 dataType: "string",
-                fieldNumber: 4,
+                fieldNumber: 3,
             },
             fullySigned: {
                 dataType: "boolean",
-                fieldNumber: 5,
+                fieldNumber: 4,
             },
             date: {
                 dataType: "string",
-                fieldNumber: 6,
+                fieldNumber: 5,
             },
             formData: {
                 type: "object",
-                fieldNumber: 7,
+                fieldNumber: 6,
                 // required: ["parties", "preample", "purpose", "payment", "dates", "propertyRights", "terminationOfAgreement", "governingLawAndJurisdiction", "finalProvisions", "milestones", "custom", "requiredToSign", "signed", "signingWindow"],
                 required: ["parties", "preample", "purpose", "payment", "dates", "propertyRights", "terminationOfAgreement", "governingLawAndJurisdiction", "finalProvisions", "requiredToSign", "signed", "signingWindow"],
                 properties: {

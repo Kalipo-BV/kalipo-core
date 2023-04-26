@@ -19,11 +19,7 @@
 
 import {
     AfterBlockApplyContext,
-
-
     AfterGenesisBlockApplyContext, BaseModule,
-
-
     BeforeBlockApplyContext, TransactionApplyContext
 } from 'lisk-sdk';
 import { db } from '../../database/db';
@@ -44,7 +40,11 @@ export class GrantContractModule extends BaseModule {
             var indexes = await this.actions.getAll();
             var returnList = [];
             for(var element in indexes["ids"]) {
-                returnList.push(await this.actions.getByID({ id: indexes["ids"][element] }));
+                try{
+                    returnList.push(await this.actions.getByID({ id: indexes["ids"][element] }));
+                } catch {
+                    //temporary fix for not removing/emptying existing index list
+                };
             }
             return returnList;
         },
