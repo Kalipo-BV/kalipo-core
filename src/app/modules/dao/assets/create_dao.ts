@@ -262,13 +262,13 @@ export class CreateDaoAsset extends BaseAsset {
 
 		}
 
-		if (asset.hasLegalEntity) {
-			dao.legalEntityProfile = {
-				jurisdiction: asset.jurisdiction,
-				cocId: asset.cocId,
-				businessAddress: asset.businessAddress
-			}
+
+		dao.legalEntityProfile = {
+			jurisdiction: asset.jurisdiction,
+			cocId: asset.cocId,
+			businessAddress: asset.businessAddress
 		}
+
 
 		const daoIdSuccess: string = await db.tables.dao.createRecord(stateStore, transaction, dao, new RowContext())
 
