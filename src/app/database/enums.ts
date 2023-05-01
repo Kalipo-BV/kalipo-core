@@ -27,10 +27,12 @@ export enum checkStatus {
 
 export enum ProposalType {
     MEMBERSHIP_INVITATION = 'membership-invitation',
+    AUTON_CREATION = 'auton-creation',
 }
 
 export enum AutonTypeEnum {
     DEFAULT = "DEFAULT",
+    GOVERNING = "GOVERNING",
     EVENT = "EVENT",
     LESSON = "LESSON"
 }

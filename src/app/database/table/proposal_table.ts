@@ -24,6 +24,17 @@ export interface MembershipInvitationArguments {
     message: string
 }
 
+export interface AutonCreationArguments {
+    name: string,
+    subtitle: string,
+    icon: string,
+    mission: string,
+    vision: string,
+    tags: Array<string>,
+    bulkInviteAccountIds: Array<string>,
+    type: string
+}
+
 export interface BinaryVoteResult {
     result: ProposalResult,
     decided: BigInt,
@@ -52,7 +63,8 @@ export interface Proposal {
     windowOpen: BigInt,
     windowClosed: BigInt,
     binaryVoteResult: BinaryVoteResult,
-    membershipInvitationArguments: MembershipInvitationArguments | null
+    membershipInvitationArguments: MembershipInvitationArguments | null,
+    autonCreationArguments: AutonCreationArguments | null
 }
 
 export class ProposalTable extends BaseTable<Proposal> {
@@ -164,7 +176,7 @@ export class ProposalTable extends BaseTable<Proposal> {
             membershipInvitationArguments: {
                 type: "object",
                 fieldNumber: 15,
-                required: ["accountId", "message"],
+                required: [],
                 properties: {
                     accountId: {
                         dataType: "string",
@@ -176,6 +188,61 @@ export class ProposalTable extends BaseTable<Proposal> {
                     },
                 }
             },
+            autonCreationArguments: {
+                fieldNumber: 16,
+                type: 'object',
+                required: [],
+                properties: {
+                    name: {
+                        dataType: 'string',
+                        fieldNumber: 1,
+                        minLength: 2,
+                        maxLength: 20
+                    },
+                    subtitle: {
+                        dataType: 'string',
+                        fieldNumber: 2,
+                        maxLength: 50
+                    },
+                    icon: {
+                        dataType: 'string',
+                        fieldNumber: 3,
+                        maxLength: 50
+                    },
+                    mission: {
+                        dataType: 'string',
+                        fieldNumber: 4,
+                        maxLength: 1024
+                    },
+                    vision: {
+                        dataType: 'string',
+                        fieldNumber: 5,
+                        maxLength: 1024
+                    },
+                    tags: {
+                        type: "array",
+                        fieldNumber: 6,
+                        maxItems: 5,
+                        items: {
+                            dataType: "string",
+                            maxLength: 16
+                        }
+                    },
+                    bulkInviteAccountIds: {
+                        type: "array",
+                        fieldNumber: 7,
+                        maxItems: 25,
+                        items: {
+                            dataType: "string",
+                            maxLength: 128
+                        }
+                    },
+                    type: {
+                        dataType: 'string',
+                        fieldNumber: 8,
+                    }
+                },
+            }
         }
     }
 

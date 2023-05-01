@@ -16,6 +16,7 @@
  */
 
 import { AfterBlockApplyContext } from "lisk-sdk";
+import { AutonCreationActions } from "./action/auton_creation_actions";
 import { MembershipInvitationAction } from "./action/membership_invitation_actions";
 import { BaseAction } from "./base_action";
 import { ProposalResult } from "./enums";
@@ -23,7 +24,7 @@ import { Auton } from "./table/auton_table";
 import { ProposalProvisions } from "./table/proposal_provisions_table";
 import { Proposal, } from "./table/proposal_table";
 
-const actionRegister: Array<BaseAction<Promise<void>>> = [new MembershipInvitationAction()]
+const actionRegister: Array<BaseAction<Promise<void>>> = [new MembershipInvitationAction(), new AutonCreationActions()]
 
 export const process = async function (proposalResult: ProposalResult, proposalId: string, proposal: Proposal,
     provision: ProposalProvisions, auton: Auton,
@@ -36,6 +37,7 @@ export const process = async function (proposalResult: ProposalResult, proposalI
                     provision, auton, _input)
             } catch (error) {
                 console.log("ERROR: ACTION COULD NOT BE EXECUTED")
+                console.log(error)
             }
 
         }
