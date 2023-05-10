@@ -108,6 +108,7 @@ export class ImprovementAsset extends BaseAsset {
 	// eslint-disable-next-line @typescript-eslint/require-await
 	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
 		console.log("Ik ben in de backend.")
+		console.log(asset.timeBasedConstraint);
 		const TYPE = ProposalType.IMPROVEMENT
 		//  Get latest provision for auton by proposal type membership-invtitation
 		const senderAddress = transaction.senderAddress;
@@ -207,7 +208,7 @@ export class ImprovementAsset extends BaseAsset {
 			references: asset.references,
 			budget: asset.budget,
 			executionRoles: asset.executionRoles,
-			timeBasedConstraint: asset.timeBasedConstrant,       
+			timeBasedConstraint: asset.timeBasedConstraint,       
 		}
 
 		console.log("Na het definiëren van de ImproveArguments.")
