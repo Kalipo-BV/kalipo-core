@@ -197,30 +197,30 @@ export class ProposalTable extends BaseTable<Proposal> {
                     },
                 }
             },
-            stakeholders: {
-                dataType: 'string',
-                fieldNumber: 16,
-            },
-
-
             // stakeholders: {
-            //     type: "array",
+            //     dataType: 'string',
             //     fieldNumber: 16,
-            //     items: {
-            //         type: "object",
-            //         required: ["stakeholderId", "expertise"],
-            //         properties: {
-            //             stakeholderId: {
-            //                 dataType: "string",
-            //                 fieldNumber: 1,
-            //             },
-            //             expertise: {
-            //                 dataType: "string",
-            //                 fieldNumber: 2,
-            //             },
-            //         }
-            //     }
             // },
+
+
+            stakeholders: {
+                type: "array",
+                fieldNumber: 16,
+                items: {
+                    type: "object",
+                    required: ["stakeholderId", "expertise"],
+                    properties: {
+                        stakeholderId: {
+                            dataType: "string",
+                            fieldNumber: 1,
+                        },
+                        expertise: {
+                            dataType: "string",
+                            fieldNumber: 2,
+                        },
+                    }
+                }
+            },
 
         }
     }

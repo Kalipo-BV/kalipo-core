@@ -65,30 +65,30 @@ export class MembershipInvitationAsset extends BaseAsset {
 				fieldNumber: 6,
 				maxLength: 128
 			},
-			stakeholders: {
-				dataType: 'string',
-				fieldNumber: 7,
-				maxLength: 128
-			},
-
 			// stakeholders: {
-            //     type: "array",
-            //     fieldNumber: 7,
-            //     items: {
-            //             type: "object",
-            //             required: ["stakeholderId", "expertise"],
-            //             properties: {
-            //                 stakeholderId: {
-            //                     dataType: "string",
-            //                     fieldNumber: 1,
-            //                 },
-            //                 expertise: {
-            //                     dataType: "string",
-            //                     fieldNumber: 2,
-            //                 },
-            //             }
-            //     },
-            // },
+			// 	dataType: 'string',
+			// 	fieldNumber: 7,
+			// 	maxLength: 128
+			// },
+
+			stakeholders: {
+                type: "array",
+                fieldNumber: 7,
+                items: {
+                        type: "object",
+                        required: ["stakeholderId", "expertise"],
+                        properties: {
+                            stakeholderId: {
+                                dataType: "string",
+                                fieldNumber: 1,
+                            },
+                            expertise: {
+                                dataType: "string",
+                                fieldNumber: 2,
+                            },
+                        }
+                },
+            },
 		},
 	};
 
