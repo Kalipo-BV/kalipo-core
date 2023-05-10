@@ -27,12 +27,19 @@ export enum checkStatus {
 
 export enum ProposalType {
     MEMBERSHIP_INVITATION = 'membership-invitation',
+    PROPOSAL_TEST = 'test_proposaltype'
 }
 
 export enum AutonTypeEnum {
     DEFAULT = "DEFAULT",
     EVENT = "EVENT",
     LESSON = "LESSON"
+}
+//stakeholders resultaten
+export enum StakeholderVote{
+    UNDECIDED = 'UNDECIDED',
+    REJECTED = 'REJECTED',
+    ACCEPTED = 'ACCEPTED',
 }
 
 export enum RoleEnum {
@@ -52,6 +59,8 @@ export enum ProposalResult {
     REJECTED = 'REJECTED',
     ACCEPTED = 'ACCEPTED',
 }
+
+
 
 export enum MembershipValidationError {
     NO_ERROR = 'NO_ERROR',

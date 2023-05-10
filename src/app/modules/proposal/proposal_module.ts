@@ -41,6 +41,12 @@ export interface BinaryVoteCount {
     totalVotes: number,
 }
 
+export interface StakeholderApprovalCount {
+    acceptCount: number,
+    refuseCount: number,
+    totalVotes: number,
+}
+
 export const currentRowContexts: Record<string, RowContext> = {}
 
 export class ProposalModule extends BaseModule {
@@ -76,7 +82,7 @@ export class ProposalModule extends BaseModule {
 
     // public constructor(genesisConfig: GenesisConfig) {
     //     super(genesisConfig);
-    // }
+    //  }
 
     // Lifecycle hooks
     public async beforeBlockApply(_input: BeforeBlockApplyContext) {
@@ -124,6 +130,7 @@ export class ProposalModule extends BaseModule {
 
                             if (auton != null && provision != null) {
                                 const binaryVoteCount = await this.calculateBinaryVoteCount(proposal, _input)
+                                //const stakeholderApprovalCount = await this.calculateStakeholderApprovalCount(proposal, _input)
                                 const totalActiveMembers = await this.calculateTotalActiveMembers(auton, proposal, _input)
                                 const isProposalSupportReached = this.isProposalSupportReached(provision, totalActiveMembers, binaryVoteCount)
                                 const isProposalResistanceReached = this.isProposalResistanceReached(provision, totalActiveMembers, binaryVoteCount)
@@ -194,6 +201,27 @@ export class ProposalModule extends BaseModule {
         return { acceptCount, refuseCount, totalVotes }
     }
 
+    private async calculateStakeholderApprovalCount(proposal: Proposal, _input: AfterBlockApplyContext): Promise<StakeholderApprovalCount> {
+        let acceptCount = 0;
+        let refuseCount = 0;
+
+        for (let vI = 0; vI < proposal.votes.length; vI++) {
+            const voteId = proposal.votes[vI];
+            const vote = await db.tables.vote.getRecord(_input.stateStore, voteId)
+
+            if (vote?.answer == "ACCEPT") {
+                acceptCount++
+            }
+            if (vote?.answer == "REFUSE") {
+                refuseCount++
+            }
+        }
+        const totalVotes = acceptCount + refuseCount;
+        return { acceptCount, refuseCount, totalVotes }
+
+
+    }
+
     private async calculateTotalActiveMembers(auton: Auton, proposal: Proposal, _input: AfterBlockApplyContext): Promise<number> {
         let totalActiveMemberships = 0;
         for (let mI = 0; mI < auton.memberships.length; mI++) {
@@ -209,6 +237,7 @@ export class ProposalModule extends BaseModule {
     }
 
     private isProposalSupportReached(provision: ProposalProvisions, totalActiveMemberships: number, binaryVoteCount: BinaryVoteCount): boolean {
+        
         if (binaryVoteCount.totalVotes / totalActiveMemberships > provision.attendance / 100) {
             // QUORUM REACHED
             if (binaryVoteCount.acceptCount / totalActiveMemberships > provision.acceptance / 100) {
@@ -216,6 +245,16 @@ export class ProposalModule extends BaseModule {
                 return true;
             }
         }
+
+        // if(stakeholderApprovalCount.totalVotes / totalActiveMemberships > provision.attendance /100){
+        //     //QUOROM REACHED
+        //     if(stakeholderApprovalCount.acceptCount/totalActiveMemberships > provision.acceptance/100){
+        //         //Acceptance reached
+        //         return true;
+        //     }
+
+        //     //stakeholderapproval hier toevoegen
+        // }
         return false;
     }
 
@@ -227,6 +266,7 @@ export class ProposalModule extends BaseModule {
                 return true;
             }
         }
+        //stakeholderapproval hier aantoevoegen
         return false;
     }
 
