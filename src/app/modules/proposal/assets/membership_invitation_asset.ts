@@ -65,7 +65,30 @@ export class MembershipInvitationAsset extends BaseAsset {
 				fieldNumber: 6,
 				maxLength: 128
 			},
+			stakeholders: {
+				dataType: 'string',
+				fieldNumber: 7,
+				maxLength: 128
+			},
 
+			// stakeholders: {
+            //     type: "array",
+            //     fieldNumber: 7,
+            //     items: {
+            //             type: "object",
+            //             required: ["stakeholderId", "expertise"],
+            //             properties: {
+            //                 stakeholderId: {
+            //                     dataType: "string",
+            //                     fieldNumber: 1,
+            //                 },
+            //                 expertise: {
+            //                     dataType: "string",
+            //                     fieldNumber: 2,
+            //                 },
+            //             }
+            //     },
+            // },
 		},
 	};
 
@@ -78,6 +101,8 @@ export class MembershipInvitationAsset extends BaseAsset {
 		const TYPE = ProposalType.MEMBERSHIP_INVITATION
 		//  Get latest provision for auton by proposal type membership-invtitation
 		const senderAddress = transaction.senderAddress;
+
+		console.log("KIJKEN OF BACKEND WERKT")
 
 		//Kalipo account
 		const accountIdWrapper = await db.indices.liskId.getRecord(stateStore, senderAddress.toString('hex'))
@@ -216,7 +241,8 @@ export class MembershipInvitationAsset extends BaseAsset {
 			windowOpen: BigInt(windowOpen),
 			windowClosed: BigInt(windowClosed),
 			membershipInvitationArguments: membershipInvitationArguments,
-			binaryVoteResult: binaryVoteResult
+			binaryVoteResult: binaryVoteResult,
+			stakeholders: asset.stakeholders
 		}
 
 		console.log("proposal")

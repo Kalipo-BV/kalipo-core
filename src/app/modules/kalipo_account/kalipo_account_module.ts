@@ -47,6 +47,8 @@ export class KalipoAccountModule extends BaseModule {
             return result;
         },
         getAll: async (params: Record<string, unknown>) => {
+            console.log("test backend")
+            console.log(this._dataAccess.getChainState.bind(this))
             return await db.indices.fullTable.getRecordInJSON(this._dataAccess.getChainState.bind(this), "kalipoAccounts")
         },
         registerNewAccount: async (params: Record<string, unknown>) => {

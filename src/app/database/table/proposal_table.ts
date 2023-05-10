@@ -37,6 +37,11 @@ export interface ProposalAction {
     resultMessage: string,
 }
 
+export interface Stakeholders{
+    stakeholderId: string,
+    expertise: string,
+}
+
 export interface Proposal {
     title: string,
     status: ProposalStatus,
@@ -52,7 +57,9 @@ export interface Proposal {
     windowOpen: BigInt,
     windowClosed: BigInt,
     binaryVoteResult: BinaryVoteResult,
-    membershipInvitationArguments: MembershipInvitationArguments | null
+    membershipInvitationArguments: MembershipInvitationArguments | null,
+    stakeholders: Array<Stakeholders>
+
 }
 
 export class ProposalTable extends BaseTable<Proposal> {
@@ -176,6 +183,31 @@ export class ProposalTable extends BaseTable<Proposal> {
                     },
                 }
             },
+            stakeholders: {
+                dataType: 'string',
+                fieldNumber: 16,
+            },
+
+
+            // stakeholders: {
+            //     type: "array",
+            //     fieldNumber: 16,
+            //     items: {
+            //         type: "object",
+            //         required: ["stakeholderId", "expertise"],
+            //         properties: {
+            //             stakeholderId: {
+            //                 dataType: "string",
+            //                 fieldNumber: 1,
+            //             },
+            //             expertise: {
+            //                 dataType: "string",
+            //                 fieldNumber: 2,
+            //             },
+            //         }
+            //     }
+            // },
+
         }
     }
 
