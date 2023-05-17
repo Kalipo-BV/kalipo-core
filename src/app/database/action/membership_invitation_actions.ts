@@ -19,7 +19,7 @@ import { AfterBlockApplyContext } from "lisk-sdk";
 import { VALID_INVITATION_WINDOW } from "../../modules/membership/membership_module";
 import { BaseAction } from "../base_action";
 import { db } from "../db";
-import { ProposalResult, ProposalType } from "../enums";
+import { checkStatus, ProposalResult, ProposalType, RoleEnum } from "../enums";
 import { Auton } from "../table/auton_table";
 import { Membership, MembershipInvitation } from "../table/membership_table";
 import { ProposalProvisions } from "../table/proposal_provisions_table";
@@ -50,7 +50,10 @@ export class MembershipInvitationAction extends BaseAction<Promise<void>> {
                 comments: [],
                 commentLikes: [],
                 commentDislikes: [],
-                proposals: []
+                proposals: [],
+                role: RoleEnum.FULL_MEMBER,
+                poasIssued: [],
+                checkedStatus: checkStatus.CHECKEDIN
             }
 
             const membershipId = await db.tables.membership.createRecordLifeCycleWay(_input.stateStore, _input.block, newMembership)

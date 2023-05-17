@@ -216,16 +216,24 @@ export class MembershipInvitationAsset extends BaseAsset {
 			windowOpen: BigInt(windowOpen),
 			windowClosed: BigInt(windowClosed),
 			membershipInvitationArguments: membershipInvitationArguments,
+			autonCreationArguments: {
+				name: "",
+				subtitle: "",
+				icon: "",
+				mission: "",
+				vision: "",
+				tags: [],
+				bulkInviteAccountIds: [],
+				type: ""
+			},
 			binaryVoteResult: binaryVoteResult
 		}
 
 		console.log("proposal")
 		console.log(proposal)
 
-		
-
-
 		const proposalId = await db.tables.proposal.createRecord(stateStore, transaction, proposal, new RowContext());
+		console.log("proposal creataed")
 
 		// Setting scheduling
 		const index = await db.indices.scheduledProposal.getRecord(stateStore, "current");
@@ -242,10 +250,13 @@ export class MembershipInvitationAsset extends BaseAsset {
 			await db.indices.scheduledProposal.setRecord(stateStore, "current", newIndex);
 		}
 
+		console.log("index created/updated")
 
 		// Setting reference in auton
 		auton.proposals.push(proposalId);
-		await db.tables.auton.updateRecord(stateStore, asset.autonId, auton)
+		await db.tables.auton.updateRecord(stateStore, asset.autonId, auton);
+
+		console.log("auton updated");
 
 		// Setting reference in membership
 		if (membershipCheck.membership != null && membershipCheck.membershipId != null) {
@@ -253,5 +264,6 @@ export class MembershipInvitationAsset extends BaseAsset {
 			await db.tables.membership.updateRecord(stateStore, membershipCheck.membershipId, membershipCheck.membership)
 		}
 
+		console.log("membership updated")
 	}
 }
