@@ -2,7 +2,6 @@ import { BaseAsset, ApplyAssetContext, ValidateAssetContext } from 'lisk-sdk';
 import { db } from '../../../database/db';
 import { Contract } from '../../../database/table/grant_contract_table';
 import { RowContext } from '../../../database/row_context';
-import { c } from 'tar';
 
 export class SignConctractAsset extends BaseAsset {
 	public name = 'signConctract';
@@ -191,42 +190,42 @@ export class SignConctractAsset extends BaseAsset {
 		// Validate your asset
 	}
 
-    private async _createContract(asset, transaction, stateStore) {
-		// This is the default auton, where poas and event are empty
-		// these fields are only needed for the auton type 'event'
-        console.log(asset, transaction);
+    // private async _createContract(asset, transaction, stateStore) {
+	// 	// This is the default auton, where poas and event are empty
+	// 	// these fields are only needed for the auton type 'event'
+    //     console.log(asset, transaction);
         
 
-        //creator
-        const senderAddress = transaction.senderAddress;
-		const accountIdWrapper = await db.indices.liskId.getRecord(stateStore, senderAddress.toString('hex'));
+    //     //creator
+    //     const senderAddress = transaction.senderAddress;
+	// 	const accountIdWrapper = await db.indices.liskId.getRecord(stateStore, senderAddress.toString('hex'));
         
-        //contract id
-        const contractId = await db.indices.contracts.getRecord(stateStore, senderAddress.toString('hex'));
-        let contract: Contract;
+    //     //contract id
+    //     const contractId = await db.indices.contracts.getRecord(stateStore, senderAddress.toString('hex'));
+    //     let contract: Contract;
 
-        //create new if not exits else update
-		if (contractId == undefined) {
-            contract = {
-                editFase: asset.editFase,
-                status: asset.status,
-                type: asset.type,
-                fullySigned: asset.fullySigned,
-                // signingWindow: asset.signingWindow,
-                date: asset.date,
-                // formData: {"parties": {"client": asset.grant_contract.parties.client, "contractor": asset.grant_contract.parties.contractor}, "preample": asset.grant_contract.preample, "purpose": asset.grant_contract.purpose, "payment": {"amount": asset.grant_contract.payment.amount, "note": asset.grant_contract.payment.note}, "dates": {"startDate": asset.grant_contract.dates.startDate, "endDate": asset.grant_contract.dates.endDate} , "propertyRights": asset.grant_contract.propertyRights, "terminationOfAgreement": asset.grant_contract.terminationOfAgreement, "governingLawAndJurisdiction": asset.grant_contract.governingLawAndJurisdiction, "finalProvisions": asset.grant_contract.finalProvisions, "milestones": asset.grant_contract.milestones, "custom": asset.grant_contract.custom, "requiredToSign": asset.grant_contract.requiredToSign, "signed": asset.grant_contract.signed, "signingWindow": asset.grant_contract.signingWindow},
-                // formData: {"parties": {"client": asset.grant_contract.parties.client, "contractor": asset.grant_contract.parties.contractor}, "preample": asset.grant_contract.preample, "purpose": asset.grant_contract.purpose, "payment": {"amount": asset.grant_contract.payment.amount, "note": asset.grant_contract.payment.note}, "dates": {"startDate": asset.grant_contract.dates.startDate, "endDate": asset.grant_contract.dates.endDate} , "propertyRights": asset.grant_contract.propertyRights, "terminationOfAgreement": asset.grant_contract.terminationOfAgreement, "governingLawAndJurisdiction": asset.grant_contract.governingLawAndJurisdiction, "finalProvisions": asset.grant_contract.finalProvisions, "milestones": asset.grant_contract.milestones, "custom": asset.grant_contract.custom, "requiredToSign": asset.grant_contract.requiredToSign, "signed": asset.grant_contract.signed},
-                formData: asset.formData,
-                createdBy: accountIdWrapper.id,
-                version: asset.version? asset.version : 1,
-                // transacion: transaction  
-            }
-        } else {
+    //     //create new if not exits else update
+	// 	if (contractId == undefined) {
+    //         contract = {
+    //             editFase: asset.editFase,
+    //             status: asset.status,
+    //             type: asset.type,
+    //             fullySigned: asset.fullySigned,
+    //             // signingWindow: asset.signingWindow,
+    //             date: asset.date,
+    //             // formData: {"parties": {"client": asset.grant_contract.parties.client, "contractor": asset.grant_contract.parties.contractor}, "preample": asset.grant_contract.preample, "purpose": asset.grant_contract.purpose, "payment": {"amount": asset.grant_contract.payment.amount, "note": asset.grant_contract.payment.note}, "dates": {"startDate": asset.grant_contract.dates.startDate, "endDate": asset.grant_contract.dates.endDate} , "propertyRights": asset.grant_contract.propertyRights, "terminationOfAgreement": asset.grant_contract.terminationOfAgreement, "governingLawAndJurisdiction": asset.grant_contract.governingLawAndJurisdiction, "finalProvisions": asset.grant_contract.finalProvisions, "milestones": asset.grant_contract.milestones, "custom": asset.grant_contract.custom, "requiredToSign": asset.grant_contract.requiredToSign, "signed": asset.grant_contract.signed, "signingWindow": asset.grant_contract.signingWindow},
+    //             // formData: {"parties": {"client": asset.grant_contract.parties.client, "contractor": asset.grant_contract.parties.contractor}, "preample": asset.grant_contract.preample, "purpose": asset.grant_contract.purpose, "payment": {"amount": asset.grant_contract.payment.amount, "note": asset.grant_contract.payment.note}, "dates": {"startDate": asset.grant_contract.dates.startDate, "endDate": asset.grant_contract.dates.endDate} , "propertyRights": asset.grant_contract.propertyRights, "terminationOfAgreement": asset.grant_contract.terminationOfAgreement, "governingLawAndJurisdiction": asset.grant_contract.governingLawAndJurisdiction, "finalProvisions": asset.grant_contract.finalProvisions, "milestones": asset.grant_contract.milestones, "custom": asset.grant_contract.custom, "requiredToSign": asset.grant_contract.requiredToSign, "signed": asset.grant_contract.signed},
+    //             formData: asset.formData,
+    //             createdBy: accountIdWrapper.id,
+    //             version: asset.version? asset.version : 1,
+    //             // transacion: transaction  
+    //         }
+    //     } else {
 
-        }
+    //     }
 
-        return contract;
-    }
+    //     return contract;
+    // }
 
 	// eslint-disable-next-line @typescript-eslint/require-await
 	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
