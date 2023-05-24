@@ -37,18 +37,19 @@ export interface Dates {
     endDate: string,
 }
 
-export interface Milestones {
-    info: string | null,
-    amount: number,
-}
+// export interface Milestones {
+//     info: string | null,
+//     amount: number,
+// }
 
-export interface Custom {
-    type: string,
-    info: string,
-    data: Buffer,
-}
+// export interface Custom {
+//     type: string,
+//     info: string,
+//     data: Buffer,
+// }
 
 export interface FormData {
+    title: string,
     parties: Parties,
     preample: string,
     purpose: string,
@@ -58,14 +59,15 @@ export interface FormData {
     terminationOfAgreement: string,
     governingLawAndJurisdiction: string,
     finalProvisions: string,
-    milestones: Array<Milestones> | null,
-    custom: Array<Custom> | null,
+    // milestones: Array<Milestones> | null,
+    // custom: Array<Custom> | null,
     requiredToSign: boolean,
     signed: boolean,
     signingWindow: string,
 }
 
 export interface Contract {
+    id: string,
     editFase: BigInt,
     status: string,
     type: string,
@@ -73,6 +75,8 @@ export interface Contract {
     // signingWindow: string,
     date: string,
     formData: FormData,
+    createdBy: string,
+    version: BigInt
     // transaction: string,
 }
 
@@ -83,10 +87,6 @@ export class GrantContractTable extends BaseTable<Contract> {
         type: "object",
         required: ["editFase", "status", "type", "fullySigned", "date", "formData"],
         properties: {
-            // contractId: {
-            //     dataType: "string",
-            //     fieldNumber: 1,
-            // },
             editFase: {
                 dataType: "uint32",
                 fieldNumber: 1,
@@ -111,11 +111,15 @@ export class GrantContractTable extends BaseTable<Contract> {
                 type: "object",
                 fieldNumber: 6,
                 // required: ["parties", "preample", "purpose", "payment", "dates", "propertyRights", "terminationOfAgreement", "governingLawAndJurisdiction", "finalProvisions", "milestones", "custom", "requiredToSign", "signed", "signingWindow"],
-                required: ["parties", "preample", "purpose", "payment", "dates", "propertyRights", "terminationOfAgreement", "governingLawAndJurisdiction", "finalProvisions", "requiredToSign", "signed", "signingWindow"],
+                required: ["title", "parties", "preample", "purpose", "payment", "dates", "propertyRights", "terminationOfAgreement", "governingLawAndJurisdiction", "finalProvisions", "requiredToSign", "signed", "signingWindow"],
                 properties: {
+                    title: {
+                        dataType: "string",
+                        fieldNumber: 1,
+                    },
                     parties: {
                         type: "object",
-                        fieldNumber: 1,
+                        fieldNumber: 2,
 						required: ["client", "contractor"],
                 		properties: {
 							client: {
@@ -136,15 +140,15 @@ export class GrantContractTable extends BaseTable<Contract> {
                     },
                     preample: {
                         dataType: "string",
-                        fieldNumber: 2,
+                        fieldNumber: 3,
                     },
                     purpose: {
                         dataType: "string",
-                        fieldNumber: 3,
+                        fieldNumber: 4,
                     },
                     payment: {
                         type: "object",
-                        fieldNumber: 4,
+                        fieldNumber: 5,
                         required: ["amount"],
                         properties: {
                             amount: {
@@ -159,7 +163,7 @@ export class GrantContractTable extends BaseTable<Contract> {
                     },
                     dates: {
                         type: "object",
-                        fieldNumber: 5,
+                        fieldNumber: 6,
                         required: ["startDate", "endDate"],
                         properties: {
                             startDate: {
@@ -175,75 +179,75 @@ export class GrantContractTable extends BaseTable<Contract> {
                     },
                     propertyRights: {
                         dataType: "string",
-                        fieldNumber: 6,
+                        fieldNumber: 7,
                     },
                     terminationOfAgreement: {
                         dataType: "string",
-                        fieldNumber: 7,
+                        fieldNumber: 8,
                     },
                     governingLawAndJurisdiction: {
                         dataType: "string",
-                        fieldNumber: 8,
+                        fieldNumber: 9,
                     },
                     finalProvisions: {
                         dataType: "string",
-                        fieldNumber: 9,
-                    },
-                    milestones: {
-                        type: "array",
                         fieldNumber: 10,
-                        items: {
-                            type: "object",
-                            // required: ["amount"],
-                            required: [],
-                            properties: {
-                                info: {
-                                    dataType: "string",
-                                    fieldNumber: 1,
-                                },
-                                amount: {
-                                    dataType: "uint32",
-                                    fieldNumber: 2,
-                                },
-                            }
-                        }
                     },
-                    custom: {
-                        type: "array",
-                        fieldNumber: 11,
-                        items: {
-                            type: "object",
-                            // required: ["type", "info", "data"],
-                            required: [],
-                            properties: {
-                                type: {
-                                    //[FINDME_BAS] not sure if string is right for type (unsure)
-                                    dataType: "string",
-                                    fieldNumber: 1,
-                                },
-                                info: {
-                                    dataType: "string",
-                                    fieldNumber: 2,
-                                },
-                                data: {
-                                    //[FINDME_BAS] type based on ^type, not sure how to do this (?cast)
-                                    dataType: "bytes",
-                                    fieldNumber: 3,
-                                },
-                            }
-                        }
-                    },
+                    // milestones: {
+                    //     type: "array",
+                    //     fieldNumber: 10,
+                    //     items: {
+                    //         type: "object",
+                    //         // required: ["amount"],
+                    //         required: [],
+                    //         properties: {
+                    //             info: {
+                    //                 dataType: "string",
+                    //                 fieldNumber: 1,
+                    //             },
+                    //             amount: {
+                    //                 dataType: "uint32",
+                    //                 fieldNumber: 2,
+                    //             },
+                    //         }
+                    //     }
+                    // },
+                    // custom: {
+                    //     type: "array",
+                    //     fieldNumber: 11,
+                    //     items: {
+                    //         type: "object",
+                    //         // required: ["type", "info", "data"],
+                    //         required: [],
+                    //         properties: {
+                    //             type: {
+                    //                 //[FINDME_BAS] not sure if string is right for type (unsure)
+                    //                 dataType: "string",
+                    //                 fieldNumber: 1,
+                    //             },
+                    //             info: {
+                    //                 dataType: "string",
+                    //                 fieldNumber: 2,
+                    //             },
+                    //             data: {
+                    //                 //[FINDME_BAS] type based on ^type, not sure how to do this (?cast)
+                    //                 dataType: "bytes",
+                    //                 fieldNumber: 3,
+                    //             },
+                    //         }
+                    //     }
+                    // },
                     requiredToSign: {
                         dataType: "boolean",
-                        fieldNumber: 12,
+                        fieldNumber: 11,
                     },
                     signed: {
                         dataType: "boolean",
-                        fieldNumber: 13,
+                        fieldNumber: 12,
                     },
                     signingWindow: {
                         dataType: "string",
-                        fieldNumber: 14,
+                        fieldNumber: 13,
                     },
                 }
             },

@@ -19,6 +19,7 @@ import { KalipoAccountTable } from './table/kalipo_account_table'
 import { AutonTable } from './table/auton_table'
 import { MembershipTable } from './table/membership_table'
 import { UsernameIndex } from './index/username_index'
+import { ContractIdIndex } from './index/contract_index'
 import { AutonNameIndex } from './index/auton_name_index'
 import { FullTableIndex } from './index/full_table_index'
 import { AutonTagIndex } from './index/auton_tag_index'
@@ -65,5 +66,6 @@ export const db = {
         poaName: new PoaNameIndex(),
         poaIssue: new PoaIssueIndex(),
         memberships: new MembershipIndex(),
+        contracts: new ContractIdIndex(),
     }
 }
