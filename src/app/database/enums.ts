@@ -30,6 +30,31 @@ export enum ProposalType {
     AUTON_CREATION = 'auton-creation',
 }
 
+export enum GovernmentalDocumentEnum {
+    CONSTITUTION = 'CONSTITUTION',
+    CODE_OF_CONDUCT = 'CODE_OF_CONDUCT',
+    MANIFESTO = 'MANIFESTO',
+}
+
+export enum ChangesEnum {
+    PARENT_CHANGED = 'PARENT_CHANGED',
+    ORDER_CHANGED = 'ORDER_CHANGED',
+    TITLE_CHANGED = 'TITLE_CHANGED',
+    CONTENT_CHANGED = 'CONTENT_CHANGED',
+}
+
+export enum MutationEnum {
+    CREATE = 'CREATE',
+    UPDATE = 'UPDATE',
+    DELETE = 'DELETE',
+}
+
+export enum GovernmentalSectionEnum {
+    GLOSSARY = 'GLOSSARY',
+    PREAMBLES = 'PREAMBLES',
+    ARTICLES = 'ARTICLES',
+}
+
 export enum AutonTypeEnum {
     DEFAULT = "DEFAULT",
     GOVERNING = "GOVERNING",

@@ -130,7 +130,8 @@ export class AutonCreationActions extends BaseAction<Promise<void>> {
                 event: {},
                 lesson: {},
                 daoId: auton.daoId,
-                parentAutonId: proposal.autonId
+                parentAutonId: proposal.autonId,
+                governmentalDocuments: []
             };
 
             const autonId: string = await db.tables.auton.createRecordLifeCycleWay(_input.stateStore, _input.block, autonToCreate)
