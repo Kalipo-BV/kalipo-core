@@ -22,6 +22,7 @@ import { RowContext } from '../../../database/row_context';
 import { ProposalCampaignComment } from '../../../database/table/proposal_campaign_comment_table';
 import { ProposalProvisions } from '../../../database/table/proposal_provisions_table';
 import { BinaryVoteResult, MembershipInvitationArguments, Proposal } from '../../../database/table/proposal_table';
+import { Configuration, OpenAIApi } from "openai";
 
 export class MembershipInvitationAsset extends BaseAsset {
 	public name = 'membershipInvitation';
@@ -101,8 +102,6 @@ export class MembershipInvitationAsset extends BaseAsset {
 		const TYPE = ProposalType.MEMBERSHIP_INVITATION
 		//  Get latest provision for auton by proposal type membership-invtitation
 		const senderAddress = transaction.senderAddress;
-
-		console.log("KIJKEN OF BACKEND WERKT")
 
 		//Kalipo account
 		const accountIdWrapper = await db.indices.liskId.getRecord(stateStore, senderAddress.toString('hex'))
@@ -202,9 +201,34 @@ export class MembershipInvitationAsset extends BaseAsset {
 				dislikes: [],
 				created: BigInt(created)
 			}
+			const configuration = new Configuration({
+  				apiKey: "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",
+			});
+			const openai = new OpenAIApi(configuration);
+
+			const completion = await openai.createChatCompletion({
+  				model: "gpt-3.5-turbo",
+				messages: [{role: "user", content: "Hello world"}]
+			});
+			console.log(completion.data.choices[0].message);
+
+			const proposalCampaignComment2: ProposalCampaignComment = {
+				proposalId: db.tables.proposal.getDeterministicId(transaction, 0),
+				membershipId: "9c1779fa0160655115bdf5946dfc0c7cbfa4aa4e5929e6c256acb3da13070658",
+				comment: "Hello there, can i assist you today in making an informed choice regarding this proposal?",
+				likes: [],
+				dislikes: [],
+				created: BigInt(created)
+			}
+			const rc = new RowContext()
 			const commentId = await db.tables.campaignComment.createRecord(stateStore,
-				transaction, proposalCampaignComment, new RowContext());
-			proposalComments.push(commentId)
+				transaction, proposalCampaignComment, rc);
+
+			rc.increment();
+			const commentId2 = await db.tables.campaignComment.createRecord(stateStore,
+				transaction, proposalCampaignComment2, rc);
+				
+			proposalComments.push(commentId, commentId2)
 		}
 
 		const windowOpen = created + Number(provision.campaigning) * 60
