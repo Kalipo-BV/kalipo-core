@@ -176,12 +176,13 @@ export class DocumentAlterationAsset extends BaseAsset {
 
 	private recursiveTreeCollector(tree): Array<string> {
 		const result = [tree.entryId]
+		console.log(result)
 
 		if (tree.children) {
 			for (let index = 0; index < tree.children.length; index++) {
 				const element = tree.children[index];
-				const tempResult = this.recursiveTreeCollector(element)
-				for (let index2 = 0; index < tempResult.length; index2++) {
+				let tempResult = this.recursiveTreeCollector(element)
+				for (let index2 = 0; index2 < tempResult.length; index2++) {
 					const rItem = tempResult[index2];
 					result.push(rItem)
 				}
@@ -199,14 +200,18 @@ export class DocumentAlterationAsset extends BaseAsset {
 		const allIds: Array<string> = []
 		for (let index = 0; index < input.trees.length; index++) {
 			const treeWrapper = input.trees[index];
+			console.log(treeWrapper)
 			for (let index2 = 0; index2 < treeWrapper.tree.length; index2++) {
 				const tree = treeWrapper.tree[index2];
 				const entryIds = this.recursiveTreeCollector(tree)
-				for (let index3 = 0; index3 < entryIds.length; index3++) {
-					const id = entryIds[index3];
+				console.log(entryIds)
+				for (let indexIds = 0; indexIds < entryIds.length; indexIds++) {
+					const id = entryIds[indexIds];
 					allIds.push(id);
 				}
+
 			}
+
 		}
 
 		for (let index = 0; index < input.mutations.length; index++) {
@@ -225,6 +230,9 @@ export class DocumentAlterationAsset extends BaseAsset {
 
 			// Check when CREATE or UPDATE, the entryId is available in the proposing tree
 			if (mutation.type == MutationEnum.CREATE || mutation.type == MutationEnum.UPDATE) {
+				console.log(allIds)
+				console.log(mutation.entryId)
+				console.log(!allIds.includes(mutation.entryId))
 				if (!allIds.includes(mutation.entryId)) {
 					throw new Error("A mutation is sent in this transaction but not set in a tree, with the following entryId: " + mutation.entryId)
 				}
@@ -268,7 +276,6 @@ export class DocumentAlterationAsset extends BaseAsset {
 		let isNewDocument = false;
 		let document: GovernmentalDocument | null = null;
 		let versions: Array<GovernmentalVersion> = [];
-		let changesMap: Map<string, Array<string>> = new Map();
 		let existingVersionIds: Array<string> = []
 
 		const auton = await db.tables.auton.getRecord(stateStore, input.autonId);
@@ -302,11 +309,30 @@ export class DocumentAlterationAsset extends BaseAsset {
 			}
 		}
 
+		const inputSectionMap = {}
+		for (let index = 0; index < input.trees.length; index++) {
+			const treeWrapper = input.trees[index];
+			const allIds: Array<string> = []
+			for (let index2 = 0; index2 < treeWrapper.tree.length; index2++) {
+				const tree = treeWrapper.tree[index2];
+				const entryIds = this.recursiveTreeCollector(tree)
+				for (let index3 = 0; index3 < entryIds.length; index3++) {
+					const id = entryIds[index3];
+					allIds.push(id);
+				}
+			}
+			inputSectionMap[treeWrapper.section] = allIds;
+		}
+
 		const sectionMap = {}
 		if (versions.length > 0) {
 			const latestVersion = versions[versions.length - 1]
 			for (let index = 0; index < latestVersion.trees.length; index++) {
 				const treeWrapper = latestVersion.trees[index];
+				if (inputSectionMap[treeWrapper.section] == undefined) {
+					throw new Error("The following section seems to be missing in the tree: " + treeWrapper.section)
+				}
+
 				const allIds: Array<string> = []
 				for (let index2 = 0; index2 < treeWrapper.tree.length; index2++) {
 					const tree = treeWrapper.tree[index2];
@@ -317,6 +343,45 @@ export class DocumentAlterationAsset extends BaseAsset {
 					}
 				}
 				sectionMap[treeWrapper.section] = allIds;
+				for (let index2 = 0; index2 < allIds.length; index2++) {
+					const element = allIds[index2];
+					if (inputSectionMap[treeWrapper.section] && !inputSectionMap[treeWrapper.section].includes(element)) {
+						let found = false;
+						for (let index3 = 0; index3 < input.mutations.length; index3++) {
+							const mutation = input.mutations[index3];
+							if (mutation.entryId == element && mutation.type == MutationEnum.DELETE) {
+								found = true;
+								break;
+							}
+						}
+						if (!found) {
+							throw new Error("The following entryId is removed from the tree but does not have a corresponding DELETE mutation: " + element)
+						}
+					}
+				}
+			}
+
+			// Check if all new entryIds in the proposing tree have a corresponding CREATE mutation
+			for (let index = 0; index < input.trees.length; index++) {
+				const treeWrapper = input.trees[index];
+				const inputIds = inputSectionMap[treeWrapper.section]
+				for (let index2 = 0; index2 < inputIds.length; index2++) {
+					const inputId = inputIds[index2];
+					if (sectionMap[treeWrapper.section] && !sectionMap[treeWrapper.section].includes(inputId)) {
+						let found = false;
+						for (let index3 = 0; index3 < input.mutations.length; index3++) {
+							const mutation = input.mutations[index3];
+							if (mutation.entryId == inputId && mutation.type == MutationEnum.CREATE) {
+								found = true;
+								break;
+							}
+						}
+						if (!found) {
+							throw new Error("The following entryId is created in the tree but does not have a corresponding CREATE mutation: " + inputId)
+						}
+					}
+
+				}
 			}
 
 			for (let index = 0; index < input.mutations.length; index++) {
@@ -360,88 +425,6 @@ export class DocumentAlterationAsset extends BaseAsset {
 			}
 		}
 
-
-
-		// for (let index = 0; index < input.mutations.length; index++) {
-		// 	const mutation = input.mutations[index];
-
-		// 	if (mutation.type == MutationEnum.CREATE) {
-
-		// 	} else if (mutation.type == MutationEnum.UPDATE) {
-		// 		let foundOldEntryId = false;
-		// 		let foundNewEntryId = false;
-
-		// 		let hasPrevEntry = false;
-		// 		let prevEntry: GovernmentalEntry | null = null;
-
-		// 		// Match the latest mutation for the provided entryId and catch prev entry
-		// 		for (let index2 = 0; index2 < versions.length; index2++) {
-		// 			const version = versions[index2];
-		// 			for (let index3 = 0; index3 < version.mutations.length; index3++) {
-		// 				const persistedMutation = version.mutations[index3];
-		// 				if (persistedMutation.oldEntryId == mutation.entryId) {
-		// 					foundOldEntryId = true;
-		// 				} else if (persistedMutation.newEntryId == mutation.entryId) {
-		// 					foundNewEntryId = true;
-		// 					if (persistedMutation.oldEntryId) {
-		// 						prevEntry = await db.tables.governmentalEntry.getRecord(stateStore, persistedMutation.oldEntryId)
-		// 						if (prevEntry) {
-		// 							hasPrevEntry = true;
-		// 						}
-		// 					}
-		// 				}
-		// 			}
-		// 		}
-
-		// 		const changes: Array<string> = [];
-		// 		if (hasPrevEntry && prevEntry != null) {
-		// 			if (mutation.title != prevEntry.title) {
-		// 				changes.push(ChangesEnum.TITLE_CHANGED);
-		// 			}
-
-		// 			if (mutation.content != prevEntry.content) {
-		// 				changes.push(ChangesEnum.CONTENT_CHANGED);
-		// 			}
-		// 		}
-		// 		changesMap.set(mutation.entryId, changes);
-
-		// 		// Check if update mutations point to latest entries
-		// 		if (foundOldEntryId) {
-		// 			// Provided entryId already obsolete
-		// 			throw new Error("Entry: '" + mutation.entryId + "' is already updated and no longer the latest")
-		// 		} else if (!foundNewEntryId) {
-		// 			// Provided entryId does not exist
-		// 			throw new Error("Entry: '" + mutation.entryId + "' cannot be updated because it does not exist")
-		// 		}
-		// 	} else if (mutation.type == MutationEnum.DELETE) {
-		// 		let foundOldEntryId = false;
-		// 		let foundNewEntryId = false;
-
-		// 		// Match the latest mutation for the provided entryId and catch prev entry
-		// 		for (let index2 = 0; index2 < versions.length; index2++) {
-		// 			const version = versions[index2];
-		// 			for (let index3 = 0; index3 < version.mutations.length; index3++) {
-		// 				const persistedMutation = version.mutations[index3];
-		// 				if (persistedMutation.oldEntryId == mutation.entryId) {
-		// 					foundOldEntryId = true;
-		// 				} else if (persistedMutation.newEntryId == mutation.entryId) {
-		// 					foundNewEntryId = true;
-		// 				}
-		// 			}
-		// 		}
-
-		// 		// Check if delete mutations point to latest entries
-		// 		if (foundOldEntryId) {
-		// 			// Provided entryId already obsolete
-		// 			throw new Error("EntryId: '" + mutation.entryId + "' cannot be deleted since it's already be updated")
-		// 		} else if (!foundNewEntryId) {
-		// 			// Provided entryId does not exist
-		// 			throw new Error("EntryId: '" + mutation.entryId + "' cannot be deleted because it is already removed or never existed in the first place")
-		// 		}
-		// 	}
-
-		// }
-
 		const newVersion: GovernmentalVersion = {
 			id: db.tables.governmentalVersion.getDeterministicId(transaction, 0),
 			documentId: isNewDocument ? db.tables.governmentalDocument.getDeterministicId(transaction, 0) : input.documentId,
@@ -468,14 +451,23 @@ export class DocumentAlterationAsset extends BaseAsset {
 				}
 
 				const newEntryId = await db.tables.governmentalEntry.createRecord(stateStore, transaction, newEntry, rowContext)
-				const changes: Array<string> | undefined = changesMap.get(mutation.entryId);
-				// Should fetch entry here and compare proposed one to determine changes...
+				const prevEntry = await db.tables.governmentalEntry.getRecord(stateStore, mutation.entryId)
+
+				const changes: Array<string> = [];
+				if (prevEntry) {
+					if (prevEntry.title != newEntry.title) {
+						changes.push(ChangesEnum.TITLE_CHANGED);
+					}
+					if (prevEntry.content != newEntry.content) {
+						changes.push(ChangesEnum.CONTENT_CHANGED);
+					}
+				}
 
 				const governmentalEntryMutation: GovernmentalEntryMutation = {
 					oldEntryId: mutation.type == MutationEnum.CREATE ? '' : mutation.entryId,
 					newEntryId: newEntryId,
 					type: mutation.type,
-					changes: changes ? changes : []
+					changes: changes
 				}
 				newVersion.mutations.push(governmentalEntryMutation);
 			} else if (mutation.type == MutationEnum.DELETE) {
@@ -507,24 +499,26 @@ export class DocumentAlterationAsset extends BaseAsset {
 			}
 		}
 
-		// console.log(newVersion)
-		// await db.tables.governmentalVersion.createRecord(stateStore, transaction, newVersion, new RowContext());
+		newVersion.trees = input.trees;
 
-		// const governmentalDocument: GovernmentalDocument = {
-		// 	id: (input.documentId == "" || input.documentId == "new") ? db.tables.governmentalDocument.getDeterministicId(transaction, 0) : input.documentId,
-		// 	type: input.type,
-		// 	versions: existingVersionIds
-		// }
-		// governmentalDocument.versions.push(db.tables.governmentalVersion.getDeterministicId(transaction, 0));
-		// console.log(governmentalDocument)
+		console.log(newVersion)
+		await db.tables.governmentalVersion.createRecord(stateStore, transaction, newVersion, new RowContext());
 
-		// if (isNewDocument) {
-		// 	await db.tables.governmentalDocument.createRecord(stateStore, transaction, governmentalDocument, new RowContext())
-		// 	auton.governmentalDocuments.push(governmentalDocument.id)
-		// 	await db.tables.auton.updateRecord(stateStore, input.autonId, auton);
-		// } else {
-		// 	await db.tables.governmentalDocument.updateRecord(stateStore, input.documentId, governmentalDocument);
-		// }
+		const governmentalDocument: GovernmentalDocument = {
+			id: (input.documentId == "" || input.documentId == "new") ? db.tables.governmentalDocument.getDeterministicId(transaction, 0) : input.documentId,
+			type: input.type,
+			versions: existingVersionIds
+		}
+		governmentalDocument.versions.push(db.tables.governmentalVersion.getDeterministicId(transaction, 0));
+		console.log(governmentalDocument)
+
+		if (isNewDocument) {
+			await db.tables.governmentalDocument.createRecord(stateStore, transaction, governmentalDocument, new RowContext())
+			auton.governmentalDocuments.push(governmentalDocument.id)
+			await db.tables.auton.updateRecord(stateStore, input.autonId, auton);
+		} else {
+			await db.tables.governmentalDocument.updateRecord(stateStore, input.documentId, governmentalDocument);
+		}
 
 	}
 }
