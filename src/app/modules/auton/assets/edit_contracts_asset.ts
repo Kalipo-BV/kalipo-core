@@ -96,7 +96,6 @@ export class EditContractsAsset extends BaseAsset {
 								required: ["startDate", "endDate"],
 								properties: {
 									startDate: {
-										//[FINDME_BAS] not sure if string is the correct type for dates
 										dataType: "string",
 										fieldNumber: 1,
 									},

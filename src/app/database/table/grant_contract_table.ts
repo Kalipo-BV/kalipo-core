@@ -17,6 +17,7 @@
 
 import { Schema } from "lisk-sdk";
 import { BaseTable } from "../base_table";
+import { Contract } from "./contract_table";
 
 // export interface PartyMembers {
 //     memberCode: string,
@@ -37,17 +38,6 @@ export interface Dates {
     endDate: string,
 }
 
-// export interface Milestones {
-//     info: string | null,
-//     amount: number,
-// }
-
-// export interface Custom {
-//     type: string,
-//     info: string,
-//     data: Buffer,
-// }
-
 export interface FormData {
     title: string,
     parties: Parties,
@@ -59,25 +49,13 @@ export interface FormData {
     terminationOfAgreement: string,
     governingLawAndJurisdiction: string,
     finalProvisions: string,
-    // milestones: Array<Milestones> | null,
-    // custom: Array<Custom> | null,
     requiredToSign: boolean,
     signed: boolean,
     signingWindow: string,
 }
 
-export interface Contract {
-    id: string,
-    editFase: BigInt,
-    status: string,
-    type: string,
-    fullySigned: boolean,
-    // signingWindow: string,
-    date: string,
+export interface GrantContract extends Contract {
     formData: FormData,
-    createdBy: string,
-    version: BigInt
-    // transaction: string,
 }
 
 export class GrantContractTable extends BaseTable<Contract> {
@@ -167,7 +145,6 @@ export class GrantContractTable extends BaseTable<Contract> {
                         required: ["startDate", "endDate"],
                         properties: {
                             startDate: {
-                                //[FINDME_BAS] not sure if string is the correct type for dates
                                 dataType: "string",
                                 fieldNumber: 1,
                             },
@@ -193,50 +170,6 @@ export class GrantContractTable extends BaseTable<Contract> {
                         dataType: "string",
                         fieldNumber: 10,
                     },
-                    // milestones: {
-                    //     type: "array",
-                    //     fieldNumber: 10,
-                    //     items: {
-                    //         type: "object",
-                    //         // required: ["amount"],
-                    //         required: [],
-                    //         properties: {
-                    //             info: {
-                    //                 dataType: "string",
-                    //                 fieldNumber: 1,
-                    //             },
-                    //             amount: {
-                    //                 dataType: "uint32",
-                    //                 fieldNumber: 2,
-                    //             },
-                    //         }
-                    //     }
-                    // },
-                    // custom: {
-                    //     type: "array",
-                    //     fieldNumber: 11,
-                    //     items: {
-                    //         type: "object",
-                    //         // required: ["type", "info", "data"],
-                    //         required: [],
-                    //         properties: {
-                    //             type: {
-                    //                 //[FINDME_BAS] not sure if string is right for type (unsure)
-                    //                 dataType: "string",
-                    //                 fieldNumber: 1,
-                    //             },
-                    //             info: {
-                    //                 dataType: "string",
-                    //                 fieldNumber: 2,
-                    //             },
-                    //             data: {
-                    //                 //[FINDME_BAS] type based on ^type, not sure how to do this (?cast)
-                    //                 dataType: "bytes",
-                    //                 fieldNumber: 3,
-                    //             },
-                    //         }
-                    //     }
-                    // },
                     requiredToSign: {
                         dataType: "boolean",
                         fieldNumber: 11,
@@ -251,10 +184,10 @@ export class GrantContractTable extends BaseTable<Contract> {
                     },
                 }
             },
-            // transaction: {
-            //     dataType: "string",
-            //     fieldNumber: 8,
-            // },
+            uuid: {
+                dataType: "string",
+                fieldNumber: 7,
+            }
         }
     };
 

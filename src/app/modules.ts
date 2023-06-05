@@ -17,6 +17,7 @@
 
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { Application } from 'lisk-sdk';
+import { AgreementModule } from "./modules/agreement/agreement_module";
 import { AutonModule } from "./modules/auton/auton_module";
 import { CommentModule } from "./modules/comment/comment_module";
 import { GrantContractModule } from "./modules/grant_contract/grant_contract_module";
@@ -40,4 +41,5 @@ export const registerModules = (app: Application): void => {
     app.registerModule(PoaModule);
     app.registerModule(PoaIssueModule);
     app.registerModule(GrantContractModule);
+    app.registerModule(AgreementModule);
 };

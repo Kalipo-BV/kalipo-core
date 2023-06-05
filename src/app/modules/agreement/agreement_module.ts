@@ -1,55 +1,42 @@
-/* Kalipo B.V. - the DAO platform for business & societal impact 
- * Copyright (C) 2022 Peter Nobels and Matthias van Dijk
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
 /* eslint-disable class-methods-use-this */
-
+import { db } from '../../database/db';
 import {
     AfterBlockApplyContext,
     AfterGenesisBlockApplyContext, BaseModule,
     BeforeBlockApplyContext, TransactionApplyContext
 } from 'lisk-sdk';
-import { db } from '../../database/db';
-import { SignConctractAsset } from "./assets/sign_conctract_asset";
+import { CreateAgreementAsset } from "./assets/create_agreement_asset";
 
-export class GrantContractModule extends BaseModule {
+export class AgreementModule extends BaseModule {
     public actions = {
         // Example below
         // getBalance: async (params) => this._dataAccess.account.get(params.address).token.balance,
         // getBlockByID: async (params) => this._dataAccess.blocks.get(params.id),
         getByID: async (params: Record<string, unknown>) => {
-            return await db.tables.grantContractTable.getRecordInJSON(this._dataAccess.getChainState.bind(this), (params as { id: string }).id);  
+            return await db.tables.agreementTable.getRecordInJSON(this._dataAccess.getChainState.bind(this), (params as { id: string }).id)
         },
         getAll: async () => {
-            return await db.indices.fullTable.getRecordInJSON(this._dataAccess.getChainState.bind(this), "grantContracts");
+            return await db.indices.fullTable.getRecordInJSON(this._dataAccess.getChainState.bind(this), "agreements")
         },
-        getAllInfo: async () => {
+        getByID2: async (params: Record<string, unknown>) => {
+            return await db.indices.agreements.getRecordInJSON(this._dataAccess.getChainState.bind(this), (params as {id: string}).id)
+        },
+        getAllByAccount: async (params: Record<string, unknown>) => {
+            // this._dataAccess.getAccountByAddress.bind(this);
+            const id = (params as { id: string }).id;
             var indexes = await this.actions.getAll();
             var returnList = [];
             for(var element in indexes["ids"]) {
                 try{
-                    returnList.push(await this.actions.getByID({ id: indexes["ids"][element] }));
+                    var agreement: any = await this.actions.getByID({ id: indexes["ids"][element] });
+                    if(agreement?.client.includes(id) || agreement?.contractor.includes(id) || agreement?.creator == id) {
+                        returnList.push(agreement);
+                    }
                 } catch {
                     //temporary fix for not removing/emptying existing index list
                 };
             }
             return returnList;
-        },
-        getByUuid: async (params: Record<string, unknown>) => {
-            return (await this.actions.getAllInfo()).find(element => element.uuid == (params as { uuid: string }).uuid);
         }
     };
     public reducers = {
@@ -66,13 +53,13 @@ export class GrantContractModule extends BaseModule {
 		// 	return account.token.balance;
 		// },
     };
-    public name = 'grantContract';
-    public transactionAssets = [new SignConctractAsset()];
+    public name = 'agreement';
+    public transactionAssets = [new CreateAgreementAsset()];
     public events = [
         // Example below
-        // 'signConctract',
+        // 'agreement:newBlock',
     ];
-    public id = 1010;
+    public id = 1011;
 
     // public constructor(genesisConfig: GenesisConfig) {
     //     super(genesisConfig);

@@ -50,13 +50,13 @@ export interface Auton {
     poas: Array<string>,
     event: EventProfile,
     lesson: LessonProfile,
-    contracts: Contracts,
+    // contracts: Contracts,
 }
 
-export interface Contracts {
-    grant_contracts: Array<GrantContractTable>,
-    //add more types of contracts here
-}
+// export interface Contracts {
+//     grant_contracts: Array<GrantContractTable>,
+//     //add more types of contracts here
+// }
 
 export interface LessonProfile {
     subject?: string,
