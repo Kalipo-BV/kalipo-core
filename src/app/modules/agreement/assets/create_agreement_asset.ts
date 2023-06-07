@@ -194,7 +194,7 @@ export class CreateAgreementAsset extends BaseAsset {
 			status: {
 				dataType: "string",
 				fieldNumber: 8,
-			}
+			},
 			TID: {
 				dataType: "string",
 				fieldNumber: 9,
