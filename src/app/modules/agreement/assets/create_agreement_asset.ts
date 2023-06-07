@@ -90,7 +90,7 @@ export class CreateAgreementAsset extends BaseAsset {
 						type: "object",
 						fieldNumber: 6,
 						// required: ["parties", "preample", "purpose", "payment", "dates", "propertyRights", "terminationOfAgreement", "governingLawAndJurisdiction", "finalProvisions", "milestones", "custom", "requiredToSign", "signed", "signingWindow"],
-						required: ["title", "parties", "preample", "purpose", "payment", "dates", "propertyRights", "terminationOfAgreement", "governingLawAndJurisdiction", "finalProvisions", "requiredToSign", "signed", "signingWindow"],
+						required: ["title", "parties", "preample", "purpose", "payment", "dates", "propertyRights", "terminationOfAgreement", "governingLawAndJurisdiction", "finalProvisions", "requiredToSign", "signed"],
 						properties: {
 							title: {
 								dataType: "string",
@@ -143,7 +143,7 @@ export class CreateAgreementAsset extends BaseAsset {
 							dates: {
 								type: "object",
 								fieldNumber: 6,
-								required: ["startDate", "endDate"],
+								required: ["startDate", "endDate", "signingDate"],
 								properties: {
 									startDate: {
 										dataType: "string",
@@ -152,6 +152,10 @@ export class CreateAgreementAsset extends BaseAsset {
 									endDate: {
 										dataType: "string",
 										fieldNumber: 2,
+									},
+									signingDate: {
+										dataType: "string",
+										fieldNumber: 3,
 									},
 								}
 							},
@@ -179,10 +183,6 @@ export class CreateAgreementAsset extends BaseAsset {
 								dataType: "boolean",
 								fieldNumber: 12,
 							},
-							signingWindow: {
-								dataType: "string",
-								fieldNumber: 13,
-							},
 						}
 					},
 					uuid: {
@@ -199,7 +199,15 @@ export class CreateAgreementAsset extends BaseAsset {
   	};
 
 	public validate({ asset }: ValidateAssetContext<{}>): void {
-		// Validate your asset
+		if (
+		// asset.creator == "" || asset.creator == undefined ||
+		asset.contractor?.length <= 0 ||
+		asset.client?.length <= 0
+		// asset.clientAuton == "" || asset.clientAuton == undefined ||
+		// asset.contractorAuton == "" || asset.contractorAuton == undefined
+		) {
+			throw new Error('One of the values is not correct/filled in');
+		}
 	}
 
 	// eslint-disable-next-line @typescript-eslint/require-await

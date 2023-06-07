@@ -28,7 +28,6 @@ import {
 } from 'lisk-sdk';
 import { db } from '../../database/db';
 import { CreateAutonAsset } from "./assets/create_auton_asset";
-import { EditContractsAsset } from "./assets/edit_contracts_asset";
 
 export class AutonModule extends BaseModule {
     public actions = {
@@ -69,7 +68,7 @@ export class AutonModule extends BaseModule {
         // },
     };
     public name = 'auton';
-    public transactionAssets = [new CreateAutonAsset(), new EditContractsAsset()];
+    public transactionAssets = [new CreateAutonAsset()];
     public events = [
         // Example below
         // 'auton:newBlock',

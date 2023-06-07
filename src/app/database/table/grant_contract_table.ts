@@ -35,7 +35,8 @@ export interface Payment {
 
 export interface Dates {
     startDate: string,
-    endDate: string,
+    endDate: string,    
+    signingDate: string,
 }
 
 export interface FormData {
@@ -51,7 +52,6 @@ export interface FormData {
     finalProvisions: string,
     requiredToSign: boolean,
     signed: boolean,
-    signingWindow: string,
 }
 
 export interface GrantContract extends Contract {
@@ -89,7 +89,7 @@ export class GrantContractTable extends BaseTable<Contract> {
                 type: "object",
                 fieldNumber: 6,
                 // required: ["parties", "preample", "purpose", "payment", "dates", "propertyRights", "terminationOfAgreement", "governingLawAndJurisdiction", "finalProvisions", "milestones", "custom", "requiredToSign", "signed", "signingWindow"],
-                required: ["title", "parties", "preample", "purpose", "payment", "dates", "propertyRights", "terminationOfAgreement", "governingLawAndJurisdiction", "finalProvisions", "requiredToSign", "signed", "signingWindow"],
+                required: ["title", "parties", "preample", "purpose", "payment", "dates", "propertyRights", "terminationOfAgreement", "governingLawAndJurisdiction", "finalProvisions", "requiredToSign", "signed"],
                 properties: {
                     title: {
                         dataType: "string",
@@ -142,7 +142,7 @@ export class GrantContractTable extends BaseTable<Contract> {
                     dates: {
                         type: "object",
                         fieldNumber: 6,
-                        required: ["startDate", "endDate"],
+                        required: ["startDate", "endDate", "signingDate"],
                         properties: {
                             startDate: {
                                 dataType: "string",
@@ -151,6 +151,10 @@ export class GrantContractTable extends BaseTable<Contract> {
                             endDate: {
                                 dataType: "string",
                                 fieldNumber: 2,
+                            },
+                            signingDate: {
+                                dataType: "string",
+                                fieldNumber: 13,
                             },
                         }
                     },
@@ -177,10 +181,6 @@ export class GrantContractTable extends BaseTable<Contract> {
                     signed: {
                         dataType: "boolean",
                         fieldNumber: 12,
-                    },
-                    signingWindow: {
-                        dataType: "string",
-                        fieldNumber: 13,
                     },
                 }
             },

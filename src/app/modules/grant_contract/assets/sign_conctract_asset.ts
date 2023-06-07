@@ -36,7 +36,7 @@ export class SignConctractAsset extends BaseAsset {
             formData: {
                 type: "object",
                 fieldNumber: 6,
-                required: ["title", "parties", "preample", "purpose", "payment", "dates", "propertyRights", "terminationOfAgreement", "governingLawAndJurisdiction", "finalProvisions", "requiredToSign", "signed", "signingWindow"],
+                required: ["title", "parties", "preample", "purpose", "payment", "dates", "propertyRights", "terminationOfAgreement", "governingLawAndJurisdiction", "finalProvisions", "requiredToSign", "signed"],
                 properties: {
                     title: {
                         dataType: "string",
@@ -89,7 +89,7 @@ export class SignConctractAsset extends BaseAsset {
                     dates: {
                         type: "object",
                         fieldNumber: 6,
-                        required: ["startDate", "endDate"],
+                        required: ["startDate", "endDate", "signingDate"],
                         properties: {
                             startDate: {
                                 dataType: "string",
@@ -98,6 +98,10 @@ export class SignConctractAsset extends BaseAsset {
                             endDate: {
                                 dataType: "string",
                                 fieldNumber: 2,
+                            },
+                            signingDate: {
+                                dataType: "string",
+                                fieldNumber: 3,
                             },
                         }
                     },
@@ -125,10 +129,6 @@ export class SignConctractAsset extends BaseAsset {
                         dataType: "boolean",
                         fieldNumber: 12,
                     },
-                    signingWindow: {
-                        dataType: "string",
-                        fieldNumber: 13,
-                    },
                 }
             },
             uuid: {
@@ -139,7 +139,39 @@ export class SignConctractAsset extends BaseAsset {
     };
 
   	public validate({ asset }: ValidateAssetContext<{}>): void {
-		// Validate your asset
+        if (asset.editFase == undefined ||
+        asset.status == "" || asset.status == undefined || 
+        asset.type == "" || asset.type == undefined || 
+        (asset.fullySigned !== true || asset.fullySigned !== false) || 
+        asset.date == "" || asset.date == undefined || !new Date(asset.date) || 
+        asset.formData?.title == "" || asset.formData?.title == undefined || 
+        asset.formData?.parties?.client?.length > 0 || 
+        asset.formData?.parties?.contractor?.length > 0 || 
+        asset.formData?.preample == "" || asset.formData?.preample == undefined || 
+        asset.formData?.purpose == "" || asset.formData?.purpose == undefined || 
+        asset.formData?.payment?.amount == undefined || 
+        asset.formData?.dates?.startDate == "" || asset.formData?.dates?.startDate == undefined || !new Date(asset.formData?.dates?.startDate) ||
+        asset.formData?.dates?.endDate == "" || asset.formData?.dates?.endDate == undefined || !new Date(asset.formData?.dates?.endDate) ||
+        asset.formData?.dates?.signingDate == "" || asset.formData?.dates?.signingDate == undefined || !new Date(asset.formData?.dates?.signingDate) ||
+        asset.formData?.propertyRights == "" || asset.formData?.propertyRights == undefined || 
+        asset.formData?.terminationOfAgreement == "" || asset.formData?.terminationOfAgreement == undefined || 
+        asset.formData?.governingLawAndJurisdiction == "" || asset.formData?.governingLawAndJurisdiction == undefined || 
+        asset.formData?.finalProvisions == "" || asset.formData?.finalProvisions == undefined || 
+        (asset.formData?.requiredToSign !== true || asset.formData?.requiredToSign !== false) || 
+        (asset.formData?.signed !== true || asset.formData?.signed !== false) || 
+        asset.uuid == "" || asset.uuid == undefined) {
+			throw new Error('One of the values is not correct/filled in #2');
+		}
+		
+		if(asset.editFase <= 0 ||
+        asset.payment?.amount < 0 ||
+        Date.parse(asset.date) < Date.now() ||
+        Date.parse(asset.dates?.startDate) < Date.now() ||
+        Date.parse(asset.dates?.signingDate) < Date.now() ||
+        Date.parse(asset.dates?.endDate) <= Date.parse(asset.dates?.startDate)
+        ) {
+            throw new Error('One of the values is not correct')
+        }
 	}
 
 	// eslint-disable-next-line @typescript-eslint/require-await
