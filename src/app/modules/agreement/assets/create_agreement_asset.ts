@@ -195,23 +195,22 @@ export class CreateAgreementAsset extends BaseAsset {
 				dataType: "string",
 				fieldNumber: 8,
 			},
-			TID: {
+			tid: {
 				dataType: "string",
 				fieldNumber: 9,
 			}
 		},
   	};
 
-	private async checkAccount(account) {
+	private async checkAccount(account, stateStore) {
 		// creator contractor", "client
-		// const accountIdWrapper = await db.indices.liskId.getRecord(stateStore, account)
-		// const accountId = accountIdWrapper?.id
-		// if (accountId == null) {
-		// 	throw new Error("Kalipo account: "+ account + "; not found.")
-		// }
+		const accountIdWrapper = await db.tables.kalipoAccount.getRecord(stateStore, account.toString('hex'));
+		if (accountIdWrapper == null || accountIdWrapper == undefined) {
+			throw new Error("Kalipo account: "+ account + "; not found.");
+		}
 	}
 
-	public async validate({ asset }: ValidateAssetContext<{}>): Promise<void> {
+	public validate({ asset }: ValidateAssetContext<{}>): void {
 		if (
 		// asset.creator == "" || asset.creator == undefined ||
 		asset.contractor?.length <= 0 ||
@@ -221,10 +220,6 @@ export class CreateAgreementAsset extends BaseAsset {
 		) {
 			throw new Error('One of the values is not correct/filled in');
 		} 
-
-		await this.checkAccount(asset.creator);
-		asset.parties.client.array.forEach(async element => {await this.checkAccount(element);});
-		asset.parties.contractor.array.forEach(async element => {await this.checkAccount(element);});
 	}
 
 	// eslint-disable-next-line @typescript-eslint/require-await
@@ -238,19 +233,23 @@ export class CreateAgreementAsset extends BaseAsset {
 		//clientAuton id !!!!
 		const clientAutonIdWrapper = await db.indices.autonUuid.getRecord(stateStore, senderAddress.toString('hex'));
 		let clientAutonId = clientAutonIdWrapper?.id;
-		// let clientAutonId = ""; // [FINDME_BAS]
+
+		//check parties/people
+		await this.checkAccount(accountId, stateStore);
+		asset.client.forEach(async element => {await this.checkAccount(element, stateStore);});
+		asset.contractor.forEach(async element => {await this.checkAccount(element, stateStore);});
 
         //agreement id !!!!
         // const agreementIdWrapper = await db.indices.agreements.getRecord(stateStore, senderAddress.toString('hex'));
         // let agreementId = agreementIdWrapper?.id;
-		let agreementId = asset.TID;
+		let agreementId = asset.tid;
 		console.log(agreementId);
 
 		//create contract
 		const contractId = await db.tables.grantContractTable.createRecord(stateStore, transaction, asset.contract, new RowContext());
 
 		//create new if not exits else update
-		if (agreementId == undefined) {
+		if (agreementId == undefined || agreementId == "") {
 			let newAgreementVersion = [{version: 1, status: asset.status, contract: contractId}],
 
             newAgreement = {

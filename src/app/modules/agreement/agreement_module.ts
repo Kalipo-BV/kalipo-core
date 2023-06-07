@@ -30,7 +30,7 @@ export class AgreementModule extends BaseModule {
                 try{
                     var agreement: any = await this.actions.getByID({ id: indexes["ids"][element] });
                     if(agreement?.client.includes(id) || agreement?.contractor.includes(id) || agreement?.creator == id) {
-                        agreement.TID = indexes["ids"][element];
+                        agreement.tid = indexes["ids"][element];
                         returnList.push(agreement);
                     }
                 } catch {
