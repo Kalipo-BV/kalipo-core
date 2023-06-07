@@ -185,20 +185,33 @@ export class CreateAgreementAsset extends BaseAsset {
 							},
 						}
 					},
-					uuid: {
-						dataType: "string",
-						fieldNumber: 7,
-					}
+					// uuid: {
+					// 	dataType: "string",
+					// 	fieldNumber: 7,
+					// }
 				}
 			},
 			status: {
 				dataType: "string",
 				fieldNumber: 8,
 			}
+			TID: {
+				dataType: "string",
+				fieldNumber: 9,
+			}
 		},
   	};
 
-	public validate({ asset }: ValidateAssetContext<{}>): void {
+	private async checkAccount(account) {
+		// creator contractor", "client
+		// const accountIdWrapper = await db.indices.liskId.getRecord(stateStore, account)
+		// const accountId = accountIdWrapper?.id
+		// if (accountId == null) {
+		// 	throw new Error("Kalipo account: "+ account + "; not found.")
+		// }
+	}
+
+	public async validate({ asset }: ValidateAssetContext<{}>): Promise<void> {
 		if (
 		// asset.creator == "" || asset.creator == undefined ||
 		asset.contractor?.length <= 0 ||
@@ -207,7 +220,11 @@ export class CreateAgreementAsset extends BaseAsset {
 		// asset.contractorAuton == "" || asset.contractorAuton == undefined
 		) {
 			throw new Error('One of the values is not correct/filled in');
-		}
+		} 
+
+		await this.checkAccount(asset.creator);
+		asset.parties.client.array.forEach(async element => {await this.checkAccount(element);});
+		asset.parties.contractor.array.forEach(async element => {await this.checkAccount(element);});
 	}
 
 	// eslint-disable-next-line @typescript-eslint/require-await

@@ -131,10 +131,6 @@ export class SignConctractAsset extends BaseAsset {
                     },
                 }
             },
-            uuid: {
-                dataType: "string",
-                fieldNumber: 7,
-            }
         }
     };
 
@@ -158,8 +154,7 @@ export class SignConctractAsset extends BaseAsset {
         asset.formData?.governingLawAndJurisdiction == "" || asset.formData?.governingLawAndJurisdiction == undefined || 
         asset.formData?.finalProvisions == "" || asset.formData?.finalProvisions == undefined || 
         (asset.formData?.requiredToSign !== true || asset.formData?.requiredToSign !== false) || 
-        (asset.formData?.signed !== true || asset.formData?.signed !== false) || 
-        asset.uuid == "" || asset.uuid == undefined) {
+        (asset.formData?.signed !== true || asset.formData?.signed !== false)) {
 			throw new Error('One of the values is not correct/filled in #2');
 		}
 		

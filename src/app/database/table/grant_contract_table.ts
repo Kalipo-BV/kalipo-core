@@ -184,10 +184,10 @@ export class GrantContractTable extends BaseTable<Contract> {
                     },
                 }
             },
-            uuid: {
-                dataType: "string",
-                fieldNumber: 7,
-            }
+            // uuid: {
+            //     dataType: "string",
+            //     fieldNumber: 7,
+            // }
         }
     };
 
