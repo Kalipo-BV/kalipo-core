@@ -446,7 +446,7 @@ export class DocumentAlterationAsset extends BaseAsset {
 					content: mutation.content
 				};
 
-				if (mutation.type = MutationEnum.CREATE) {
+				if (mutation.type == MutationEnum.CREATE) {
 					replaceInTree[mutation.entryId] = newEntry.id
 				}
 
