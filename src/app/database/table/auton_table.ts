@@ -51,6 +51,7 @@ export interface Auton {
     lesson: LessonProfile,
     daoId: string,
     parentAutonId?: string,
+    governmentalDocuments: Array<string>,
 }
 
 export interface LessonProfile {
@@ -242,6 +243,13 @@ export class AutonTable extends BaseTable<Auton> {
             parentAutonId: {
                 dataType: "string",
                 fieldNumber: 12,
+            },
+            governmentalDocuments: {
+                type: "array",
+                fieldNumber: 13,
+                items: {
+                    dataType: "string",
+                }
             },
         }
     }

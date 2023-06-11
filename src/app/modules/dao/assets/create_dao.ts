@@ -237,7 +237,8 @@ export class CreateDaoAsset extends BaseAsset {
 			poas: [],
 			event: {},
 			lesson: {},
-			daoId: daoId
+			daoId: daoId,
+			governmentalDocuments: []
 		};
 
 		const autonRowContext: RowContext = new RowContext;

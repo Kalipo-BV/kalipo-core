@@ -34,6 +34,7 @@ import { Auton } from '../../database/table/auton_table';
 import { ProposalProvisions } from '../../database/table/proposal_provisions_table';
 import { Proposal } from '../../database/table/proposal_table';
 import { AutonCreationAsset } from "./assets/auton_creation_asset";
+import { DocumentAlterationAsset } from "./assets/document_alteration_asset";
 import { MembershipInvitationAsset } from "./assets/membership_invitation_asset";
 
 export interface BinaryVoteCount {
@@ -68,7 +69,7 @@ export class ProposalModule extends BaseModule {
         // },
     };
     public name = 'proposal';
-    public transactionAssets = [new MembershipInvitationAsset(), new AutonCreationAsset()];
+    public transactionAssets = [new MembershipInvitationAsset(), new AutonCreationAsset(), new DocumentAlterationAsset()];
     public events = [
         // Example below
         'gotDecided'

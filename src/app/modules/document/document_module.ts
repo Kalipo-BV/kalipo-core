@@ -1,57 +1,26 @@
-/* Kalipo B.V. - the DAO platform for business & societal impact 
- * Copyright (C) 2022 Peter Nobels and Matthias van Dijk
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 /* eslint-disable class-methods-use-this */
 
 import {
+    BaseModule,
     AfterBlockApplyContext,
-
-
-    AfterGenesisBlockApplyContext, BaseModule,
-
-
-    BeforeBlockApplyContext, TransactionApplyContext
+    TransactionApplyContext,
+    BeforeBlockApplyContext,
+    AfterGenesisBlockApplyContext,
+    // GenesisConfig
 } from 'lisk-sdk';
 import { db } from '../../database/db';
 
-
-export class AutonModule extends BaseModule {
+export class DocumentModule extends BaseModule {
     public actions = {
-        // Example below
-        // getBalance: async (params) => this._dataAccess.account.get(params.address).token.balance,
-        // getBlockByID: async (params) => this._dataAccess.blocks.get(params.id),
-        getByID: async (params: Record<string, unknown>) => {
-            return await db.tables.auton.getRecordInJSON(this._dataAccess.getChainState.bind(this), (params as { id: string }).id)
+        getGovernmentalDocumentByID: async (params: Record<string, unknown>) => {
+            return await db.tables.governmentalDocument.getRecordInJSON(this._dataAccess.getChainState.bind(this), (params as { id: string }).id)
         },
-        getProvisionByID: async (params: Record<string, unknown>) => {
-            return await db.tables.provisions.getRecordInJSON(this._dataAccess.getChainState.bind(this), (params as { id: string }).id)
+        getGovernmentalVersionByID: async (params: Record<string, unknown>) => {
+            return await db.tables.governmentalVersion.getRecordInJSON(this._dataAccess.getChainState.bind(this), (params as { id: string }).id)
         },
-        getAutonIdByName: async (params: Record<string, unknown>) => {
-            return await db.indices.autonName.getRecord(this._dataAccess.getChainState.bind(this), (params as { name: string }).name)
+        getGovernmentalEntryByID: async (params: Record<string, unknown>) => {
+            return await db.tables.governmentalEntry.getRecordInJSON(this._dataAccess.getChainState.bind(this), (params as { id: string }).id)
         },
-        getAutonIdsByTag: async (params: Record<string, unknown>) => {
-            return await db.indices.autonTag.getRecord(this._dataAccess.getChainState.bind(this), (params as { tag: string }).tag)
-        },
-        getAll: async (params: Record<string, unknown>) => {
-            return await db.indices.fullTable.getRecordInJSON(this._dataAccess.getChainState.bind(this), "autons")
-        },
-        getAutonIdByUUID: async (params: Record<string, unknown>) => {
-            return await db.indices.autonUuid.getRecordInJSON(this._dataAccess.getChainState.bind(this), (params as { uuid: string }).uuid)
-        }
     };
     public reducers = {
         // Example below
@@ -67,13 +36,13 @@ export class AutonModule extends BaseModule {
         // 	return account.token.balance;
         // },
     };
-    public name = 'auton';
+    public name = 'document';
     public transactionAssets = [];
     public events = [
         // Example below
-        // 'auton:newBlock',
+        // 'document:newBlock',
     ];
-    public id = 1003;
+    public id = 1010;
 
     // public constructor(genesisConfig: GenesisConfig) {
     //     super(genesisConfig);

@@ -36,9 +36,13 @@ import { PoaIssueTable } from './table/poa_issue_table'
 import { PoaIssueIndex } from './index/poa_issue_index'
 import { MembershipIndex } from './index/membership_index'
 import { AutonUuidIndex } from './index/auton_uuid_index'
+import { GovernmentalDocumentTable } from './table/governmental_document_table'
+import { GovernmentalVersionTable } from './table/governmental_version_table'
+import { GovernmentalEntryTable } from './table/governmental_entry'
 
 export const tableRegistrationClasses: Array<BaseTable> = [new KalipoAccountTable(), new AutonTable(), new MembershipTable(),
-new ProposalTable(), new ProposalProvisionsTable(), new VoteTable(), new ProposalCampaignCommentTable()]
+new ProposalTable(), new ProposalProvisionsTable(), new VoteTable(), new ProposalCampaignCommentTable(), new GovernmentalDocumentTable(),
+new GovernmentalVersionTable(), new GovernmentalEntryTable()]
 
 export const db = {
     tables: {
@@ -52,7 +56,10 @@ export const db = {
         campaignComment: new ProposalCampaignCommentTable(),
         poa: new PoaTable(),
         poaIssue: new PoaIssueTable(),
-        memberships: new MembershipTable()
+        memberships: new MembershipTable(),
+        governmentalDocument: new GovernmentalDocumentTable(),
+        governmentalVersion: new GovernmentalVersionTable(),
+        governmentalEntry: new GovernmentalEntryTable(),
     },
     indices: {
         liskId: new LiskIdIndex(),
