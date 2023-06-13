@@ -250,7 +250,7 @@ export class CreateAgreementAsset extends BaseAsset {
 
 		//create new if not exits else update
 		if (agreementId == undefined || agreementId == "") {
-			let newAgreementVersion = [{version: 1, status: asset.status, contract: contractId}],
+			let newAgreementVersion = [{version: 1, status: asset.status, signedBy: [accountId], contract: contractId}],
 
             newAgreement = {
 				creator: accountId,
@@ -288,7 +288,7 @@ export class CreateAgreementAsset extends BaseAsset {
 
 			console.log(existingAgreement)
 			if (existingAgreement !== null) {
-				let newAgreementVersion = existingAgreement.agreementVersion.push({version: (existingAgreement.agreementVersion.length() + 1), status: asset.status, contract: asset.contract});
+				let newAgreementVersion = existingAgreement.agreementVersion.push({version: (existingAgreement.agreementVersion.length() + 1), status: asset.status, signedBy: [accountId], contract: asset.contract});
 
 				existingAgreement.creator = accountId;
 				existingAgreement.contractor = asset.contractor;

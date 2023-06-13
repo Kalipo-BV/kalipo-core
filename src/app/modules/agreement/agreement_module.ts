@@ -1,11 +1,12 @@
 /* eslint-disable class-methods-use-this */
-import { db } from '../../database/db';
 import {
     AfterBlockApplyContext,
     AfterGenesisBlockApplyContext, BaseModule,
     BeforeBlockApplyContext, TransactionApplyContext
 } from 'lisk-sdk';
+import { db } from '../../database/db';
 import { CreateAgreementAsset } from "./assets/create_agreement_asset";
+import { SignAgreementVersionAsset } from "./assets/sign_agreement_version_asset";
 
 export class AgreementModule extends BaseModule {
     public actions = {
@@ -38,6 +39,9 @@ export class AgreementModule extends BaseModule {
                 };
             }
             return returnList;
+        },
+        getSignInfo: async (params: Record<string, unknown>) => {
+            return (((await this.actions.getByID(params)).agreementVersion)[(params as {version: number}).version].signedBy);
         }
     };
     public reducers = {
@@ -55,7 +59,7 @@ export class AgreementModule extends BaseModule {
 		// },
     };
     public name = 'agreement';
-    public transactionAssets = [new CreateAgreementAsset()];
+    public transactionAssets = [new CreateAgreementAsset(), new SignAgreementVersionAsset()];
     public events = [
         // Example below
         // 'agreement:newBlock',

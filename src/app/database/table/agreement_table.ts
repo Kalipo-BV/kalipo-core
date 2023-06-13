@@ -26,15 +26,15 @@ export interface Agreement {
     creator: string | null, //User
     contractor: Array<string>, //Users
     client: Array<string>, //Users
-    clientAuton: string | null, //Auton
-    contractorAuton: string | null, //
+    clientAuton: Auton | null,
+    contractorAuton: string | null,
     agreementVersion: Array<AgreementVersion> | null,
 }
 
 export interface AgreementVersion {
     version: number,
     status: string,
-    contract: string, //Contract
+    contract: Contract,
 }
 
 export class AgreementTable extends BaseTable<Agreement> {
@@ -85,9 +85,16 @@ export class AgreementTable extends BaseTable<Agreement> {
 							dataType: "string",
 							fieldNumber: 2,
 						},
+						signedBy: {
+							type: "array",
+							fieldNumber: 3,
+							items: {
+								dataType: "string",
+							}
+						},
 						contract: {
 							dataType: "string",
-							fieldNumber: 3,
+							fieldNumber: 4,
 						},
 					}
 				}
