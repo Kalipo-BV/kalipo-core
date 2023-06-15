@@ -155,7 +155,7 @@ export class SignConctractAsset extends BaseAsset {
         asset.formData?.finalProvisions == "" || asset.formData?.finalProvisions == undefined || 
         (asset.formData?.requiredToSign !== true || asset.formData?.requiredToSign !== false) || 
         (asset.formData?.signed !== true || asset.formData?.signed !== false)) {
-			throw new Error('One of the values is not correct/filled in #2');
+			throw new Error('One of the values is not correct/filled in');
 		}
 		
 		if(asset.editFase <= 0 ||

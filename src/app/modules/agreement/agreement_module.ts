@@ -41,7 +41,21 @@ export class AgreementModule extends BaseModule {
             return returnList;
         },
         getSignInfo: async (params: Record<string, unknown>) => {
-            return (((await this.actions.getByID(params)).agreementVersion)[(params as {version: number}).version].signedBy);
+            // return (((await this.actions.getByID(params)).agreementVersion)[(params as {version: number}).version].signedBy);
+            const data = (await this.actions.getByID(params)); //.agreementVersion[(params as {version: number}).version].signedBy
+            const singInfo = data?.agreementVersion[(params as {version: number}).version - 1].signedBy
+            let test = {};
+            test[(await db.tables.kalipoAccount.getRecordInJSON(this._dataAccess.getChainState.bind(this), data?.creator))?.name] = singInfo.includes(data?.creator);
+
+            await Promise.all((data?.contractor || []).map(async (element) => {
+                test[(await db.tables.kalipoAccount.getRecordInJSON(this._dataAccess.getChainState.bind(this), element))?.name] = singInfo.includes(element);
+                console.log("test2 = ", test)
+            }));
+            await Promise.all((data?.client || []).map(async (element) => {
+                test[(await db.tables.kalipoAccount.getRecordInJSON(this._dataAccess.getChainState.bind(this), element))?.name] = singInfo.includes(element);
+            }));
+            
+            return test;
         }
     };
     public reducers = {
