@@ -129,6 +129,10 @@ export class SignConctractAsset extends BaseAsset {
                         dataType: "boolean",
                         fieldNumber: 12,
                     },
+                    productDescription: {
+                        dataType: "string",
+                        fieldNumber: 13,
+                    }
                 }
             },
         }
@@ -144,6 +148,7 @@ export class SignConctractAsset extends BaseAsset {
         asset.formData?.parties?.client?.length > 0 || 
         asset.formData?.parties?.contractor?.length > 0 || 
         asset.formData?.preample == "" || asset.formData?.preample == undefined || 
+        asset.formData?.productDescription == "" || asset.formData?.productDescription == undefined || 
         asset.formData?.purpose == "" || asset.formData?.purpose == undefined || 
         asset.formData?.payment?.amount == undefined || 
         asset.formData?.dates?.startDate == "" || asset.formData?.dates?.startDate == undefined || !new Date(asset.formData?.dates?.startDate) ||

@@ -89,7 +89,6 @@ export class CreateAgreementAsset extends BaseAsset {
 					formData: {
 						type: "object",
 						fieldNumber: 6,
-						// required: ["parties", "preample", "purpose", "payment", "dates", "propertyRights", "terminationOfAgreement", "governingLawAndJurisdiction", "finalProvisions", "milestones", "custom", "requiredToSign", "signed", "signingWindow"],
 						required: ["title", "parties", "preample", "purpose", "payment", "dates", "propertyRights", "terminationOfAgreement", "governingLawAndJurisdiction", "finalProvisions", "requiredToSign", "signed"],
 						properties: {
 							title: {
@@ -183,6 +182,10 @@ export class CreateAgreementAsset extends BaseAsset {
 								dataType: "boolean",
 								fieldNumber: 12,
 							},
+							productDescription: {
+								dataType: "string",
+								fieldNumber: 13,
+							}
 						}
 					},
 					// uuid: {

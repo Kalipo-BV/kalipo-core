@@ -19,10 +19,6 @@ import { Schema } from "lisk-sdk";
 import { BaseTable } from "../base_table";
 import { Contract } from "./contract_table";
 
-// export interface PartyMembers {
-//     memberCode: string,
-// }
-
 export interface Parties {
     client: Array<string> | null,
     contractor: Array<string> | null
@@ -52,6 +48,7 @@ export interface FormData {
     finalProvisions: string,
     requiredToSign: boolean,
     signed: boolean,
+    productDescription: string,
 }
 
 export interface GrantContract extends Contract {
@@ -88,7 +85,6 @@ export class GrantContractTable extends BaseTable<Contract> {
             formData: {
                 type: "object",
                 fieldNumber: 6,
-                // required: ["parties", "preample", "purpose", "payment", "dates", "propertyRights", "terminationOfAgreement", "governingLawAndJurisdiction", "finalProvisions", "milestones", "custom", "requiredToSign", "signed", "signingWindow"],
                 required: ["title", "parties", "preample", "purpose", "payment", "dates", "propertyRights", "terminationOfAgreement", "governingLawAndJurisdiction", "finalProvisions", "requiredToSign", "signed"],
                 properties: {
                     title: {
@@ -182,6 +178,10 @@ export class GrantContractTable extends BaseTable<Contract> {
                         dataType: "boolean",
                         fieldNumber: 12,
                     },
+                    productDescription: {
+                        dataType: "string",
+                        fieldNumber: 13,
+                    }
                 }
             },
             // uuid: {
