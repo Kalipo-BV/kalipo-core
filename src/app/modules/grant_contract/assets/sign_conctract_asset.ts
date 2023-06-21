@@ -194,6 +194,9 @@ export class SignConctractAsset extends BaseAsset {
             version: 1, 
         };
 
+        // formData.parties.client = [...asset.formData.parties.client]
+        // formData.parties.contractor = [...asset.formData.parties.contractor]
+
         let contractId = await db.tables.grantContractTable.createRecord(stateStore, transaction, newContract, new RowContext());
         let allContractIds = await db.indices.fullTable.getRecord(stateStore, "grantContracts");
 

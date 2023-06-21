@@ -188,10 +188,6 @@ export class CreateAgreementAsset extends BaseAsset {
 							}
 						}
 					},
-					// uuid: {
-					// 	dataType: "string",
-					// 	fieldNumber: 7,
-					// }
 				}
 			},
 			status: {
@@ -242,9 +238,7 @@ export class CreateAgreementAsset extends BaseAsset {
 		asset.client.forEach(async element => {await this.checkAccount(element, stateStore);});
 		asset.contractor.forEach(async element => {await this.checkAccount(element, stateStore);});
 
-        //agreement id !!!!
-        // const agreementIdWrapper = await db.indices.agreements.getRecord(stateStore, senderAddress.toString('hex'));
-        // let agreementId = agreementIdWrapper?.id;
+        //agreement id
 		let agreementId = asset.tid;
 		console.log(agreementId);
 
@@ -276,29 +270,18 @@ export class CreateAgreementAsset extends BaseAsset {
 			}
 			
 			await db.indices.fullTable.setRecord(stateStore, "agreements", allAgreementIds);
-
-			// await db.indices.agreements.setRecord(stateStore, senderAddress.toString('hex'), {
-			// 	id: agreementId
-			// });
         } else {
-			// await db.indices.liskId.getRecord(stateStore, senderAddress.toString('hex'));
 			const existingAgreement = await db.tables.agreementTable.getRecord(stateStore, agreementId.toString('hex'))
 
-			// Release previous claimed username by setting index to null
-			// if (existingAgreement?.id !== undefined) {
-			// 	db.indices.agreements.deleteRecord(stateStore, existingAgreement.id);
-			// }
-
-			console.log(existingAgreement)
 			if (existingAgreement !== null) {
-				let newAgreementVersion = existingAgreement.agreementVersion.push({version: (existingAgreement.agreementVersion.length() + 1), status: asset.status, signedBy: [accountId], contract: asset.contract});
+				
+				existingAgreement.agreementVersion.push({version: (existingAgreement.agreementVersion.length + 1), status: asset.status, signedBy: [accountId], contract: contractId});
 
 				existingAgreement.creator = accountId;
 				existingAgreement.contractor = asset.contractor;
 				existingAgreement.client = asset.client;
 				existingAgreement.clientAuton = clientAutonId;
 				existingAgreement.contractorAuton = asset.contractorAuton;
-				existingAgreement.agreementVersion = newAgreementVersion;
 
 				if (agreementId) {
 					await db.tables.agreementTable.updateRecord(stateStore, agreementId, existingAgreement)
@@ -306,11 +289,13 @@ export class CreateAgreementAsset extends BaseAsset {
 			}
         }
 
-        // await db.indices.agreements.setRecord(stateStore, asset.agreement, { id: agreementId })
 		await db.indices.agreements.setRecord(stateStore, senderAddress.toString('hex'), {
 			id: agreementId
 		});
+
+		// let allAgreementIds = await db.indices.fullTable.getRecord(stateStore, "agreements");
+		// await db.indices.fullTable.setRecord(stateStore, "agreements", allAgreementIds);
 		
-		console.log("E")
+		// console.log("E")
 	}
 }
