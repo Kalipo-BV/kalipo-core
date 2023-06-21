@@ -72,7 +72,7 @@ export class GrantContractModule extends BaseModule {
         // Example below
         // 'signConctract',
     ];
-    public id = 1010;
+    public id = 1012;
 
     // public constructor(genesisConfig: GenesisConfig) {
     //     super(genesisConfig);
