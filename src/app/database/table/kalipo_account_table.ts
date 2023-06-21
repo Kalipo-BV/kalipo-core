@@ -23,6 +23,7 @@ export interface Social {
     link: string
 }
 
+
 export interface KalipoAccount {
     id: string,
     username: string,
@@ -32,6 +33,7 @@ export interface KalipoAccount {
     memberships: Array<string>
     transaction: string,
     issuedPoas: Array<string>,
+    stakeholderNotification: Array<string>,
 }
 
 export class KalipoAccountTable extends BaseTable<KalipoAccount> {
@@ -90,6 +92,13 @@ export class KalipoAccountTable extends BaseTable<KalipoAccount> {
                 items: {
                     dataType: "string",
                 }
+            },
+            stakeholderNotification: {
+                type: "array",
+                fieldNumber: 8,
+                items: {
+                    dataType: "string",
+                },
             },
         }
     }
