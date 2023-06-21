@@ -76,6 +76,7 @@ export class CreateAccountAsset extends BaseAsset {
 				memberships: [],
 				transaction: transaction.id.toString('hex'),
 				issuedPoas: [],
+				stakeholderNotification: []
 			}
 			const accountRowContext = new RowContext();
 			accountId = await db.tables.kalipoAccount.createRecord(stateStore, transaction, newKalipoAccount, accountRowContext)

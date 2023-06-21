@@ -22,6 +22,7 @@ import { RowContext } from '../../../database/row_context';
 import { ProposalCampaignComment } from '../../../database/table/proposal_campaign_comment_table';
 import { ProposalProvisions } from '../../../database/table/proposal_provisions_table';
 import { BinaryVoteResult, MembershipInvitationArguments, Proposal } from '../../../database/table/proposal_table';
+import { devNull } from 'os';
 
 export class MembershipInvitationAsset extends BaseAsset {
 	public name = 'membershipInvitation';
@@ -189,6 +190,7 @@ export class MembershipInvitationAsset extends BaseAsset {
 		if (provision == null) {
 			throw new Error("This type has not been constitutionalised")
 		}
+		console.log("LOG 1")
 
 		const created = stateStore.chain.lastBlockHeaders[0].timestamp
 
@@ -224,6 +226,7 @@ export class MembershipInvitationAsset extends BaseAsset {
 			refusedCount: 0,
 			decided: BigInt(0)
 		}
+		console.log("LOG 2")
 
 		// Creating proposal
 		const proposal: Proposal = {
@@ -252,6 +255,7 @@ export class MembershipInvitationAsset extends BaseAsset {
 
 
 		const proposalId = await db.tables.proposal.createRecord(stateStore, transaction, proposal, new RowContext());
+		console.log("LOG 3")
 
 		// Setting scheduling
 		const index = await db.indices.scheduledProposal.getRecord(stateStore, "current");
@@ -267,6 +271,7 @@ export class MembershipInvitationAsset extends BaseAsset {
 			const newIndex = { data: [{ id: proposalId, scheduled: BigInt(windowOpen) }] }
 			await db.indices.scheduledProposal.setRecord(stateStore, "current", newIndex);
 		}
+		console.log("LOG 4")
 
 
 		// Setting reference in auton
@@ -278,6 +283,37 @@ export class MembershipInvitationAsset extends BaseAsset {
 			membershipCheck.membership.proposals.push(proposalId);
 			await db.tables.membership.updateRecord(stateStore, membershipCheck.membershipId, membershipCheck.membership)
 		}
+		console.log("LOG 5")
+		// voeg hier alerts/meldingen toe
+		const proposalIndex = asset.proposalIndex;
+		const autonName = asset.autonName
+
+		const dict = [{autonName: autonName, proposalIndex: proposalIndex},]
+		console.log("Proposal id wordt ontvangen: ")
+		console.log(dict)
+
+		for(let advisor in asset.stakeholders){
+			console.log("EERSTEKEER LOOP: ")
+			console.log(advisor)
+		}
+		// asset.stakeholders.length gaf niet de length terug, maar omdat het altijd 
+		// 3 zal zijn doe ik gewoon hardcoded 3 nu
+		for(let i = 0; i< 3; i++){
+
+			if(asset.stakeholders[i].stakeholderId != ""){
+				// hier moet het aan de stakeholder account toegevoegd worden
+				const stakeholder = await db.tables.kalipoAccount.getRecord(stateStore, asset.stakeholders[i].stakeholderId)
+				if(stakeholder.stakeholderNotification == null){
+					stakeholder.stakeholderNotification = [];
+				}
+				stakeholder.stakeholderNotification.push(proposalId);
+				await db.tables.kalipoAccount.updateRecord(stateStore, asset.stakeholders[i].stakeholderId, stakeholder);
+				// check of alles goed wordt geupdate
+			}
+		}
+		
+		
+
 
 	}
 }
