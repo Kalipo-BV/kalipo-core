@@ -23,16 +23,16 @@ import { ProposalCampaignComment } from '../../../database/table/proposal_campai
 import { ProposalProvisions } from '../../../database/table/proposal_provisions_table';
 import { BinaryVoteResult, MembershipInvitationArguments, Proposal } from '../../../database/table/proposal_table';
 
-export class MembershipInvitationAsset extends BaseAsset {
-	public name = 'membershipInvitation';
-	public id = 0;
+export class AutonCreationAsset extends BaseAsset {
+	public name = 'autonCreation';
+	public id = 1;
 
 	// Define schema for asset
 	public schema = {
-		$id: 'proposal/membershipInvitation-asset',
-		title: 'MembershipInvitationAsset transaction asset for proposal module',
+		$id: 'proposal/autonCreation-asset',
+		title: 'AutonCreationAsset transaction asset for proposal module',
 		type: 'object',
-		required: ["title", "proposalType", "autonId", "accountIdToInvite"],
+		required: ["title", "proposalType", "autonId", "autonCreationArguments"],
 		properties: {
 			title: {
 				dataType: 'string',
@@ -55,17 +55,61 @@ export class MembershipInvitationAsset extends BaseAsset {
 				fieldNumber: 4,
 				maxLength: 256,
 			},
-			accountIdToInvite: {
-				dataType: 'string',
+			autonCreationArguments: {
 				fieldNumber: 5,
-				maxLength: 256
-			},
-			invitationMessage: {
-				dataType: 'string',
-				fieldNumber: 6,
-				maxLength: 128
-			},
-
+				type: 'object',
+				required: ["name", "type"],
+				properties: {
+					name: {
+						dataType: 'string',
+						fieldNumber: 1,
+						minLength: 2,
+						maxLength: 20
+					},
+					subtitle: {
+						dataType: 'string',
+						fieldNumber: 2,
+						maxLength: 50
+					},
+					icon: {
+						dataType: 'string',
+						fieldNumber: 3,
+						maxLength: 50
+					},
+					mission: {
+						dataType: 'string',
+						fieldNumber: 4,
+						maxLength: 1024
+					},
+					vision: {
+						dataType: 'string',
+						fieldNumber: 5,
+						maxLength: 1024
+					},
+					tags: {
+						type: "array",
+						fieldNumber: 6,
+						maxItems: 5,
+						items: {
+							dataType: "string",
+							maxLength: 16
+						}
+					},
+					bulkInviteAccountIds: {
+						type: "array",
+						fieldNumber: 7,
+						maxItems: 25,
+						items: {
+							dataType: "string",
+							maxLength: 128
+						}
+					},
+					type: {
+						dataType: 'string',
+						fieldNumber: 8,
+					}
+				},
+			}
 		},
 	};
 
@@ -75,7 +119,7 @@ export class MembershipInvitationAsset extends BaseAsset {
 
 	// eslint-disable-next-line @typescript-eslint/require-await
 	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
-		const TYPE = ProposalType.MEMBERSHIP_INVITATION
+		const TYPE = ProposalType.AUTON_CREATION;
 		//  Get latest provision for auton by proposal type membership-invtitation
 		const senderAddress = transaction.senderAddress;
 
@@ -85,10 +129,6 @@ export class MembershipInvitationAsset extends BaseAsset {
 
 		if (accountId == null) {
 			throw new Error("No Kalipo account found for this Lisk account")
-		}
-
-		if (accountId == asset.accountIdToInvite) {
-			throw new Error("You cannot invite yourself")
 		}
 
 		const kalipoAccount = await db.tables.kalipoAccount.getRecord(stateStore, accountId)
@@ -115,29 +155,17 @@ export class MembershipInvitationAsset extends BaseAsset {
 			throw new Error("You aren't member yet, you still need to accept the invitation")
 		}
 
-		// Membership check invited account
-		const kalipoAccountToBeInvited = await db.tables.kalipoAccount.getRecord(stateStore, asset.accountIdToInvite)
+		// Auton name availability
 
-		// Membership check invited account
-		const invitedMembershipCheck = await db.tables.membership.validateMembership(kalipoAccountToBeInvited, asset.autonId, stateStore);
-		if (invitedMembershipCheck.error == MembershipValidationError.ACCOUNT_NOT_FOUND) {
-			throw new Error("The account you try to invite does not exist")
-		}
-
-		if (invitedMembershipCheck.error == MembershipValidationError.NO_ERROR) {
-			throw new Error("The account you try to invite is already member")
-		}
-
-		if (invitedMembershipCheck.error == MembershipValidationError.OPEN_INVITATION_NOT_ACCEPTED_OR_REFUSED) {
-			throw new Error("The account you try to invite is has already an open invitation")
+		const alreadyRegisteredAuton = await db.indices.autonName.getRecord(stateStore, asset.autonCreationArguments.name);
+		if (alreadyRegisteredAuton !== null) {
+			throw new Error("Oops this auton name is already taken")
 		}
 
 		// Provisions
 		let provisionId: string | null = null;
 		let provision: ProposalProvisions | null = null;
-		console.log("AUTON: ")
-		console.log(auton)
-		console.log(auton.constitution[0].provisions)
+
 		for (let index = 0; index < auton.constitution.length; index++) {
 			const proposalType = auton.constitution[index];
 			if (proposalType.type == TYPE) {
@@ -185,13 +213,6 @@ export class MembershipInvitationAsset extends BaseAsset {
 		const windowOpen = created + Number(provision.campaigning) * 60
 		const windowClosed = windowOpen + Number(provision.votingWindow) * 60
 
-		const invitationMessage = asset.invitationMessage ? asset.invitationMessage : "Join us"
-
-		const membershipInvitationArguments: MembershipInvitationArguments = {
-			accountId: asset.accountIdToInvite,
-			message: invitationMessage
-		}
-
 		const binaryVoteResult: BinaryVoteResult = {
 			result: ProposalResult.UNDECIDED,
 			memberCount: 0,
@@ -205,7 +226,7 @@ export class MembershipInvitationAsset extends BaseAsset {
 			title: asset.title,
 			status: ProposalStatus.CAMPAIGNING,
 			actions: [],
-			type: ProposalType.MEMBERSHIP_INVITATION,
+			type: ProposalType.AUTON_CREATION,
 			membershipId: submitterMembershipId,
 			provisionId: provisionId,
 			autonId: asset.autonId,
@@ -215,25 +236,12 @@ export class MembershipInvitationAsset extends BaseAsset {
 			created: BigInt(created),
 			windowOpen: BigInt(windowOpen),
 			windowClosed: BigInt(windowClosed),
-			membershipInvitationArguments: membershipInvitationArguments,
-			autonCreationArguments: {
-				name: "",
-				subtitle: "",
-				icon: "",
-				mission: "",
-				vision: "",
-				tags: [],
-				bulkInviteAccountIds: [],
-				type: ""
-			},
+			membershipInvitationArguments: { accountId: "", message: "" },
+			autonCreationArguments: asset.autonCreationArguments,
 			binaryVoteResult: binaryVoteResult
 		}
 
-		console.log("proposal")
-		console.log(proposal)
-
 		const proposalId = await db.tables.proposal.createRecord(stateStore, transaction, proposal, new RowContext());
-		console.log("proposal creataed")
 
 		// Setting scheduling
 		const index = await db.indices.scheduledProposal.getRecord(stateStore, "current");
@@ -250,20 +258,14 @@ export class MembershipInvitationAsset extends BaseAsset {
 			await db.indices.scheduledProposal.setRecord(stateStore, "current", newIndex);
 		}
 
-		console.log("index created/updated")
-
 		// Setting reference in auton
 		auton.proposals.push(proposalId);
-		await db.tables.auton.updateRecord(stateStore, asset.autonId, auton);
-
-		console.log("auton updated");
+		await db.tables.auton.updateRecord(stateStore, asset.autonId, auton)
 
 		// Setting reference in membership
 		if (membershipCheck.membership != null && membershipCheck.membershipId != null) {
 			membershipCheck.membership.proposals.push(proposalId);
 			await db.tables.membership.updateRecord(stateStore, membershipCheck.membershipId, membershipCheck.membership)
 		}
-
-		console.log("membership updated")
 	}
 }

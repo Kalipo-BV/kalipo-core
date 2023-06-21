@@ -15,27 +15,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { BaseAsset, ApplyAssetContext, ValidateAssetContext, HTTPAPIPlugin } from 'lisk-sdk';
-import { Membership, MembershipInvitation } from '../../../database/table/membership_table';
-import { Auton, ProposalTypeConstitution } from '../../../database/table/auton_table';
+import { ChainStateStore } from '@liskhq/lisk-chain/dist-node/state_store/chain_state_store';
+import { BaseAsset, ApplyAssetContext, ValidateAssetContext, codec } from 'lisk-sdk';
 import { db } from '../../../database/db';
-import { KalipoAccount } from '../../../database/table/kalipo_account_table';
+import { AutonTypeEnum, checkStatus, RoleEnum } from '../../../database/enums';
 import { RowContext } from '../../../database/row_context';
+import { Auton, ProposalTypeConstitution } from '../../../database/table/auton_table';
+import { Dao } from '../../../database/table/dao_table';
+import { KalipoAccount } from '../../../database/table/kalipo_account_table';
+import { Membership, MembershipInvitation } from '../../../database/table/membership_table';
 import { templates } from '../../../database/templates';
 import { VALID_INVITATION_WINDOW } from '../../membership/membership_module';
-import { AutonTypeEnum, checkStatus, RoleEnum } from '../../../database/enums';
-import { v4 as uuidv4 } from 'uuid';
 
-export class CreateAutonAsset extends BaseAsset {
-	public name = 'createAuton';
+export class CreateDaoAsset extends BaseAsset {
+	public name = 'createDao';
 	public id = 0;
 
-	// Define schema for asset
 	public schema = {
 		$id: 'auton/createAuton-asset',
 		title: 'CreateAutonAsset transaction asset for auton module',
 		type: 'object',
-		required: ["name", "type"],
+		required: ["name", "governingAutonName", "icon"],
 		properties: {
 			name: {
 				dataType: 'string',
@@ -43,10 +43,11 @@ export class CreateAutonAsset extends BaseAsset {
 				minLength: 2,
 				maxLength: 20
 			},
-			subtitle: {
+			governingAutonName: {
 				dataType: 'string',
 				fieldNumber: 2,
-				maxLength: 50
+				minLength: 2,
+				maxLength: 20
 			},
 			icon: {
 				dataType: 'string',
@@ -63,13 +64,27 @@ export class CreateAutonAsset extends BaseAsset {
 				fieldNumber: 5,
 				maxLength: 1024
 			},
-			tags: {
+			linkedChannels: {
 				type: "array",
 				fieldNumber: 6,
 				maxItems: 5,
 				items: {
-					dataType: "string",
-					maxLength: 16
+					type: 'object',
+					required: ["channel", "link"],
+					properties: {
+						channel: {
+							dataType: 'string',
+							fieldNumber: 1,
+							minLength: 2,
+							maxLength: 20
+						},
+						link: {
+							dataType: 'string',
+							fieldNumber: 2,
+							minLength: 2,
+							maxLength: 50
+						}
+					}
 				}
 			},
 			bulkInviteAccountIds: {
@@ -81,113 +96,34 @@ export class CreateAutonAsset extends BaseAsset {
 					maxLength: 128
 				}
 			},
-			type: {
-				dataType: 'string',
-				fieldNumber: 8,
+			hasLegalEntity: {
+				dataType: 'boolean',
+				fieldNumber: 8
 			},
-			description: {
+			jurisdiction: {
 				dataType: 'string',
 				fieldNumber: 9,
+				maxLength: 264
 			},
-			location: {
+			cocId: {
 				dataType: 'string',
 				fieldNumber: 10,
+				maxLength: 128
 			},
-			capacity: {
-				dataType: 'uint64',
+			businessAddress: {
+				dataType: 'string',
 				fieldNumber: 11,
-			},
-			price: {
-				dataType: 'uint64',
-				fieldNumber: 12,
-			},
-			start: {
-				dataType: 'uint64',
-				fieldNumber: 13,
-			},
-			end: {
-				dataType: 'uint64',
-				fieldNumber: 14,
-			},
-			subject: {
-				dataType: 'string',
-				fieldNumber: 15,
-			},
-			checkoutRequired: {
-				dataType: 'string',
-				fieldNumber: 16,
+				maxLength: 264
 			}
 		},
 	};
 
 	public validate({ asset }: ValidateAssetContext<{}>): void {
-		// Validate your asset
-	}
-
-
-	private _createAuton(asset, constitution, memberships, transaction, stateStore) {
-
-		// This is the default auton, where poas and event are empty
-		// these fields are only needed for the auton type 'event'
-		let auton: Auton = {
-			memberships: memberships,
-			autonProfile: {
-				name: asset.name,
-				subtitle: asset.subtitle,
-				icon: asset.icon,
-				mission: asset.mission,
-				vision: asset.vision,
-				foundingDate: BigInt(stateStore.chain.lastBlockHeaders[0].timestamp),
-
-			},
-			tags: asset.tags,
-
-			constitution: constitution,
-			proposals: [],
-			transaction: transaction.id.toString('hex'),
-			type: asset.type,
-			poas: [],
-			event: {},
-			lesson: {},
-		};
-
-		if (asset.type == AutonTypeEnum.EVENT) {
-
-			auton.poas = [];
-			auton.event = {
-				description: asset.description,
-				location: asset.location,
-				capacity: asset.capacity,
-				price: asset.price,
-				start: asset.start,
-				end: asset.end,
-			}
-		}
-
-		if (asset.type == AutonTypeEnum.LESSON) {
-			const getUuid = require('uuid-by-string');
-			const seed = asset.name + asset.location;
-
-			auton.poas = [];
-			auton.lesson = {
-				subject: asset.subject,
-				description: asset.description,
-				location: asset.location,
-				start: asset.start,
-				end: asset.end,
-				uuid: getUuid(seed),
-				checkoutRequired: asset.checkoutRequired === "true" ? true : false,
-			}
-		}
-
-		return auton;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/require-await
 	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
-
-		console.log("-----------------------APPLY FUNC CREATE AUTON ASSET-----------------------")
-
+		console.log("OUI")
 		console.log(asset)
 
 		const senderAddress = transaction.senderAddress;
@@ -198,10 +134,20 @@ export class CreateAutonAsset extends BaseAsset {
 			throw new Error("No Kalipo account found for this Lisk account")
 		}
 
-		const alreadyRegisteredAuton = await db.indices.autonName.getRecord(stateStore, asset.name);
-		if (alreadyRegisteredAuton !== null) {
-			throw new Error("Oops this auton name is already taken")
+		if (asset.name == asset.governingAutonName) {
+			throw new Error("Oops the governing auton name cannot be the same as the DAO name")
 		}
+
+		const alreadyRegisteredDao = await db.indices.autonName.getRecord(stateStore, asset.name);
+		if (alreadyRegisteredDao !== null) {
+			throw new Error("Oops this dao name is already taken")
+		}
+
+		const alreadyRegisteredGoverningAuton = await db.indices.autonName.getRecord(stateStore, asset.governingAutonName);
+		if (alreadyRegisteredGoverningAuton !== null) {
+			throw new Error("Oops the governing auton name is already taken")
+		}
+
 		// Get bulk kalipoAccounts to check if they exists
 		const bulkAccounts: Array<KalipoAccount> = [];
 		const bulkAccountsCheckList: Array<string> = [];
@@ -228,6 +174,7 @@ export class CreateAutonAsset extends BaseAsset {
 		if (multipleInvitesToSameAccount) {
 			throw new Error("Cannot send multiple invites to the same account")
 		}
+
 
 		// Founder membership is automaticly set as accepted
 		const membershipInvitation: MembershipInvitation = {
@@ -270,16 +217,64 @@ export class CreateAutonAsset extends BaseAsset {
 			constitution.push(porposalType)
 		}
 
-		const auton: Auton = this._createAuton(asset, constitution, memberships, transaction, stateStore)
+		const daoId = db.tables.dao.getDeterministicId(transaction, 0);
 
+		const governingAuton: Auton = {
+			memberships: memberships,
+			autonProfile: {
+				name: asset.governingAutonName,
+				subtitle: "Governing Auton",
+				icon: asset.icon,
+				mission: asset.mission,
+				vision: asset.vision,
+				foundingDate: BigInt(stateStore.chain.lastBlockHeaders[0].timestamp),
+			},
+			tags: ["GOVERNING"],
+			constitution: constitution,
+			proposals: [],
+			transaction: transaction.id.toString('hex'),
+			type: AutonTypeEnum.GOVERNING,
+			poas: [],
+			event: {},
+			lesson: {},
+			daoId: daoId,
+			governmentalDocuments: []
+		};
 
 		const autonRowContext: RowContext = new RowContext;
-		const autonId: string = await db.tables.auton.createRecord(stateStore, transaction, auton, autonRowContext)
+		const autonId: string = await db.tables.auton.createRecord(stateStore, transaction, governingAuton, autonRowContext)
 
 		const membershipRowContext: RowContext = new RowContext;
 		const membershipId: string = await db.tables.membership.createRecord(stateStore, transaction, membership, membershipRowContext)
 
-		await db.indices.autonName.setRecord(stateStore, asset.name, { id: autonId })
+		// Dao creation
+		let dao: Dao = {
+			autons: [autonId],
+			governingAutonId: autonId,
+			daoProfile: {
+				name: asset.name,
+				subtitle: "DAO",
+				icon: asset.icon,
+				mission: asset.mission,
+				vision: asset.vision,
+				foundingDate: BigInt(stateStore.chain.lastBlockHeaders[0].timestamp),
+			},
+			contactChannels: asset.linkedChannels,
+
+		}
+
+
+		dao.legalEntityProfile = {
+			jurisdiction: asset.jurisdiction,
+			cocId: asset.cocId,
+			businessAddress: asset.businessAddress
+		}
+
+
+		const daoIdSuccess: string = await db.tables.dao.createRecord(stateStore, transaction, dao, new RowContext())
+
+		await db.indices.autonName.setRecord(stateStore, asset.governingAutonName, { id: autonId })
+		await db.indices.autonName.setRecord(stateStore, asset.name, { id: daoId })
 
 		let allAutonIds = await db.indices.fullTable.getRecord(stateStore, "autons");
 
@@ -291,6 +286,16 @@ export class CreateAutonAsset extends BaseAsset {
 			await db.indices.fullTable.setRecord(stateStore, "autons", allAutonIds)
 		}
 
+		let allDaoIds = await db.indices.fullTable.getRecord(stateStore, "daos");
+
+		if (allDaoIds == null) {
+			const index = { ids: [daoId] }
+			await db.indices.fullTable.setRecord(stateStore, "daos", index)
+		} else {
+			allDaoIds.ids.push(daoId)
+			await db.indices.fullTable.setRecord(stateStore, "daos", allDaoIds)
+		}
+
 		const kalipoAccount = await db.tables.kalipoAccount.getRecord(stateStore, accountId)
 
 		if (kalipoAccount !== null) {
@@ -298,8 +303,8 @@ export class CreateAutonAsset extends BaseAsset {
 			await db.tables.kalipoAccount.updateRecord(stateStore, accountId, kalipoAccount)
 		}
 
-		for (let index = 0; index < asset.tags.length; index++) {
-			const tag: string = asset.tags[index];
+		for (let index = 0; index < governingAuton.tags.length; index++) {
+			const tag: string = governingAuton.tags[index];
 			const currentIndexState = await db.indices.autonTag.getRecord(stateStore, tag)
 			if (currentIndexState !== null) {
 				currentIndexState?.ids.push(autonId)
@@ -322,10 +327,6 @@ export class CreateAutonAsset extends BaseAsset {
 					proposalId: "Founder invitation",
 					message: "Founder"
 				};
-
-				if (asset.type == AutonTypeEnum.LESSON) {
-					bulkMembershipInvitation.accepted = BigInt(stateStore.chain.lastBlockHeaders[0].timestamp)
-				}
 
 				let bulkMembership: Membership = {
 					started: BigInt(0),

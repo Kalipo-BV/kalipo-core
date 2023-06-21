@@ -50,7 +50,9 @@ export interface Auton {
     poas: Array<string>,
     event: EventProfile,
     lesson: LessonProfile,
-    // contracts: Contracts,
+    daoId: string,
+    parentAutonId?: string,
+    governmentalDocuments: Array<string>,
 }
 
 // export interface Contracts {
@@ -239,7 +241,22 @@ export class AutonTable extends BaseTable<Auton> {
                         fieldNumber: 7
                     }
                 }
-            }
+            },
+            daoId: {
+                dataType: "string",
+                fieldNumber: 11,
+            },
+            parentAutonId: {
+                dataType: "string",
+                fieldNumber: 12,
+            },
+            governmentalDocuments: {
+                type: "array",
+                fieldNumber: 13,
+                items: {
+                    dataType: "string",
+                }
+            },
         }
     };
 }

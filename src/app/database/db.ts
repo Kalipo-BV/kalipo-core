@@ -17,6 +17,7 @@
 
 import { KalipoAccountTable } from './table/kalipo_account_table'
 import { AutonTable } from './table/auton_table'
+import { DaoTable } from './table/dao_table'
 import { MembershipTable } from './table/membership_table'
 import { UsernameIndex } from './index/username_index'
 import { ContractIdIndex } from './index/contract_index'
@@ -39,14 +40,19 @@ import { AutonUuidIndex } from './index/auton_uuid_index'
 import { GrantContractTable } from './table/grant_contract_table'
 import { AgreementTable } from './table/agreement_table'
 import { AgreementIdIndex } from './index/agreement_index'
+import { GovernmentalDocumentTable } from './table/governmental_document_table'
+import { GovernmentalVersionTable } from './table/governmental_version_table'
+import { GovernmentalEntryTable } from './table/governmental_entry'
 
 export const tableRegistrationClasses: Array<BaseTable> = [new KalipoAccountTable(), new AutonTable(), new MembershipTable(),
-new ProposalTable(), new ProposalProvisionsTable(), new VoteTable(), new ProposalCampaignCommentTable(), new GrantContractTable(), new AgreementTable()]
+new ProposalTable(), new ProposalProvisionsTable(), new VoteTable(), new ProposalCampaignCommentTable(), new GovernmentalDocumentTable(),
+new GovernmentalVersionTable(), new GovernmentalEntryTable(), new GrantContractTable(), new AgreementTable()]
 
 export const db = {
     tables: {
         kalipoAccount: new KalipoAccountTable(),
         auton: new AutonTable(),
+        dao: new DaoTable(),
         membership: new MembershipTable(),
         proposal: new ProposalTable(),
         provisions: new ProposalProvisionsTable(),
@@ -57,6 +63,9 @@ export const db = {
         memberships: new MembershipTable(),
         grantContractTable: new GrantContractTable(),
         agreementTable: new AgreementTable(),
+        governmentalDocument: new GovernmentalDocumentTable(),
+        governmentalVersion: new GovernmentalVersionTable(),
+        governmentalEntry: new GovernmentalEntryTable(),
     },
     indices: {
         liskId: new LiskIdIndex(),
