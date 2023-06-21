@@ -28,6 +28,7 @@ import {
 } from 'lisk-sdk';
 import { db } from '../../database/db';
 import { CreateCampaignCommentAsset } from "./assets/create_campaign_comment_asset";
+import { CreateExpertAdviceAsset } from "./assets/create_expert_advice_asset";
 
 export class CommentModule extends BaseModule {
     public actions = {
@@ -53,7 +54,7 @@ export class CommentModule extends BaseModule {
         // },
     };
     public name = 'comment';
-    public transactionAssets = [new CreateCampaignCommentAsset()];
+    public transactionAssets = [new CreateCampaignCommentAsset(), new CreateExpertAdviceAsset()];
     public events = [
         // Example below
         // 'comment:newBlock',
