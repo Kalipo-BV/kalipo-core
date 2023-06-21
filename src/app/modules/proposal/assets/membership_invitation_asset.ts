@@ -77,7 +77,7 @@ export class MembershipInvitationAsset extends BaseAsset {
                 fieldNumber: 7,
                 items: {
                         type: "object",
-                        required: ["stakeholderId", "expertise", "advice", "opinion"],
+                        required: ["stakeholderId", "expertise"],
                         properties: {
                             stakeholderId: {
                                 dataType: "string",

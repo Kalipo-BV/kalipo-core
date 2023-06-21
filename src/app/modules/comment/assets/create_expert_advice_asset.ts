@@ -24,7 +24,7 @@ export class CreateExpertAdviceAsset extends BaseAsset {
     $id: 'comment/createExpertAdvice-asset',
 		title: 'CreateExpertAdviceAsset transaction asset for comment module',
 		type: 'object',
-		required: ["proposalId", "stakeholderId", "advice", "opinion"],
+		required: ["proposalId", "stakeholderId"],
 		properties: {
 			//uitleg over advies
 			proposalId:{

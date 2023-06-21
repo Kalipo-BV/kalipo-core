@@ -212,7 +212,7 @@ export class ProposalTable extends BaseTable<Proposal> {
                 fieldNumber: 16,
                 items: {
                     type: "object",
-                    required: ["stakeholderId", "expertise", "advice", "opinion"],
+                    required: ["stakeholderId", "expertise"],
                     properties: {
                         stakeholderId: {
                             dataType: "string",
