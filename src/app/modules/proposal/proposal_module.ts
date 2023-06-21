@@ -34,6 +34,7 @@ import { Auton } from '../../database/table/auton_table';
 import { ProposalProvisions } from '../../database/table/proposal_provisions_table';
 import { Proposal } from '../../database/table/proposal_table';
 import { MembershipInvitationAsset } from "./assets/membership_invitation_asset";
+import { Console } from 'console';
 
 export interface BinaryVoteCount {
     acceptCount: number,
@@ -120,7 +121,9 @@ export class ProposalModule extends BaseModule {
                         const provision = await db.tables.provisions.getRecord(_input.stateStore, proposal.provisionId)
 
                         if (proposal.status == ProposalStatus.CAMPAIGNING) {
-                            proposal.status = ProposalStatus.VOTING;
+                            console.log(proposal)
+
+                            //proposal.status = ProposalStatus.VOTING;
                         } else if ((proposal.status == ProposalStatus.VOTING || proposal.status == ProposalStatus.DECIDED)
                             && BigInt(_input.block.header.timestamp) >= proposal.windowClosed) {
                             proposal.status = ProposalStatus.ENDED;

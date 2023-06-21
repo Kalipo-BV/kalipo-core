@@ -46,6 +46,8 @@ export interface Stakeholderbill{
 }
 
 
+
+
 export interface ProposalAction {
     executed: BigInt,
     resultMessage: string,
@@ -54,6 +56,8 @@ export interface ProposalAction {
 export interface Stakeholders{
     stakeholderId: string,
     expertise: string,
+    advice: string,
+    opinion: string
 }
 
 export interface Proposal {
@@ -208,7 +212,7 @@ export class ProposalTable extends BaseTable<Proposal> {
                 fieldNumber: 16,
                 items: {
                     type: "object",
-                    required: ["stakeholderId", "expertise"],
+                    required: ["stakeholderId", "expertise", "advice", "opinion"],
                     properties: {
                         stakeholderId: {
                             dataType: "string",
@@ -217,6 +221,14 @@ export class ProposalTable extends BaseTable<Proposal> {
                         expertise: {
                             dataType: "string",
                             fieldNumber: 2,
+                        },
+                        advice:{
+                            dataType: "string",
+                            fieldNumber: 3,
+                        },
+                        opinion: {
+                            dataType: "string",
+                            fieldNumber: 4,
                         },
                     }
                 }
