@@ -121,7 +121,6 @@ export class ProposalModule extends BaseModule {
                         const provision = await db.tables.provisions.getRecord(_input.stateStore, proposal.provisionId)
 
                         if (proposal.status == ProposalStatus.CAMPAIGNING) {
-                            console.log(proposal)
 
                             //proposal.status = ProposalStatus.VOTING;
                         } else if ((proposal.status == ProposalStatus.VOTING || proposal.status == ProposalStatus.DECIDED)

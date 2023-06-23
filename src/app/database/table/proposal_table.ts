@@ -136,6 +136,7 @@ export class ProposalTable extends BaseTable<Proposal> {
                     dataType: "string",
                 }
             },
+
             votes: {
                 type: "array",
                 fieldNumber: 9,
@@ -231,6 +232,13 @@ export class ProposalTable extends BaseTable<Proposal> {
                             fieldNumber: 4,
                         },
                     }
+                }
+            },
+            stakeholderComments:{
+                type: "array",
+                fieldNumber: 17,
+                items: {
+                    dataType: "string",
                 }
             },
 

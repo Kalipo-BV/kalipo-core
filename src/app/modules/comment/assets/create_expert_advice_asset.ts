@@ -57,6 +57,9 @@ export class CreateExpertAdviceAsset extends BaseAsset {
 
 	// eslint-disable-next-line @typescript-eslint/require-await
   public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
+
+	console.log(asset);
+
 	const senderAddress = transaction.senderAddress;
 
 	//Kalipo account
@@ -88,13 +91,13 @@ export class CreateExpertAdviceAsset extends BaseAsset {
 		throw new Error("No Kalipo account found")
 	}
 
-	if (membershipCheck.error == MembershipValidationError.NO_ACTIVE_MEMBERSHIP) {
-		throw new Error("You need a membership to submit new proposals")
-	}
+	// if (membershipCheck.error == MembershipValidationError.NO_ACTIVE_MEMBERSHIP) {
+	// 	throw new Error("You need a membership to submit new proposals")
+	// }
 
-	if (membershipCheck.error == MembershipValidationError.OPEN_INVITATION_NOT_ACCEPTED_OR_REFUSED) {
-		throw new Error("You aren't member yet, you still need to accept the invitation")
-	}
+	// if (membershipCheck.error == MembershipValidationError.OPEN_INVITATION_NOT_ACCEPTED_OR_REFUSED) {
+	// 	throw new Error("You aren't member yet, you still need to accept the invitation")
+	// }
 
 	// Proposal status
 	if (proposal.status != ProposalStatus.CAMPAIGNING) {
@@ -102,16 +105,27 @@ export class CreateExpertAdviceAsset extends BaseAsset {
 	}
 	const created = stateStore.chain.lastBlockHeaders[0].timestamp
 
-	
-	const comment: Stakeholders = {
-		stakeholderId: asset.stakeholderId,
-		comment: asset.comment,
+	const proposalStakeholderComment: ProposalCampaignComment = {
+		proposalId: asset.proposalId,
+		membershipId: asset.stakeholderId,
+		comment: asset.advice,
 		likes: [],
 		dislikes: [],
 		created: BigInt(created)
 	}
-	const commentId = await db.tables.campaignComment.createRecord(stateStore, transaction, comment, new RowContext())
-		membership?.comments.push(commentId)
-		await db.tables.membership.updateRecord(stateStore, membershipId, membership)
+	
+	// const comment: Stakeholders = {
+	// 	stakeholderId: asset.stakeholderId,
+	// 	comment: asset.comment,
+	// 	likes: [],
+	// 	dislikes: [],
+	// 	created: BigInt(created)
+	// }
+	const rc = new RowContext()
+	const commentId = await db.tables.campaignComment.createRecord(stateStore,
+		transaction, proposalStakeholderComment, rc);
+		proposal.stakeholderComments.push(commentId)
+		
+	const proposalId = await db.tables.proposal.updateRecord(stateStore, asset.proposalId, proposal);
 }
 }

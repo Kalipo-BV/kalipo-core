@@ -46,6 +46,12 @@ export class MembershipInvitationAsset extends BaseAsset {
 				fieldNumber: 2,
 				maxLength: 1024,
 			},
+			stakeholderComments:{
+				dataType: 'string',
+				fieldNumber: 2,
+				maxLength: 1024,
+
+			},
 			proposalType: {
 				dataType: 'string',
 				fieldNumber: 3,
@@ -86,15 +92,7 @@ export class MembershipInvitationAsset extends BaseAsset {
                             expertise: {
                                 dataType: "string",
                                 fieldNumber: 2,
-                            },
-							advice:{
-								dataType: "string",
-								fieldNumber: 3,
-							},
-							opinion: {
-								dataType: "string",
-								fieldNumber: 4,
-							},
+                            }
                         }
                 },
             },
@@ -210,16 +208,16 @@ export class MembershipInvitationAsset extends BaseAsset {
 				dislikes: [],
 				created: BigInt(created)
 			}
-			const configuration = new Configuration({
-  				apiKey: "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",
-			});
-			const openai = new OpenAIApi(configuration);
+			// const configuration = new Configuration({
+  			// 	apiKey: "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",
+			// });
+			// const openai = new OpenAIApi(configuration);
 
-			const completion = await openai.createChatCompletion({
-  				model: "gpt-3.5-turbo",
-				messages: [{role: "user", content: "Hello world"}]
-			});
-			console.log(completion.data.choices[0].message);
+			// const completion = await openai.createChatCompletion({
+  			// 	model: "gpt-3.5-turbo",
+			// 	messages: [{role: "user", content: "Hello world"}]
+			// });
+			// console.log(completion.data.choices[0].message);
 
 			const proposalCampaignComment2: ProposalCampaignComment = {
 				proposalId: db.tables.proposal.getDeterministicId(transaction, 0),
