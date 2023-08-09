@@ -20,6 +20,8 @@ import { ProposalProvisions } from "./table/proposal_provisions_table";
 
 export const templates = {
     starter: [new ProposalProvisions(ProposalType.MEMBERSHIP_INVITATION, 51, 51, BigInt(0), BigInt(60 * 24 * 3), false, "system"),
-    new ProposalProvisions(ProposalType.AUTON_CREATION, 51, 51, BigInt(0), BigInt(60 * 24 * 3), false, "system")
+    new ProposalProvisions(ProposalType.AUTON_CREATION, 51, 51, BigInt(0), BigInt(60 * 24 * 3), false, "system"),
+    new ProposalProvisions(ProposalType.TERMS_AND_CONDITIONS_BILL, 51, 51, BigInt(0), BigInt(60 * 24 * 3), false, "system"),
+    new ProposalProvisions(ProposalType.PROPOSAL_TYPE_SETTINGS_BILL, 51, 51, BigInt(0), BigInt(60 * 24 * 3), false, "system")
     ],
 }
