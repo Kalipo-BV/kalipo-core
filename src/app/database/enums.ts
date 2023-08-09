@@ -28,6 +28,8 @@ export enum checkStatus {
 export enum ProposalType {
     MEMBERSHIP_INVITATION = 'membership-invitation',
     AUTON_CREATION = 'auton-creation',
+    TERMS_AND_CONDITIONS_BILL = 'terms-and-conditions-bill',
+    PROPOSAL_TYPE_SETTINGS_BILL = 'proposal-type-settings-bill'
 }
 
 export enum GovernmentalDocumentEnum {
