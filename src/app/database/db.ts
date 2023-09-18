@@ -20,6 +20,7 @@ import { AutonTable } from './table/auton_table'
 import { DaoTable } from './table/dao_table'
 import { MembershipTable } from './table/membership_table'
 import { UsernameIndex } from './index/username_index'
+import { ContractIdIndex } from './index/contract_index'
 import { AutonNameIndex } from './index/auton_name_index'
 import { FullTableIndex } from './index/full_table_index'
 import { AutonTagIndex } from './index/auton_tag_index'
@@ -36,13 +37,16 @@ import { PoaIssueTable } from './table/poa_issue_table'
 import { PoaIssueIndex } from './index/poa_issue_index'
 import { MembershipIndex } from './index/membership_index'
 import { AutonUuidIndex } from './index/auton_uuid_index'
+import { GrantContractTable } from './table/grant_contract_table'
+import { AgreementTable } from './table/agreement_table'
+import { AgreementIdIndex } from './index/agreement_index'
 import { GovernmentalDocumentTable } from './table/governmental_document_table'
 import { GovernmentalVersionTable } from './table/governmental_version_table'
 import { GovernmentalEntryTable } from './table/governmental_entry'
 
 export const tableRegistrationClasses: Array<BaseTable> = [new KalipoAccountTable(), new AutonTable(), new MembershipTable(),
 new ProposalTable(), new ProposalProvisionsTable(), new VoteTable(), new ProposalCampaignCommentTable(), new GovernmentalDocumentTable(),
-new GovernmentalVersionTable(), new GovernmentalEntryTable()]
+new GovernmentalVersionTable(), new GovernmentalEntryTable(), new GrantContractTable(), new AgreementTable()]
 
 export const db = {
     tables: {
@@ -57,6 +61,8 @@ export const db = {
         poa: new PoaTable(),
         poaIssue: new PoaIssueTable(),
         memberships: new MembershipTable(),
+        grantContractTable: new GrantContractTable(),
+        agreementTable: new AgreementTable(),
         governmentalDocument: new GovernmentalDocumentTable(),
         governmentalVersion: new GovernmentalVersionTable(),
         governmentalEntry: new GovernmentalEntryTable(),
@@ -71,6 +77,8 @@ export const db = {
         scheduledProposal: new ScheduledProposalIndex(),
         poaName: new PoaNameIndex(),
         poaIssue: new PoaIssueIndex(),
-        memberships: new MembershipIndex()
+        memberships: new MembershipIndex(),
+        contracts: new ContractIdIndex(),
+        agreements: new AgreementIdIndex(),
     }
 }

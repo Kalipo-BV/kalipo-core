@@ -19,6 +19,7 @@ import { Schema } from "lisk-sdk";
 import { BaseTable } from "../base_table";
 import { ProposalType } from "../enums";
 import { AutonTypeEnum } from "../enums";
+import { GrantContractTable } from "./grant_contract_table";
 
 
 
@@ -53,6 +54,11 @@ export interface Auton {
     parentAutonId?: string,
     governmentalDocuments: Array<string>,
 }
+
+// export interface Contracts {
+//     grant_contracts: Array<GrantContractTable>,
+//     //add more types of contracts here
+// }
 
 export interface LessonProfile {
     subject?: string,
@@ -252,5 +258,5 @@ export class AutonTable extends BaseTable<Auton> {
                 }
             },
         }
-    }
+    };
 }

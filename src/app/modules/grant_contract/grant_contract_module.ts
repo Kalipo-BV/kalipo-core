@@ -13,67 +13,66 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+*/
 
 /* eslint-disable class-methods-use-this */
 
 import {
     AfterBlockApplyContext,
-
-
     AfterGenesisBlockApplyContext, BaseModule,
-
-
     BeforeBlockApplyContext, TransactionApplyContext
 } from 'lisk-sdk';
 import { db } from '../../database/db';
-import { CreateAutonAsset } from "./assets/create_auton_asset";
+import { SignConctractAsset } from "./assets/sign_conctract_asset";
 
-export class AutonModule extends BaseModule {
+export class GrantContractModule extends BaseModule {
     public actions = {
         // Example below
         // getBalance: async (params) => this._dataAccess.account.get(params.address).token.balance,
         // getBlockByID: async (params) => this._dataAccess.blocks.get(params.id),
         getByID: async (params: Record<string, unknown>) => {
-            return await db.tables.auton.getRecordInJSON(this._dataAccess.getChainState.bind(this), (params as { id: string }).id)
+            return await db.tables.grantContractTable.getRecordInJSON(this._dataAccess.getChainState.bind(this), (params as { id: string }).id);  
         },
-        getProvisionByID: async (params: Record<string, unknown>) => {
-            return await db.tables.provisions.getRecordInJSON(this._dataAccess.getChainState.bind(this), (params as { id: string }).id)
+        getAll: async () => {
+            return await db.indices.fullTable.getRecordInJSON(this._dataAccess.getChainState.bind(this), "grantContracts");
         },
-        getAutonIdByName: async (params: Record<string, unknown>) => {
-            return await db.indices.autonName.getRecord(this._dataAccess.getChainState.bind(this), (params as { name: string }).name)
+        getAllInfo: async () => {
+            var indexes = await this.actions.getAll();
+            var returnList = [];
+            for(var element in indexes["ids"]) {
+                try{
+                    returnList.push(await this.actions.getByID({ id: indexes["ids"][element] }));
+                } catch {
+                    //temporary fix for not removing/emptying existing index list
+                };
+            }
+            return returnList;
         },
-        getAutonIdsByTag: async (params: Record<string, unknown>) => {
-            return await db.indices.autonTag.getRecord(this._dataAccess.getChainState.bind(this), (params as { tag: string }).tag)
-        },
-        getAll: async (params: Record<string, unknown>) => {
-            return await db.indices.fullTable.getRecordInJSON(this._dataAccess.getChainState.bind(this), "autons")
-        },
-        getAutonIdByUUID: async (params: Record<string, unknown>) => {
-            return await db.indices.autonUuid.getRecordInJSON(this._dataAccess.getChainState.bind(this), (params as { uuid: string }).uuid)
+        getByUuid: async (params: Record<string, unknown>) => {
+            return (await this.actions.getAllInfo()).find(element => element.uuid == (params as { uuid: string }).uuid);
         }
     };
     public reducers = {
         // Example below
         // getBalance: async (
-        // 	params: Record<string, unknown>,
-        // 	stateStore: StateStore,
-        // ): Promise<bigint> => {
-        // 	const { address } = params;
-        // 	if (!Buffer.isBuffer(address)) {
-        // 		throw new Error('Address must be a buffer');
-        // 	}
-        // 	const account = await stateStore.account.getOrDefault<TokenAccount>(address);
-        // 	return account.token.balance;
-        // },
+		// 	params: Record<string, unknown>,
+		// 	stateStore: StateStore,
+		// ): Promise<bigint> => {
+		// 	const { address } = params;
+		// 	if (!Buffer.isBuffer(address)) {
+		// 		throw new Error('Address must be a buffer');
+		// 	}
+		// 	const account = await stateStore.account.getOrDefault<TokenAccount>(address);
+		// 	return account.token.balance;
+		// },
     };
-    public name = 'auton';
-    public transactionAssets = [];
+    public name = 'grantContract';
+    public transactionAssets = [new SignConctractAsset()];
     public events = [
         // Example below
-        // 'auton:newBlock',
+        // 'signConctract',
     ];
-    public id = 1003;
+    public id = 1012;
 
     // public constructor(genesisConfig: GenesisConfig) {
     //     super(genesisConfig);
@@ -83,13 +82,13 @@ export class AutonModule extends BaseModule {
     public async beforeBlockApply(_input: BeforeBlockApplyContext) {
         // Get any data from stateStore using block info, below is an example getting a generator
         // const generatorAddress = getAddressFromPublicKey(_input.block.header.generatorPublicKey);
-        // const generator = await _input.stateStore.account.get<TokenAccount>(generatorAddress);
+		// const generator = await _input.stateStore.account.get<TokenAccount>(generatorAddress);
     }
 
     public async afterBlockApply(_input: AfterBlockApplyContext) {
         // Get any data from stateStore using block info, below is an example getting a generator
         // const generatorAddress = getAddressFromPublicKey(_input.block.header.generatorPublicKey);
-        // const generator = await _input.stateStore.account.get<TokenAccount>(generatorAddress);
+		// const generator = await _input.stateStore.account.get<TokenAccount>(generatorAddress);
     }
 
     public async beforeTransactionApply(_input: TransactionApplyContext) {
